@@ -1,0 +1,93 @@
+{
+  "snapshot_utc": "2026-10-14T14:01:34.744187+00:00",
+  "global_db_ghsa_count": 386391,
+  "repos_surveyed": 30,
+  "total_published_gras": 618,
+  "in_global_db": 423,
+  "in_global_db_reviewed": 423,
+  "in_global_db_unreviewed": 0,
+  "not_in_global_db_by_own_ghsa": 195,
+  "censored_with_only_nvd_cve_record": 18,
+  "censored_with_no_global_presence": 90,
+  "median_days_missing": 91.1,
+  "max_days_missing": 999.7,
+  "median_days_to_import_when_reviewed": 3.2,
+  "per_repo": {
+    "FlowiseAI/Flowise": {
+      "total": 130,
+      "censored": 28
+    },
+    "langgenius/dify": {
+      "total": 21,
+      "censored": 21
+    },
+    "langflow-ai/langflow": {
+      "total": 37,
+      "censored": 4
+    },
+    "vllm-project/vllm": {
+      "total": 104,
+      "censored": 35
+    },
+    "comfyanonymous/ComfyUI": {
+      "total": 4,
+      "censored": 4
+    },
+    "open-webui/open-webui": {
+      "total": 165,
+      "censored": 21
+    },
+    "BerriAI/litellm": {
+      "total": 17,
+      "censored": 3
+    },
+    "oobabooga/text-generation-webui": {
+      "total": 12,
+      "censored": 12
+    },
+    "infiniflow/ragflow": {
+      "total": 8,
+      "censored": 8
+    },
+    "Mintplex-Labs/anything-llm": {
+      "total": 25,
+      "censored": 25
+    },
+    "danny-avila/LibreChat": {
+      "total": 29,
+      "censored": 29
+    },
+    "mlflow/mlflow": {
+      "total": 10,
+      "censored": 3
+    },
+    "ray-project/ray": {
+      "total": 4,
+      "censored": 0
+    },
+    "gradio-app/gradio": {
+      "total": 29,
+      "censored": 1
+    },
+    "langchain-ai/langchain": {
+      "total": 9,
+      "censored": 0
+    },
+    "deepset-ai/haystack": {
+      "total": 1,
+      "censored": 0
+    },
+    "xorbitsai/inference": {
+      "total": 1,
+      "censored": 0
+    },
+    "feast-dev/feast": {
+      "total": 1,
+      "censored": 1
+    },
+    "bentoml/BentoML": {
+      "total": 11,
+      "censored": 0
+    }
+  }
+}

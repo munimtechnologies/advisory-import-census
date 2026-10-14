@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "advisory-import-census"
+version = "0.1.0"
+description = "A census of maintainer-published GitHub repository security advisories for self-hosted AI/ML tools that never reach the global GitHub Advisory Database (so Dependabot and OSV scanners cannot flag them)."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "Apache-2.0"
+authors = [{ name = "MV2 of Munim, Inc." }]
+keywords = ["security", "advisories", "dependabot", "osv", "ghsa", "ai", "supply-chain"]
+
+[project.urls]
+Homepage = "https://github.com/munimtechnologies/advisory-import-census"
+
+[tool.setuptools]
+py-modules = ["census"]
