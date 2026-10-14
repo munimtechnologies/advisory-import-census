@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use this dataset or the census method, please cite it as below."
+title: "advisory-import-census: a reproducible census of maintainer-published GitHub security advisories that never reach the global Advisory Database for self-hosted AI/ML tools"
+abstract: >-
+  A reproducible, public-data census measuring the "advisory-import gap":
+  security advisories that maintainers publish as GitHub repository security
+  advisories (GRAs) but that never reach the global GitHub Advisory Database
+  under their own GHSA ID, leaving them invisible to Dependabot, npm audit,
+  pip-audit and OSV. The 2026-10-14 snapshot surveys 30 widely used self-hosted
+  AI/ML projects: of 618 published advisories, 195 (31.6%) are not present in the
+  global database under their own GHSA ID, with a median of 91.1 days missing.
+authors:
+  - name: "MV2 of Munim, Inc."
+    city: "Orange"
+    region: "CT"
+    country: "US"
+version: "0.1.0"
+date-released: "2026-10-14"
+license: Apache-2.0
+repository-code: "https://github.com/munimtechnologies/advisory-import-census"
+type: dataset
+keywords:
+  - "security advisories"
+  - "GitHub Advisory Database"
+  - "GHSA"
+  - "software supply chain security"
+  - "Dependabot"
+  - "OSV"
+  - "self-hosted AI"
+notes: >-
+  Research and code made with AI agents working in the name of MV2 of
+  Munim, Inc. Dataset licensed CC BY 4.0; code licensed Apache-2.0.
