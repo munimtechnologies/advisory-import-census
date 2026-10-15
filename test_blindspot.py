@@ -112,6 +112,10 @@ class TestManifests(unittest.TestCase):
         self.assertEqual(bs.parse_package_arg("npm:flowise@3.1.3"), ("npm", "flowise", "3.1.3"))
         self.assertEqual(bs.parse_package_arg("npm:@scope/x@1.0.0"), ("npm", "@scope/x", "1.0.0"))
         self.assertEqual(bs.parse_package_arg("npm:@scope/x"), ("npm", "@scope/x", None))
+        self.assertEqual(bs.parse_package_arg("go:github.com/gin-gonic/gin@v1.9.1"),
+                         ("go", "github.com/gin-gonic/gin", "v1.9.1"))
+        self.assertEqual(bs.parse_package_arg("golang:github.com/gin-gonic/gin"),
+                         ("go", "github.com/gin-gonic/gin", None))
         self.assertEqual(bs.parse_package_arg("repo:langgenius/dify@1.4.0"),
                          ("repo", "langgenius/dify", "1.4.0"))
         with self.assertRaises(ValueError):
@@ -335,6 +339,32 @@ PNPM_V5 = "\n".join([
     "",
 ])
 
+GO_MOD = "\n".join([
+    "module example.com/myapp",
+    "",
+    "go 1.21",
+    "",
+    "require github.com/gin-gonic/gin v1.9.1",
+    "",
+    "require (",
+    "\tgithub.com/prometheus/client_golang v1.19.0",
+    "\tgolang.org/x/text v0.14.0 // indirect",
+    "\tgithub.com/aws/aws-sdk-go-v2/service/s3 v1.48.0 // indirect",
+    ")",
+    "",
+    "replace github.com/old/pkg => github.com/new/pkg v1.0.0",
+    "",
+])
+
+GO_SUM = "\n".join([
+    "github.com/gin-gonic/gin v1.9.1 h1:hashAAA=",
+    "github.com/gin-gonic/gin v1.9.1/go.mod h1:hashBBB=",
+    "github.com/gin-gonic/gin v1.8.0/go.mod h1:hashCCC=",
+    "golang.org/x/text v0.14.0 h1:hashDDD=",
+    "golang.org/x/text v0.14.0/go.mod h1:hashEEE=",
+    "",
+])
+
 
 class TestLockFiles(unittest.TestCase):
     def test_uv_lock_skips_the_project_itself(self):
@@ -394,6 +424,68 @@ class TestLockFiles(unittest.TestCase):
             bs.parse_lock("requirements.lock", "x==1\n")
 
 
+class TestGo(unittest.TestCase):
+    def test_parse_gomod(self):
+        # Single-line and block require directives, direct and // indirect; the
+        # module, go and replace lines are left out.
+        self.assertEqual(bs.parse_gomod(GO_MOD), [
+            ("github.com/aws/aws-sdk-go-v2/service/s3", "v1.48.0"),
+            ("github.com/gin-gonic/gin", "v1.9.1"),
+            ("github.com/prometheus/client_golang", "v1.19.0"),
+            ("golang.org/x/text", "v0.14.0")])
+
+    def test_parse_gosum_dedups_and_strips_go_mod(self):
+        # The /go.mod hash line repeats a (module, version); both v1.8.0 and
+        # v1.9.1 of gin are in the graph, so both are returned.
+        self.assertEqual(bs.parse_gosum(GO_SUM), [
+            ("github.com/gin-gonic/gin", "v1.8.0"),
+            ("github.com/gin-gonic/gin", "v1.9.1"),
+            ("golang.org/x/text", "v0.14.0")])
+
+    def test_go_module_repo(self):
+        self.assertEqual(bs.go_module_repo("github.com/gin-gonic/gin"), "gin-gonic/gin")
+        self.assertEqual(bs.go_module_repo("github.com/aws/aws-sdk-go-v2/service/s3"),
+                         "aws/aws-sdk-go-v2")
+        self.assertEqual(bs.go_module_repo("github.com/foo/bar/v2"), "foo/bar")
+        self.assertIsNone(bs.go_module_repo("golang.org/x/text"))
+        self.assertIsNone(bs.go_module_repo("github.com/sponsors/someone"))
+        self.assertIsNone(bs.go_module_repo(""))
+
+    def test_osv_query_version_strips_v_for_go_only(self):
+        self.assertEqual(bs.osv_query_version("go", "v1.9.1"), "1.9.1")
+        self.assertEqual(bs.osv_query_version("go", "1.9.1"), "1.9.1")
+        self.assertIsNone(bs.osv_query_version("go", None))
+        self.assertEqual(bs.osv_query_version("pip", "v1.0"), "v1.0")
+        self.assertEqual(bs.osv_query_version("npm", "1.2.3"), "1.2.3")
+
+    def test_parse_lock_go(self):
+        eco, deps = bs.parse_lock("go.mod", GO_MOD)
+        self.assertEqual(eco, "go")
+        self.assertIn(("github.com/gin-gonic/gin", "v1.9.1"), deps)
+        self.assertEqual(bs.parse_lock(os.path.join("sub", "go.sum"), GO_SUM)[0], "go")
+
+    def test_go_module_blind_spot(self):
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check([("go", "github.com/gin-gonic/gin", "v1.9.1")],
+                          resolve, lambda r: GO_ADVISORIES.get(r, []),
+                          lambda e, n, v: set(), lambda i: set())
+        self.assertEqual(report["mapped_to_repo"], 1)
+        # go11 affects < 1.9.0, so our v1.9.1 is out of range; go22 affects us
+        # and the fake OSV reports nothing, so it is the one blind spot.
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["ghsa_id"], "GHSA-go22-2222-2222")
+        self.assertEqual(f["repo"], "gin-gonic/gin")
+        self.assertEqual(f["affects_your_version"], "yes")
+
+    def test_go_module_unmapped_non_github(self):
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check([("go", "golang.org/x/text", "v0.14.0")],
+                          resolve, lambda r: [], lambda e, n, v: set(), lambda i: set())
+        self.assertEqual(report["mapped_to_repo"], 0)
+        self.assertEqual(report["unmapped"][0]["package"], "golang.org/x/text")
+
+
 class TestRepoUrls(unittest.TestCase):
     def test_repo_from_urls(self):
         self.assertEqual(bs.repo_from_urls(["git+https://github.com/BerriAI/litellm.git"]),
@@ -439,6 +531,16 @@ ADVISORIES = {
         adv("GHSA-ffff-ffff-ffff", None, "high", [vuln("pip", "dify-api", "< 1.5.0", "1.5.0")]),
         adv("GHSA-gggg-gggg-gggg", None, "medium", []),
         adv("GHSA-hhhh-hhhh-hhhh", None, "low", [vuln("pip", "dify-api", "< 1.0.0", "1.0.0")]),
+    ],
+}
+
+
+GO_ADVISORIES = {
+    "gin-gonic/gin": [
+        adv("GHSA-go11-1111-1111", "CVE-2027-1", "high",
+            [vuln("go", "github.com/gin-gonic/gin", "< 1.9.0", "1.9.0")]),   # not our version
+        adv("GHSA-go22-2222-2222", None, "high",
+            [vuln("go", "github.com/gin-gonic/gin", "<= 1.9.1", "1.9.2")]),  # blind here
     ],
 }
 
@@ -729,6 +831,27 @@ class TestMain(unittest.TestCase):
         self.assertEqual(report["blind_spots"], 2)
         self.assertEqual(report["findings"][0]["version"], "3.1.3")
         self.assertEqual(report["findings"][0]["affects_your_version"], "yes")
+        self.assertEqual(code, 1)
+
+    def test_cli_lock_gomod_offline(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "go.mod")
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write("module demo\ngo 1.21\n"
+                         "require github.com/gin-gonic/gin v1.9.1\n")
+            with mock.patch.object(bs, "list_repo_advisories",
+                                   lambda repo: GO_ADVISORIES.get(repo, [])), \
+                 mock.patch.object(bs, "osv_package_ids", lambda e, n, v: set()), \
+                 mock.patch.object(bs, "osv_has_id", lambda i: set()), \
+                 mock.patch.object(bs, "registry_repo", lambda e, n: bs.go_module_repo(n)):
+                out = io.StringIO()
+                with redirect_stdout(out):
+                    code = bs.main(["--lock", path, "--json", "--fail-on-blind"])
+            report = json.loads(out.getvalue())
+        self.assertEqual(report["dependencies_checked"], 1)
+        self.assertEqual(report["blind_spots"], 1)
+        self.assertEqual(report["findings"][0]["ghsa_id"], "GHSA-go22-2222-2222")
+        self.assertEqual(report["findings"][0]["repo"], "gin-gonic/gin")
         self.assertEqual(code, 1)
 
     def test_cli_lock_unknown_name_is_an_error(self):

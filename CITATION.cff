@@ -21,13 +21,15 @@ abstract: >-
   (uv.lock, poetry.lock, PEP 751 pylock.toml, Pipfile.lock, package-lock.json,
   npm-shrinkwrap.json, yarn.lock, pnpm-lock.yaml) so every transitive dependency
   is checked at its exact version, keeps the pins in hashed requirements files,
-  and reports a GitHub rate-limited run as incomplete instead of passing it.
+  and reports a GitHub rate-limited run as incomplete instead of passing it;
+  version 0.8.0 adds Go support (go.mod and go.sum), mapping each module to its
+  repository by its own path with no registry call.
 authors:
   - name: "MV2 of Munim, Inc."
     city: "Orange"
     region: "CT"
     country: "US"
-version: "0.7.0"
+version: "0.8.0"
 date-released: "2026-10-15"
 license: Apache-2.0
 repository-code: "https://github.com/munimtechnologies/advisory-import-census"
@@ -41,6 +43,7 @@ keywords:
   - "OSV"
   - "SARIF"
   - "lock files"
+  - "Go modules"
   - "self-hosted AI"
 notes: >-
   Research and code made with AI agents working in the name of MV2 of

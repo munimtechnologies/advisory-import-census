@@ -9,7 +9,7 @@ the census in this repo found 31.6% of GRAs for self-hosted AI/ML tools never
 got there. This tool checks YOUR dependencies for that gap:
 
   1. map each package to its GitHub repo (registry metadata, a small built-in
-     map, or --map name=owner/repo);
+     map, --map name=owner/repo, or, for a Go module, its own path);
   2. list that repo's published security advisories (public REST API);
   3. keep the ones whose affected range covers your version;
   4. ask OSV.dev, with the same package and version a scanner would send,
@@ -22,9 +22,10 @@ Usage:
   python blindspot.py --npm package-lock.json
   python blindspot.py --pyproject pyproject.toml
   python blindspot.py --lock uv.lock      (also poetry.lock, pylock.toml,
-                      Pipfile.lock, yarn.lock, pnpm-lock.yaml: exact versions
-                      of every direct and transitive dependency)
+                      Pipfile.lock, yarn.lock, pnpm-lock.yaml, go.mod, go.sum:
+                      exact versions of every direct and transitive dependency)
   python blindspot.py --package pip:vllm==0.10.1 --package npm:flowise@3.1.3
+  python blindspot.py --package go:github.com/gin-gonic/gin@v1.9.1
   python blindspot.py --package repo:langgenius/dify@1.4.0   (apps, not packages)
   add --json for machine-readable output, --fail-on-blind for CI, and
   --sarif blindspot.sarif to write the blind spots as SARIF 2.1.0 for GitHub
@@ -55,7 +56,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.7.0"
+__version__ = "0.8.0"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -66,7 +67,8 @@ OSV_ECOSYSTEM = {
     "nuget": "NuGet", "pub": "Pub", "erlang": "Hex",
 }
 ECOSYSTEM_ALIASES = {"pypi": "pip", "python": "pip", "node": "npm", "cargo": "rust",
-                     "crates.io": "rust", "packagist": "composer", "gem": "rubygems"}
+                     "crates.io": "rust", "packagist": "composer", "gem": "rubygems",
+                     "golang": "go"}
 
 # Packages whose registry entry has no GitHub link (checked 2026-10-14:
 # registry.npmjs.org/flowise/latest has no "repository" field).
@@ -225,7 +227,8 @@ def parse_package_json(data):
 
 def parse_package_arg(text):
     """'pip:vllm==0.10.1', 'npm:flowise@3.1.3', 'npm:@scope/x@1.0.0',
-    'repo:owner/name@1.4.0' -> (ecosystem, name, version-or-None)."""
+    'go:github.com/gin-gonic/gin@v1.9.1', 'repo:owner/name@1.4.0' ->
+    (ecosystem, name, version-or-None)."""
     if ":" not in text:
         raise ValueError("expected ECOSYSTEM:NAME[==VERSION], got %r" % text)
     eco, rest = text.split(":", 1)
@@ -301,11 +304,14 @@ def parse_pyproject(data):
 # ---------------------------------------------------------------- lock files
 
 LOCK_FILES = ("uv.lock", "poetry.lock", "pylock.toml", "Pipfile.lock", "package-lock.json",
-              "npm-shrinkwrap.json", "yarn.lock", "pnpm-lock.yaml")
+              "npm-shrinkwrap.json", "yarn.lock", "pnpm-lock.yaml", "go.mod", "go.sum")
 # A uv/poetry/PEP 751 package from one of these sources is the project's own code.
 LOCAL_SOURCE_KEYS = ("editable", "virtual", "directory", "path")
 # yarn ranges that point at local code or patch another entry, not a registry release.
 YARN_LOCAL = ("workspace:", "link:", "portal:", "file:", "patch:", "exec:")
+# A go.mod require line: a module path, then its selected version (vX.Y.Z or a
+# vX.Y.Z-pseudo.version). An inline `// indirect` comment is stripped first.
+GOMOD_REQUIRE_RE = re.compile(r"^(\S+)\s+(v\S+)")
 
 
 def parse_toml_lock(data):
@@ -402,6 +408,53 @@ def parse_pnpm_lock(text):
     return sorted(deps)
 
 
+def parse_gomod(text):
+    """Return [(module, version)] from a go.mod: the require directives, direct
+    and `// indirect`, at their selected versions. Both the single-line
+    `require M V` form and the `require ( ... )` block are read; the module,
+    go, toolchain, exclude and replace directives are left out (a `replace` is
+    not followed, so a replaced module is reported at its required version).
+    The module path is the OSV/GitHub Go package name; github.com/* modules map
+    to a repo by their path, others are reported as unmapped."""
+    deps, in_require = set(), False
+    for raw in (text or "").splitlines():
+        line = raw.split("//", 1)[0].strip()
+        if not line:
+            continue
+        if in_require:
+            if line.startswith(")"):
+                in_require = False
+                continue
+            m = GOMOD_REQUIRE_RE.match(line)
+            if m:
+                deps.add((m.group(1), m.group(2)))
+            continue
+        if line.startswith("require"):
+            rest = line[len("require"):].strip()
+            if rest.startswith("("):
+                in_require = True
+                continue
+            m = GOMOD_REQUIRE_RE.match(rest)
+            if m:
+                deps.add((m.group(1), m.group(2)))
+    return sorted(deps)
+
+
+def parse_gosum(text):
+    """Return [(module, version)] from a go.sum. go.sum records a hash for
+    every module version in the build graph, so a module can appear at more
+    than one version and the `/go.mod` hash line repeats it; each distinct
+    (module, version) is returned, with the `/go.mod` suffix stripped from the
+    version. go.mod lists one selected version per module, so prefer it when a
+    project has both."""
+    deps = set()
+    for raw in (text or "").splitlines():
+        parts = raw.split()
+        if len(parts) >= 2 and parts[1].startswith("v"):
+            deps.add((parts[0], parts[1].split("/", 1)[0]))
+    return sorted(deps)
+
+
 def parse_lock(path, text):
     """(ecosystem, [(name, version)]) from a lock file, chosen by its file name.
     Raises ValueError for a file name it does not know."""
@@ -416,6 +469,10 @@ def parse_lock(path, text):
         return "npm", parse_yarn_lock(text)
     if base == "pnpm-lock.yaml":
         return "npm", parse_pnpm_lock(text)
+    if base == "go.mod":
+        return "go", parse_gomod(text)
+    if base == "go.sum":
+        return "go", parse_gosum(text)
     raise ValueError("not a supported lock file name (supported: %s, pylock.NAME.toml)"
                      % ", ".join(LOCK_FILES))
 
@@ -467,8 +524,23 @@ def repo_from_urls(urls):
     return None
 
 
+def go_module_repo(module):
+    """The GitHub owner/repo for a Go module path, or None. For
+    github.com/OWNER/REPO (optionally with a /vN major-version suffix or a
+    deeper sub-package path) the repo is OWNER/REPO; modules on other hosts
+    (golang.org/x/..., gopkg.in/..., a private host) are not mapped, so they are
+    reported as unmapped rather than guessed. No network request."""
+    parts = (module or "").split("/")
+    if len(parts) >= 3 and parts[0].lower() == "github.com":
+        owner, repo = parts[1], parts[2]
+        if owner and repo and owner.lower() not in NOT_REPO_OWNERS:
+            return "%s/%s" % (owner, repo)
+    return None
+
+
 def registry_repo(ecosystem, name):
-    """Find a package's GitHub repo from its registry metadata (PyPI, npm)."""
+    """Find a package's GitHub repo from its registry metadata (PyPI, npm) or,
+    for a Go module, from its own path (no network request)."""
     if ecosystem == "pip":
         status, obj = http_json("https://pypi.org/pypi/%s/json" % urllib.parse.quote(name))
         if status != 200 or not obj:
@@ -489,6 +561,8 @@ def registry_repo(ecosystem, name):
         bugs = obj.get("bugs")
         bugs = bugs.get("url") if isinstance(bugs, dict) else bugs
         return repo_from_urls([repo, obj.get("homepage"), bugs])
+    if ecosystem == "go":
+        return go_module_repo(name)
     return None
 
 
@@ -521,9 +595,20 @@ def list_repo_advisories(repo):
     return out
 
 
+def osv_query_version(ecosystem, version):
+    """The version string to send to OSV for a package query. A Go module
+    version carries a leading 'v' (v1.9.1) in go.mod/go.sum, but OSV's Go
+    ranges are plain semver, so the 'v' is dropped for the query; every other
+    ecosystem is sent unchanged."""
+    if version and ecosystem == "go" and version[:1] in ("v", "V"):
+        return version[1:]
+    return version
+
+
 def osv_package_ids(ecosystem, name, version):
     """Every vulnerability ID and alias OSV.dev reports for this package (and
     version, when given): what an OSV-based scanner would be told."""
+    version = osv_query_version(ecosystem, version)
     query = {"package": {"name": name, "ecosystem": OSV_ECOSYSTEM[ecosystem]}}
     if version:
         query["version"] = version
@@ -844,7 +929,8 @@ def main(argv=None):
                          + " (every locked package, at its exact version)")
     ap.add_argument("--package", action="append", default=[],
                     help="ECOSYSTEM:NAME[==VERSION], e.g. pip:vllm==0.10.1, "
-                         "npm:flowise@3.1.3, repo:langgenius/dify@1.4.0")
+                         "npm:flowise@3.1.3, go:github.com/gin-gonic/gin@v1.9.1, "
+                         "repo:langgenius/dify@1.4.0")
     ap.add_argument("--map", action="append", default=[],
                     help="NAME=OWNER/REPO for packages whose registry has no GitHub link")
     ap.add_argument("--ignore", action="append", default=[], metavar="ID",

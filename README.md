@@ -97,6 +97,7 @@ OSV-based scanner will not report to you.
 # at its exact version (see "Lock files" below for the formats)
 python blindspot.py --lock uv.lock
 python blindspot.py --lock package-lock.json
+python blindspot.py --lock go.mod            # Go modules (also go.sum)
 
 # a Python project (hashed `pip-compile --generate-hashes` output is fine)
 python blindspot.py -r requirements.txt
@@ -111,6 +112,9 @@ python blindspot.py --npm package.json
 
 # ad-hoc, pin a version to filter by affected range
 python blindspot.py --package pip:vllm==0.10.1 --package npm:flowise@3.1.3
+
+# a Go module (mapped to its repo by its own path; no registry lookup)
+python blindspot.py --package go:github.com/gin-gonic/gin@v1.9.1
 
 # a self-hosted app you run from source (no package on a registry)
 python blindspot.py --package repo:langgenius/dify@1.4.0
@@ -131,8 +135,8 @@ console command, with identical flags.
 
 How it works, per dependency:
 
-1. map the package to its GitHub repo (registry metadata, a small built-in map, or
-   `--map name=owner/repo`);
+1. map the package to its GitHub repo (registry metadata, a small built-in map,
+   `--map name=owner/repo`, or — for a Go module — its own path);
 2. list that repo's **published** security advisories (public REST API);
 3. keep the ones whose affected range covers your version;
 4. ask OSV.dev, with the same package and version a scanner would send, whether it reports
@@ -161,6 +165,7 @@ ship. `--lock` (repeatable) recognises the file by its name:
 | `package-lock.json`, `npm-shrinkwrap.json` | npm | lockfile v1, v2 and v3 |
 | `yarn.lock` | npm | classic (v1) and Berry (v2+); `npm:` aliases count as the real package; workspace, link, file and patch entries are left out |
 | `pnpm-lock.yaml` | npm | lockfile v5, v6 and v9 (the `packages:` map; peer suffixes dropped); read line by line, no YAML library |
+| `go.mod`, `go.sum` | Go | `go.mod` reads the `require` directives (direct and `// indirect`) at their selected versions; `go.sum` lists every version in the build graph. Each module maps to its repo **by its own path** (`github.com/*` only), with no registry call |
 
 **Big lock files and GitHub's rate limit.** Each distinct GitHub repo behind your
 dependencies costs one API request. Without a token the limit is 60 an hour; the workflow
@@ -218,9 +223,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: munimtechnologies/advisory-import-census@v0.7.0
+      - uses: munimtechnologies/advisory-import-census@v0.8.0
         with:
-          lock: uv.lock          # or package-lock.json, yarn.lock, pnpm-lock.yaml, ...
+          lock: uv.lock          # or package-lock.json, yarn.lock, pnpm-lock.yaml, go.mod, ...
           # requirements: requirements.txt
           # pyproject: pyproject.toml
           fail-on-blind: "true"
@@ -256,7 +261,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: munimtechnologies/advisory-import-census@v0.7.0
+      - uses: munimtechnologies/advisory-import-census@v0.8.0
         with:
           lock: package-lock.json
           sarif: blindspot.sarif
@@ -365,8 +370,11 @@ when the measurement run completes.
   means "not present under its own ID at snapshot time," not "wrongly withheld." No vendor or
   maintainer is blamed; the gap is a pipeline-coverage measurement.
 - Unauthenticated API data only; repos with zero published advisories contribute nothing.
-- `blindspot.py` finds a package's repo from PyPI / npm metadata. Lock files for other
-  ecosystems (Cargo, Go, Composer, ...) are not read yet; use `--package` with `--map`.
+- `blindspot.py` finds a package's repo from PyPI / npm metadata, or, for a Go module, from
+  its own path. A `replace` directive in `go.mod` is not followed, and Go modules not hosted
+  on github.com (`golang.org/x/...`, `gopkg.in/...`) are reported as unmapped rather than
+  guessed. Lock files for other ecosystems (Cargo, Composer, ...) are not read yet; use
+  `--package` with `--map`.
 
 ## Dataset schema (`out/gra_census.csv`)
 
