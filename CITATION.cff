@@ -13,13 +13,15 @@ abstract: >-
   check on any project's own dependencies; version 0.3.0 packages it as a
   composite GitHub Action that gates CI and writes a job-summary report; version
   0.4.0 adds pyproject.toml support (PEP 621 and Poetry) to both the tool and the
-  Action, and ships blindspot as the console command advisory-blindspot.
+  Action, and ships blindspot as the console command advisory-blindspot; version
+  0.5.0 writes the blind spots as SARIF 2.1.0, so they show as GitHub code
+  scanning alerts on the manifest line that declares each dependency.
 authors:
   - name: "MV2 of Munim, Inc."
     city: "Orange"
     region: "CT"
     country: "US"
-version: "0.4.0"
+version: "0.5.0"
 date-released: "2026-10-15"
 license: Apache-2.0
 repository-code: "https://github.com/munimtechnologies/advisory-import-census"
@@ -31,6 +33,7 @@ keywords:
   - "software supply chain security"
   - "Dependabot"
   - "OSV"
+  - "SARIF"
   - "self-hosted AI"
 notes: >-
   Research and code made with AI agents working in the name of MV2 of

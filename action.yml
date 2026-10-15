@@ -40,6 +40,13 @@ inputs:
     description: "Fail the job (exit 1) if any blind spot is found."
     required: false
     default: "true"
+  sarif:
+    description: >-
+      Path to also write the blind spots as a SARIF 2.1.0 file, for
+      github/codeql-action/upload-sarif, so they show as code scanning alerts in
+      the repository's Security tab. Empty (the default) writes no file.
+    required: false
+    default: ""
   github-token:
     description: >-
       Token for api.github.com, to raise the 60 requests/hour anonymous limit.
@@ -47,10 +54,16 @@ inputs:
     required: false
     default: ${{ github.token }}
 
+outputs:
+  sarif-file:
+    description: "Path of the SARIF file written (empty when the sarif input is not set)."
+    value: ${{ steps.blindspot.outputs.sarif-file }}
+
 runs:
   using: "composite"
   steps:
     - name: Run advisory blind-spot check
+      id: blindspot
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
@@ -60,6 +73,7 @@ runs:
         BLINDSPOT_PACKAGES: ${{ inputs.packages }}
         BLINDSPOT_MAP: ${{ inputs.map }}
         BLINDSPOT_FAIL_ON_BLIND: ${{ inputs.fail-on-blind }}
+        BLINDSPOT_SARIF: ${{ inputs.sarif }}
       run: |
         set -euo pipefail
         args=()
@@ -71,6 +85,16 @@ runs:
         if [ ${#args[@]} -eq 0 ]; then
           echo "advisory-import-census: set at least one of requirements, npm, pyproject or packages." >&2
           exit 2
+        fi
+        if [ -n "$BLINDSPOT_SARIF" ]; then
+          args+=(--sarif "$BLINDSPOT_SARIF")
+          # `packages` specs are listed in the workflow file, so their alerts point there.
+          # GITHUB_WORKFLOW_REF is owner/repo/.github/workflows/x.yml@refs/...
+          anchor="${GITHUB_WORKFLOW_REF:-}"
+          anchor="${anchor#*/*/}"
+          anchor="${anchor%%@*}"
+          if [ -n "$anchor" ]; then args+=(--sarif-anchor "$anchor"); fi
+          echo "sarif-file=$BLINDSPOT_SARIF" >> "$GITHUB_OUTPUT"
         fi
         report="${RUNNER_TEMP:-/tmp}/blindspot-report.json"
         python3 "${GITHUB_ACTION_PATH}/blindspot.py" "${args[@]}" --json | tee "$report"

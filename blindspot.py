@@ -23,7 +23,9 @@ Usage:
   python blindspot.py --pyproject pyproject.toml
   python blindspot.py --package pip:vllm==0.10.1 --package npm:flowise@3.1.3
   python blindspot.py --package repo:langgenius/dify@1.4.0   (apps, not packages)
-  add --json for machine-readable output, --fail-on-blind for CI.
+  add --json for machine-readable output, --fail-on-blind for CI, and
+  --sarif blindspot.sarif to write the blind spots as SARIF 2.1.0 for GitHub
+  code scanning (they then show as alerts in the repository's Security tab).
 
 Set GITHUB_TOKEN in the environment to raise GitHub's unauthenticated limit of
 60 requests an hour (one request per repo); it is only sent to api.github.com.
@@ -34,14 +36,18 @@ needs Python 3.11+ for the standard-library tomllib, or the `tomli` backport).
 Made with AI agents working for MV2 of Munim, Inc. Apache-2.0.
 """
 import argparse
+import hashlib
 import json
 import os
+import pathlib
 import re
 import sys
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
+
+__version__ = "0.5.0"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -494,6 +500,151 @@ def render_text(report):
     return "\n".join(lines)
 
 
+# ---------------------------------------------------------------- SARIF
+
+# GitHub code scanning reads properties.security-severity (0.1-10.0) and maps
+# it to its own levels: > 9.0 critical, 7.0-8.9 high, 4.0-6.9 medium, < 4 low.
+SECURITY_SEVERITY = {"critical": "9.5", "high": "8.0", "moderate": "5.5",
+                     "medium": "5.5", "low": "2.0"}
+SARIF_LEVEL = {"critical": "error", "high": "error", "moderate": "warning",
+               "medium": "warning", "low": "note"}
+SCANNERS = "Dependabot, pip-audit, osv-scanner, npm audit"
+
+
+def name_pattern(ecosystem, name):
+    """Regex that finds a dependency name as a whole token in a manifest line
+    (for pip, '-', '_' and '.' are interchangeable, as in PEP 503)."""
+    if ecosystem == "pip":
+        body = r"[-_.]+".join(re.escape(p) for p in normalize_name("pip", name).split("-"))
+    else:
+        body = re.escape(name)
+    return re.compile(r"(?<![A-Za-z0-9_.-])%s(?![A-Za-z0-9_-])" % body, re.IGNORECASE)
+
+
+def find_line(text, ecosystem, name):
+    """(1-based line number, line length) of the first non-comment line of
+    `text` that names the dependency, or None."""
+    pattern = name_pattern(ecosystem, name)
+    for number, line in enumerate((text or "").splitlines(), 1):
+        if line.lstrip().startswith("#"):
+            continue
+        if pattern.search(line):
+            return number, len(line)
+    return None
+
+
+def sarif_uri(path):
+    """A repository-relative URI with forward slashes; paths outside the
+    current directory become file:// URIs."""
+    if os.path.isabs(path):
+        try:
+            rel = os.path.relpath(path)
+        except ValueError:  # another drive on Windows
+            rel = ".."
+        if rel.startswith(".."):
+            return pathlib.Path(path).as_uri()
+        path = rel
+    path = path.replace("\\", "/")
+    while path.startswith("./"):
+        path = path[2:]
+    return path
+
+
+def _fixed_text(patched):
+    parts = [p.strip() for p in (patched or "").split(";")]
+    if all(p in ("", "?") for p in parts):
+        return "no patched version is listed"
+    return "fixed in " + "; ".join(p for p in parts if p not in ("", "?"))
+
+
+def render_sarif(report, locate):
+    """SARIF 2.1.0 log of the blind spots, for GitHub code scanning
+    (github/codeql-action/upload-sarif). One rule per advisory, one result per
+    affected dependency. locate(finding) -> (uri, line, line_length) says where
+    the dependency is declared. Advisories OSV does report are left out: an
+    OSV-based scanner already alerts on them. An empty result list is still
+    written, so code scanning closes alerts once an advisory is imported."""
+    rules, rule_index, results = [], {}, []
+    for f in report.get("findings", []):
+        if f.get("scanner_visible"):
+            continue
+        sev = (f.get("severity") or "").lower()
+        rule_id = f.get("ghsa_id") or f.get("cve_id") or "advisory-blindspot/unknown"
+        ident = rule_id + (" / " + f["cve_id"] if f.get("cve_id") and f["cve_id"] != rule_id else "")
+        summary = f.get("summary") or ident
+        if rule_id not in rule_index:
+            help_text = (
+                "%s was published by the maintainers of %s as a GitHub repository security "
+                "advisory, but OSV.dev does not report it for the affected package, so "
+                "OSV-based scanners (%s) cannot alert on it. Affected: %s; %s. Advisory: %s"
+                % (ident, f.get("repo"), SCANNERS, f.get("vulnerable_range") or "?",
+                   _fixed_text(f.get("patched")), f.get("url") or "(no URL)"))
+            properties = {"tags": ["security", "dependency", "advisory-blindspot"],
+                          "precision": "high"}
+            if sev in SECURITY_SEVERITY:
+                properties["security-severity"] = SECURITY_SEVERITY[sev]
+            rule = {
+                "id": rule_id,
+                "shortDescription": {"text": "%s: %s" % (rule_id, summary)},
+                "fullDescription": {"text": summary},
+                "help": {"text": help_text},
+                "defaultConfiguration": {"level": SARIF_LEVEL.get(sev, "warning")},
+                "properties": properties,
+            }
+            if f.get("url"):
+                rule["helpUri"] = f["url"]
+            rule_index[rule_id] = len(rules)
+            rules.append(rule)
+        uri, line, length = locate(f)
+        version = f.get("version")
+        if f.get("ecosystem") == "repo":
+            where = "OSV.dev does not carry this advisory"
+        else:
+            where = "OSV.dev does not report it for this package and version"
+        message = ("%s %s is affected by %s (%s severity), published by the maintainers of "
+                   "%s, but %s, so OSV-based scanners (%s) cannot alert on it. Affected: %s; "
+                   "%s.%s" % (
+                       f.get("package"), version or "(any version)", ident, sev or "unknown",
+                       f.get("repo"), where, SCANNERS, f.get("vulnerable_range") or "?",
+                       _fixed_text(f.get("patched")),
+                       "" if f.get("affects_your_version") == "yes"
+                       else " The version is not pinned or the range is unclear, so check "
+                            "which version you install."))
+        key = "|".join([rule_id, f.get("ecosystem") or "",
+                        normalize_name(f.get("ecosystem") or "", f.get("package") or ""),
+                        version or "", uri])
+        results.append({
+            "ruleId": rule_id,
+            "ruleIndex": rule_index[rule_id],
+            "level": SARIF_LEVEL.get(sev, "warning"),
+            "message": {"text": message},
+            "locations": [{"physicalLocation": {
+                "artifactLocation": {"uri": uri},
+                "region": {"startLine": line, "startColumn": 1, "endLine": line,
+                           "endColumn": max(2, length + 1)},
+            }}],
+            "partialFingerprints": {
+                "primaryLocationLineHash": hashlib.sha256(key.encode("utf-8")).hexdigest()[:16]
+                + ":1"},
+            "properties": {"ecosystem": f.get("ecosystem"), "package": f.get("package"),
+                           "version": version, "repo": f.get("repo"),
+                           "cve": f.get("cve_id") or None},
+        })
+    return {
+        "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+        "version": "2.1.0",
+        "runs": [{
+            "tool": {"driver": {
+                "name": "advisory-blindspot",
+                "semanticVersion": __version__,
+                "informationUri": "https://github.com/munimtechnologies/advisory-import-census",
+                "rules": rules,
+            }},
+            "results": results,
+        }],
+    }
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(
         description="List security advisories your dependencies' maintainers published "
@@ -512,26 +663,47 @@ def main(argv=None):
     ap.add_argument("--json", action="store_true", help="print JSON instead of text")
     ap.add_argument("--fail-on-blind", action="store_true",
                     help="exit 1 if any blind spot is found (for CI)")
+    ap.add_argument("--sarif", metavar="PATH",
+                    help="also write the blind spots as SARIF 2.1.0 to PATH, for GitHub "
+                         "code scanning (github/codeql-action/upload-sarif)")
+    ap.add_argument("--sarif-anchor", metavar="FILE",
+                    help="repository file that SARIF results for --package specs point "
+                         "at, e.g. the workflow that lists them (default: the first "
+                         "manifest given)")
     args = ap.parse_args(argv)
 
-    deps = []
+    deps, sources, texts = [], {}, {}
+
+    def add(eco, parsed, path):
+        for n, v in parsed:
+            deps.append((eco, n, v))
+            if path:
+                sources.setdefault((eco, normalize_name(eco, n)), path)
+
     for path in args.requirements:
         with open(path, encoding="utf-8") as fh:
-            deps += [("pip", n, v) for n, v in parse_requirements(fh.read())]
+            texts[path] = fh.read()
+        add("pip", parse_requirements(texts[path]), path)
     for path in args.npm:
         with open(path, encoding="utf-8") as fh:
-            data = json.load(fh)
+            texts[path] = fh.read()
+        data = json.loads(texts[path])
         parsed = (parse_package_lock(data) if ("packages" in data or "lockfileVersion" in data)
                   else parse_package_json(data))
-        deps += [("npm", n, v) for n, v in parsed]
+        add("npm", parsed, path)
     for path in args.pyproject:
         with open(path, encoding="utf-8") as fh:
-            data = load_toml(fh.read())
-        deps += [("pip", n, v) for n, v in parse_pyproject(data)]
+            texts[path] = fh.read()
+        add("pip", parse_pyproject(load_toml(texts[path])), path)
     for text in args.package:
-        deps.append(parse_package_arg(text))
+        eco, name, version = parse_package_arg(text)
+        add(eco, [(name, version)], None)
     if not deps:
         ap.error("give at least one of -r, --npm, --pyproject or --package")
+    anchor = args.sarif_anchor or next(iter(texts), None)
+    if args.sarif and args.package and not anchor:
+        ap.error("--sarif with only --package specs needs --sarif-anchor FILE "
+                 "(e.g. the workflow file that lists them)")
     seen, unique = set(), []
     for d in deps:
         key = (d[0], normalize_name(d[0], d[1]), d[2])
@@ -557,6 +729,23 @@ def main(argv=None):
 
     report = check(unique, resolve, list_repo_advisories, osv_package_ids, osv_has_id)
     print(json.dumps(report, indent=2) if args.json else render_text(report))
+
+    if args.sarif:
+        def locate(f):
+            eco = f["ecosystem"]
+            path = sources.get((eco, normalize_name(eco, f["package"]))) or anchor
+            if path not in texts:
+                try:
+                    with open(path, encoding="utf-8") as fh:
+                        texts[path] = fh.read()
+                except OSError:
+                    texts[path] = ""
+            line, length = find_line(texts[path], eco, f["package"]) or (1, 0)
+            return sarif_uri(path), line, length
+
+        with open(args.sarif, "w", encoding="utf-8") as fh:
+            json.dump(render_sarif(report, locate), fh, indent=2)
+            fh.write("\n")
     return 1 if (args.fail_on_blind and report["blind_spots"]) else 0
 
 

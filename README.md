@@ -78,6 +78,9 @@ python blindspot.py --package repo:langgenius/dify@1.4.0
 
 # machine-readable, and a CI gate
 python blindspot.py -r requirements.txt --json --fail-on-blind
+
+# also write the blind spots as SARIF 2.1.0, for GitHub code scanning
+python blindspot.py -r requirements.txt --sarif blindspot.sarif
 ```
 
 Installed from this repo (`pip install .`), the same tool is also the `advisory-blindspot`
@@ -122,7 +125,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: munimtechnologies/advisory-import-census@v0.4.0
+      - uses: munimtechnologies/advisory-import-census@v0.5.0
         with:
           requirements: requirements.txt   # or: npm: package-lock.json
           # pyproject: pyproject.toml       # PEP 621 or Poetry deps
@@ -131,15 +134,58 @@ jobs:
 
 Inputs: `requirements`, `npm`, `pyproject`, and `packages` (any whitespace-separated list,
 matching the CLI's `-r`, `--npm`, `--pyproject`, and `--package`); `map` for `NAME=OWNER/REPO`
-overrides; `fail-on-blind` (default `true`) to fail the job when a blind spot is found; and
-`github-token` (defaults to the workflow token, only sent to `api.github.com`). The runner's
-`python3` is 3.11+, so `pyproject` files are read with the standard-library `tomllib` and no
-install. Every run writes a Markdown table to the **job summary**: blind spots first, then a
-collapsed list of advisories OSV does report. A weekly `schedule:` trigger is worth adding —
-an advisory can be published upstream *after* you merged a dependency, and the gap has a
-median life of 91 days, so a one-off check goes stale.
+overrides; `fail-on-blind` (default `true`) to fail the job when a blind spot is found;
+`sarif` to also write a SARIF file (below); and `github-token` (defaults to the workflow
+token, only sent to `api.github.com`). The runner's `python3` is 3.11+, so `pyproject` files
+are read with the standard-library `tomllib` and no install. Every run writes a Markdown
+table to the **job summary**: blind spots first, then a collapsed list of advisories OSV does
+report. A weekly `schedule:` trigger is worth adding — an advisory can be published upstream
+*after* you merged a dependency, and the gap has a median life of 91 days, so a one-off check
+goes stale.
 
 Offline unit tests for the summary renderer: `python -m unittest -v test_action_summary`.
+
+### Blind spots as code scanning alerts (SARIF)
+
+Set the `sarif` input and upload the file with `github/codeql-action/upload-sarif`, and each
+blind spot becomes an alert in your repository's **Security** tab
+([full example](examples/blindspot-code-scanning.yml)):
+
+```yaml
+permissions:
+  contents: read
+  security-events: write
+jobs:
+  blindspot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: munimtechnologies/advisory-import-census@v0.5.0
+        with:
+          requirements: requirements.txt
+          sarif: blindspot.sarif
+          fail-on-blind: "false"
+      - uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: blindspot.sarif
+          category: advisory-blindspot
+```
+
+- **Where the alert points.** Each alert sits on the line of your manifest that declares the
+  dependency. `packages` specs have no manifest, so their alerts point at the workflow file
+  that lists them (the CLI's `--sarif-anchor FILE` does the same by hand).
+- **What is in it.** One rule per advisory, carrying its GHSA ID, summary, affected and
+  patched ranges, and a link to the maintainers' advisory. GitHub's critical / high / medium /
+  low comes from the advisory's own severity (`security-severity` 9.5 / 8.0 / 5.5 / 2.0).
+  Advisories that OSV *does* report are left out, because an OSV-based scanner already alerts
+  on them.
+- **When it closes.** Fingerprints are stable per advisory, package, version and manifest, so
+  an alert stays one alert across runs. A run with no blind spots still uploads an empty
+  result set, so an alert closes by itself once the advisory reaches OSV or you upgrade past
+  the affected range.
+- Code scanning is free for public repositories; private repositories need GitHub Code
+  Security.
 
 ## Method
 

@@ -2,9 +2,10 @@
 import io
 import json
 import os
+import re
 import tempfile
 import unittest
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 from unittest import mock
 
 import blindspot as bs
@@ -227,6 +228,91 @@ class TestCheck(unittest.TestCase):
         self.assertIn("--map", bs.render_text(report))
 
 
+FINGERPRINT_RE = re.compile(r"^[0-9a-f]{16}:1$")
+
+
+class TestSarif(unittest.TestCase):
+    def report(self, deps):
+        return TestCheck.run_check(self, deps)[0]
+
+    def test_find_line(self):
+        text = "# open-webui pinned below\nflowise-components==1.0\nOpen_WebUI[all]==0.6.5\n"
+        self.assertEqual(bs.find_line(text, "pip", "open-webui"), (3, 22))
+        self.assertIsNone(bs.find_line("flowise-components==1.0\n", "npm", "flowise"))
+        lock = '{\n  "dependencies": {\n    "@scope/x": "1.0.0"\n  }\n}'
+        self.assertEqual(bs.find_line(lock, "npm", "@scope/x")[0], 3)
+        self.assertIsNone(bs.find_line("", "pip", "vllm"))
+
+    def test_sarif_uri(self):
+        self.assertEqual(bs.sarif_uri("./sub\\requirements.txt"), "sub/requirements.txt")
+        self.assertEqual(bs.sarif_uri(os.path.join(os.getcwd(), "a", "b.txt")), "a/b.txt")
+
+    def test_blind_spot_becomes_security_result(self):
+        report = self.report([("npm", "flowise", "3.1.3")])
+        sarif = bs.render_sarif(report, lambda f: ("package.json", 3, 25))
+        json.dumps(sarif)  # serialisable
+        self.assertEqual(sarif["version"], "2.1.0")
+        run = sarif["runs"][0]
+        self.assertEqual(run["tool"]["driver"]["name"], "advisory-blindspot")
+        # Only the blind spot: OSV-visible advisories are already alerted on.
+        self.assertEqual([r["ruleId"] for r in run["results"]], ["GHSA-aaaa-aaaa-aaaa"])
+        rule = run["tool"]["driver"]["rules"][0]
+        self.assertEqual(rule["id"], "GHSA-aaaa-aaaa-aaaa")
+        self.assertEqual(rule["properties"]["security-severity"], "9.5")
+        self.assertIn("security", rule["properties"]["tags"])
+        self.assertTrue(rule["helpUri"].endswith("GHSA-aaaa-aaaa-aaaa"))
+        for key in ("shortDescription", "fullDescription", "help"):
+            self.assertTrue(rule[key]["text"])
+        res = run["results"][0]
+        self.assertEqual((res["level"], res["ruleIndex"]), ("error", 0))
+        loc = res["locations"][0]["physicalLocation"]
+        self.assertEqual(loc["artifactLocation"]["uri"], "package.json")
+        self.assertEqual((loc["region"]["startLine"], loc["region"]["endColumn"]), (3, 26))
+        self.assertIn("CVE-2026-1", res["message"]["text"])
+        self.assertIn("fixed in 3.1.4", res["message"]["text"])
+        fp = res["partialFingerprints"]["primaryLocationLineHash"]
+        self.assertRegex(fp, FINGERPRINT_RE)
+        again = bs.render_sarif(report, lambda f: ("package.json", 9, 1))
+        # Stable across runs, even if the manifest line moves.
+        self.assertEqual(again["runs"][0]["results"][0]["partialFingerprints"]
+                         ["primaryLocationLineHash"], fp)
+
+    def test_one_rule_per_advisory(self):
+        report = self.report([("npm", "flowise", "3.1.3"), ("npm", "flowise", "3.1.2")])
+        run = bs.render_sarif(report, lambda f: ("package-lock.json", 1, 0))["runs"][0]
+        self.assertEqual(len(run["tool"]["driver"]["rules"]), 1)
+        self.assertEqual(len(run["results"]), 2)
+        fps = {r["partialFingerprints"]["primaryLocationLineHash"] for r in run["results"]}
+        self.assertEqual(len(fps), 2)
+        self.assertEqual(run["results"][0]["locations"][0]["physicalLocation"]["region"]
+                         ["endColumn"], 2)
+
+    def test_no_blind_spots_still_writes_a_run(self):
+        report = self.report([("pip", "nothing-here", "1.0")])
+        run = bs.render_sarif(report, lambda f: ("x", 1, 0))["runs"][0]
+        self.assertEqual((run["results"], run["tool"]["driver"]["rules"]), ([], []))
+
+    def test_repo_mode_message(self):
+        report = self.report([("repo", "langgenius/dify", "1.4.0")])
+        run = bs.render_sarif(report, lambda f: ("ci.yml", 6, 30))["runs"][0]
+        self.assertEqual([r["ruleId"] for r in run["results"]], ["GHSA-gggg-gggg-gggg"])
+        res = run["results"][0]
+        self.assertEqual(res["level"], "warning")
+        self.assertIn("OSV.dev does not carry this advisory", res["message"]["text"])
+        self.assertIn("no patched version is listed", res["message"]["text"])
+        self.assertIn("not pinned", res["message"]["text"])
+        self.assertEqual(run["tool"]["driver"]["rules"][0]["properties"]["security-severity"],
+                         "5.5")
+
+
+def offline():
+    """Patch every network call of main() with the fake advisories."""
+    return [mock.patch.object(bs, "list_repo_advisories", lambda repo: ADVISORIES.get(repo, [])),
+            mock.patch.object(bs, "osv_package_ids", lambda e, n, v: {"GHSA-bbbb-bbbb-bbbb"}),
+            mock.patch.object(bs, "osv_has_id", lambda i: set()),
+            mock.patch.object(bs, "registry_repo", lambda e, n: None)]
+
+
 class TestMain(unittest.TestCase):
     def test_cli_end_to_end_offline(self):
         with tempfile.TemporaryDirectory() as d:
@@ -266,6 +352,57 @@ class TestMain(unittest.TestCase):
             self.assertEqual(report["dependencies_checked"], 1)
             self.assertEqual({f["ghsa_id"] for f in report["findings"]},
                              {"GHSA-ffff-ffff-ffff"})
+
+    def run_in(self, d, argv):
+        old = os.getcwd()
+        patches = offline()
+        os.chdir(d)
+        try:
+            for p in patches:
+                p.start()
+            with redirect_stdout(io.StringIO()):
+                return bs.main(argv)
+        finally:
+            for p in patches:
+                p.stop()
+            os.chdir(old)
+
+    def test_cli_sarif_points_at_manifest_line(self):
+        with tempfile.TemporaryDirectory() as d:
+            with open(os.path.join(d, "package.json"), "w", encoding="utf-8") as fh:
+                json.dump({"dependencies": {"flowise": "3.1.3"}}, fh, indent=2)
+            code = self.run_in(d, ["--npm", "package.json", "--sarif", "out.sarif"])
+            with open(os.path.join(d, "out.sarif"), encoding="utf-8") as fh:
+                run = json.load(fh)["runs"][0]
+        self.assertEqual(code, 0)
+        # The offline OSV fake reports only GHSA-bbbb, so -cccc (CVE alias) is blind here too.
+        self.assertEqual([r["ruleId"] for r in run["results"]],
+                         ["GHSA-aaaa-aaaa-aaaa", "GHSA-cccc-cccc-cccc"])
+        loc = run["results"][0]["locations"][0]["physicalLocation"]
+        self.assertEqual(loc["artifactLocation"]["uri"], "package.json")
+        self.assertEqual(loc["region"]["startLine"], 3)
+
+    def test_cli_sarif_package_specs_point_at_anchor(self):
+        with tempfile.TemporaryDirectory() as d:
+            os.makedirs(os.path.join(d, ".github", "workflows"))
+            with open(os.path.join(d, ".github", "workflows", "ci.yml"), "w",
+                      encoding="utf-8") as fh:
+                fh.write("jobs:\n  x:\n    steps:\n"
+                         "      - uses: munimtechnologies/advisory-import-census@v0.5.0\n"
+                         "        with:\n"
+                         "          packages: \"npm:flowise@3.1.3\"\n")
+            self.run_in(d, ["--package", "npm:flowise@3.1.3", "--sarif", "out.sarif",
+                            "--sarif-anchor", ".github/workflows/ci.yml"])
+            with open(os.path.join(d, "out.sarif"), encoding="utf-8") as fh:
+                run = json.load(fh)["runs"][0]
+        loc = run["results"][0]["locations"][0]["physicalLocation"]
+        self.assertEqual(loc["artifactLocation"]["uri"], ".github/workflows/ci.yml")
+        self.assertEqual(loc["region"]["startLine"], 6)
+
+    def test_cli_sarif_package_specs_need_an_anchor(self):
+        with redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
+            bs.main(["--package", "npm:flowise@3.1.3", "--sarif", "never-written.sarif"])
+        self.assertFalse(os.path.exists("never-written.sarif"))
 
 
 if __name__ == "__main__":
