@@ -17,6 +17,13 @@ inputs:
     description: "Whitespace-separated package-lock.json / package.json paths to check."
     required: false
     default: ""
+  pyproject:
+    description: >-
+      Whitespace-separated pyproject.toml paths to check (PEP 621 [project]
+      dependencies or legacy Poetry). The runner's python3 is 3.11+, so the
+      standard-library tomllib reads them with no install.
+    required: false
+    default: ""
   packages:
     description: >-
       Whitespace-separated ECOSYSTEM:NAME[==VERSION] specs, e.g.
@@ -49,6 +56,7 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github-token }}
         BLINDSPOT_REQUIREMENTS: ${{ inputs.requirements }}
         BLINDSPOT_NPM: ${{ inputs.npm }}
+        BLINDSPOT_PYPROJECT: ${{ inputs.pyproject }}
         BLINDSPOT_PACKAGES: ${{ inputs.packages }}
         BLINDSPOT_MAP: ${{ inputs.map }}
         BLINDSPOT_FAIL_ON_BLIND: ${{ inputs.fail-on-blind }}
@@ -57,10 +65,11 @@ runs:
         args=()
         for f in $BLINDSPOT_REQUIREMENTS; do args+=(-r "$f"); done
         for f in $BLINDSPOT_NPM; do args+=(--npm "$f"); done
+        for f in $BLINDSPOT_PYPROJECT; do args+=(--pyproject "$f"); done
         for p in $BLINDSPOT_PACKAGES; do args+=(--package "$p"); done
         for m in $BLINDSPOT_MAP; do args+=(--map "$m"); done
         if [ ${#args[@]} -eq 0 ]; then
-          echo "advisory-import-census: set at least one of requirements, npm or packages." >&2
+          echo "advisory-import-census: set at least one of requirements, npm, pyproject or packages." >&2
           exit 2
         fi
         report="${RUNNER_TEMP:-/tmp}/blindspot-report.json"

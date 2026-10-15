@@ -62,6 +62,11 @@ OSV-based scanner will not report to you.
 # a Python project
 python blindspot.py -r requirements.txt
 
+# a Python project that declares its dependencies in pyproject.toml
+# (PEP 621 [project] or legacy Poetry; needs Python 3.11+ for the stdlib
+#  tomllib, or `pip install tomli` on older Python)
+python blindspot.py --pyproject pyproject.toml
+
 # a Node project
 python blindspot.py --npm package-lock.json
 
@@ -75,6 +80,9 @@ python blindspot.py --package repo:langgenius/dify@1.4.0
 python blindspot.py -r requirements.txt --json --fail-on-blind
 ```
 
+Installed from this repo (`pip install .`), the same tool is also the `advisory-blindspot`
+console command, with identical flags.
+
 How it works, per dependency:
 
 1. map the package to its GitHub repo (registry metadata, a small built-in map, or
@@ -85,7 +93,8 @@ How it works, per dependency:
    that advisory — by its GHSA ID or its CVE alias.
 
 An advisory that affects you but that OSV does **not** report is a **blind spot**, printed
-first. Standard library only, Python 3.8+, public read-only metadata, no install. Set
+first. Standard library only, Python 3.8+ (reading a `pyproject.toml` needs Python 3.11+ for
+the stdlib `tomllib`, or the `tomli` backport), public read-only metadata, no install. Set
 `GITHUB_TOKEN` in the environment (sent only to `api.github.com`) to raise GitHub's
 unauthenticated limit of 60 requests/hour; the tool makes one request per repo.
 
@@ -113,19 +122,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: munimtechnologies/advisory-import-census@v0.3.0
+      - uses: munimtechnologies/advisory-import-census@v0.4.0
         with:
           requirements: requirements.txt   # or: npm: package-lock.json
+          # pyproject: pyproject.toml       # PEP 621 or Poetry deps
           fail-on-blind: "true"
 ```
 
-Inputs: `requirements`, `npm`, and `packages` (any whitespace-separated list, matching the
-CLI's `-r`, `--npm`, and `--package`); `map` for `NAME=OWNER/REPO` overrides; `fail-on-blind`
-(default `true`) to fail the job when a blind spot is found; and `github-token` (defaults to
-the workflow token, only sent to `api.github.com`). Every run writes a Markdown table to the
-**job summary**: blind spots first, then a collapsed list of advisories OSV does report. A
-weekly `schedule:` trigger is worth adding — an advisory can be published upstream *after* you
-merged a dependency, and the gap has a median life of 91 days, so a one-off check goes stale.
+Inputs: `requirements`, `npm`, `pyproject`, and `packages` (any whitespace-separated list,
+matching the CLI's `-r`, `--npm`, `--pyproject`, and `--package`); `map` for `NAME=OWNER/REPO`
+overrides; `fail-on-blind` (default `true`) to fail the job when a blind spot is found; and
+`github-token` (defaults to the workflow token, only sent to `api.github.com`). The runner's
+`python3` is 3.11+, so `pyproject` files are read with the standard-library `tomllib` and no
+install. Every run writes a Markdown table to the **job summary**: blind spots first, then a
+collapsed list of advisories OSV does report. A weekly `schedule:` trigger is worth adding —
+an advisory can be published upstream *after* you merged a dependency, and the gap has a
+median life of 91 days, so a one-off check goes stale.
 
 Offline unit tests for the summary renderer: `python -m unittest -v test_action_summary`.
 
