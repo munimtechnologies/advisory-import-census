@@ -20,6 +20,7 @@ An advisory that affects you but that OSV does not report is a blind spot.
 Usage:
   python blindspot.py -r requirements.txt
   python blindspot.py --npm package-lock.json
+  python blindspot.py --pyproject pyproject.toml
   python blindspot.py --package pip:vllm==0.10.1 --package npm:flowise@3.1.3
   python blindspot.py --package repo:langgenius/dify@1.4.0   (apps, not packages)
   add --json for machine-readable output, --fail-on-blind for CI.
@@ -27,7 +28,8 @@ Usage:
 Set GITHUB_TOKEN in the environment to raise GitHub's unauthenticated limit of
 60 requests an hour (one request per repo); it is only sent to api.github.com.
 
-Public, read-only metadata only. Standard library only.
+Public, read-only metadata only. Standard library only (reading a pyproject.toml
+needs Python 3.11+ for the standard-library tomllib, or the `tomli` backport).
 
 Made with AI agents working for MV2 of Munim, Inc. Apache-2.0.
 """
@@ -217,6 +219,49 @@ def parse_package_arg(text):
     else:
         name, version = rest, None
     return eco, name.strip(), (version.strip() or None) if version else None
+
+
+def load_toml(text):
+    """Parse TOML text to a dict. Uses the standard-library tomllib on Python
+    3.11+, or the `tomli` backport if installed; raises a clear error on older
+    Python with neither."""
+    try:
+        import tomllib
+    except ModuleNotFoundError:
+        try:
+            import tomli as tomllib
+        except ModuleNotFoundError:
+            raise RuntimeError(
+                "reading a pyproject.toml needs Python 3.11+ (tomllib) or the "
+                "`tomli` package; on older Python use -r requirements.txt instead"
+            ) from None
+    return tomllib.loads(text)
+
+
+def parse_pyproject(data):
+    """Return [(name, version-or-None)] from a parsed pyproject.toml. Covers
+    PEP 621 [project] dependencies / optional-dependencies (PEP 508 strings)
+    and legacy Poetry [tool.poetry] dependencies and group dependencies. As in
+    requirements.txt, only an exact `==` pin gives a version; any other
+    constraint (ranges, carets, markers) checks every version."""
+    project = data.get("project") or {}
+    lines = [str(x) for x in (project.get("dependencies") or [])]
+    for group in (project.get("optional-dependencies") or {}).values():
+        lines += [str(x) for x in (group or [])]
+    deps = parse_requirements("\n".join(lines))
+    poetry = (data.get("tool") or {}).get("poetry") or {}
+    tables = [poetry.get("dependencies") or {}]
+    for grp in (poetry.get("group") or {}).values():
+        tables.append((grp or {}).get("dependencies") or {})
+    for table in tables:
+        for name, spec in table.items():
+            if name.lower() == "python":
+                continue
+            if isinstance(spec, dict):
+                spec = spec.get("version") or ""
+            pin = re.match(r"^===?\s*([^\s,;*]+)$", str(spec).strip())
+            deps.append((name, pin.group(1) if pin else None))
+    return deps
 
 
 # ---------------------------------------------------------------- network
@@ -457,6 +502,8 @@ def main(argv=None):
                     help="a pip requirements.txt")
     ap.add_argument("--npm", action="append", default=[],
                     help="a package-lock.json or package.json")
+    ap.add_argument("--pyproject", action="append", default=[],
+                    help="a pyproject.toml (PEP 621 or Poetry dependencies)")
     ap.add_argument("--package", action="append", default=[],
                     help="ECOSYSTEM:NAME[==VERSION], e.g. pip:vllm==0.10.1, "
                          "npm:flowise@3.1.3, repo:langgenius/dify@1.4.0")
@@ -477,10 +524,14 @@ def main(argv=None):
         parsed = (parse_package_lock(data) if ("packages" in data or "lockfileVersion" in data)
                   else parse_package_json(data))
         deps += [("npm", n, v) for n, v in parsed]
+    for path in args.pyproject:
+        with open(path, encoding="utf-8") as fh:
+            data = load_toml(fh.read())
+        deps += [("pip", n, v) for n, v in parse_pyproject(data)]
     for text in args.package:
         deps.append(parse_package_arg(text))
     if not deps:
-        ap.error("give at least one of -r, --npm or --package")
+        ap.error("give at least one of -r, --npm, --pyproject or --package")
     seen, unique = set(), []
     for d in deps:
         key = (d[0], normalize_name(d[0], d[1]), d[2])

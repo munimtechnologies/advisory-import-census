@@ -99,6 +99,35 @@ class TestManifests(unittest.TestCase):
         with self.assertRaises(ValueError):
             bs.parse_package_arg("cobol:x==1")
 
+    def test_pyproject_pep621(self):
+        data = {"project": {
+            "dependencies": ["vllm==0.10.1", "litellm>=1.0", "requests"],
+            "optional-dependencies": {
+                "all": ["Open_WebUI[all]==0.6.5 ; python_version >= '3.11'"]}}}
+        self.assertEqual(bs.parse_pyproject(data), [
+            ("vllm", "0.10.1"), ("litellm", None), ("requests", None),
+            ("Open_WebUI", "0.6.5")])
+
+    def test_pyproject_poetry(self):
+        data = {"tool": {"poetry": {
+            "dependencies": {"python": "^3.9", "requests": "^2.0",
+                             "vllm": "==0.10.1", "flowise": {"version": "3.1.3"}},
+            "group": {"dev": {"dependencies": {"pytest": "^7.0"}}}}}}
+        self.assertEqual(bs.parse_pyproject(data), [
+            ("requests", None), ("vllm", "0.10.1"), ("flowise", None),
+            ("pytest", None)])
+
+    def test_pyproject_load_toml(self):
+        text = "\n".join([
+            '[project]',
+            'name = "demo"',
+            'dependencies = ["vllm==0.10.1", "litellm>=1.0"]',
+            '[project.optional-dependencies]',
+            'extra = ["requests==2.31.0"]',
+        ])
+        self.assertEqual(bs.parse_pyproject(bs.load_toml(text)), [
+            ("vllm", "0.10.1"), ("litellm", None), ("requests", "2.31.0")])
+
 
 class TestRepoUrls(unittest.TestCase):
     def test_repo_from_urls(self):
@@ -216,6 +245,27 @@ class TestMain(unittest.TestCase):
             self.assertEqual(code, 1)
             self.assertEqual(report["findings"][0]["repo"], "FlowiseAI/Flowise")
             self.assertEqual(report["findings"][0]["ghsa_id"], "GHSA-aaaa-aaaa-aaaa")
+
+    def test_cli_pyproject_offline(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "pyproject.toml")
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write('[project]\nname = "demo"\n'
+                         'dependencies = ["dify-api==1.4.0"]\n')
+            with mock.patch.object(bs, "list_repo_advisories",
+                                   lambda repo: ADVISORIES.get(repo, [])), \
+                 mock.patch.object(bs, "osv_package_ids",
+                                   lambda e, n, v: {"GHSA-bbbb-bbbb-bbbb"}), \
+                 mock.patch.object(bs, "osv_has_id", lambda i: set()), \
+                 mock.patch.object(bs, "registry_repo",
+                                   lambda e, n: "langgenius/dify" if n == "dify-api" else None):
+                out = io.StringIO()
+                with redirect_stdout(out):
+                    code = bs.main(["--pyproject", path, "--json"])
+            report = json.loads(out.getvalue())
+            self.assertEqual(report["dependencies_checked"], 1)
+            self.assertEqual({f["ghsa_id"] for f in report["findings"]},
+                             {"GHSA-ffff-ffff-ffff"})
 
 
 if __name__ == "__main__":
