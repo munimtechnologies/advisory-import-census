@@ -52,6 +52,52 @@ vulnerabilities whose advisories a dependency scanner will never surface.
 Full per-repo counts are in [`out/summary.json`](out/summary.json); one row per advisory is
 in [`out/gra_census.csv`](out/gra_census.csv).
 
+## Check your own dependencies: `blindspot.py`
+
+The census measures the gap across a fixed sample. `blindspot.py` turns the same method on
+**your** project: it finds the advisories your dependencies' maintainers published that an
+OSV-based scanner will not report to you.
+
+```
+# a Python project
+python blindspot.py -r requirements.txt
+
+# a Node project
+python blindspot.py --npm package-lock.json
+
+# ad-hoc, pin a version to filter by affected range
+python blindspot.py --package pip:vllm==0.10.1 --package npm:flowise@3.1.3
+
+# a self-hosted app you run from source (no package on a registry)
+python blindspot.py --package repo:langgenius/dify@1.4.0
+
+# machine-readable, and a CI gate
+python blindspot.py -r requirements.txt --json --fail-on-blind
+```
+
+How it works, per dependency:
+
+1. map the package to its GitHub repo (registry metadata, a small built-in map, or
+   `--map name=owner/repo`);
+2. list that repo's **published** security advisories (public REST API);
+3. keep the ones whose affected range covers your version;
+4. ask OSV.dev, with the same package and version a scanner would send, whether it reports
+   that advisory — by its GHSA ID or its CVE alias.
+
+An advisory that affects you but that OSV does **not** report is a **blind spot**, printed
+first. Standard library only, Python 3.8+, public read-only metadata, no install. Set
+`GITHUB_TOKEN` in the environment (sent only to `api.github.com`) to raise GitHub's
+unauthenticated limit of 60 requests/hour; the tool makes one request per repo.
+
+**A live example you can reproduce.** As of **2026-10-15**, `api.osv.dev/v1/vulns/GHSA-vcwp-f9rq-3887`
+returns **404**. That GHSA is a critical Flowise repository advisory (authenticated RCE via a
+custom MCP `npx` server) that its maintainers published but that OSV does not carry. So when
+you run `blindspot.py` against a `flowise` version this advisory affects, it reports
+`GHSA-vcwp-f9rq-3887` as a blind spot: published upstream, but an OSV-based scanner will not
+warn you. Re-run it any time; the day the advisory is imported, the tool stops flagging it.
+
+Offline unit tests (GitHub and OSV faked, no network): `python -m unittest -v test_blindspot`.
+
 ## Method
 
 All data is public, unauthenticated, and read-only metadata. No system is scanned, probed,
@@ -81,6 +127,14 @@ python census.py --advdb /tmp/advdb --out-dir out
 
 Unit tests for the pure helpers (no network, no clone): `python -m unittest -v`.
 
+### A method note on OSV IDs (case sensitivity)
+
+If you reproduce the membership test by querying OSV per ID instead of cloning, note that
+**OSV.dev advisory IDs are case-sensitive**: `api.osv.dev/v1/vulns/GHSA-39mp-8hj3-5c49`
+returns a record, but the upper-cased `GHSA-39MP-8HJ3-5C49` returns 404. Normalising GHSA
+IDs to upper case before querying OSV makes every lookup miss and can wrongly report 100%
+of advisories as "missing." `blindspot.py` and `census.py` preserve the ID as published.
+
 ### Independent cross-check with OSV
 
 [OSV.dev](https://osv.dev) is the open mirror of the global GitHub Advisory Database, so a
@@ -101,9 +155,18 @@ Each was confirmed 404 at both `github.com/advisories/{id}` and `api.osv.dev/v1/
 
 Two further cases anchor the method and sit in the dataset: the critical Flowise
 authenticated-RCE via custom MCP `npx` ([GHSA-vcwp-f9rq-3887](https://github.com/FlowiseAI/Flowise/security/advisories/GHSA-vcwp-f9rq-3887),
-missing 44 days) and a vLLM Nemotron-VL decompression-bomb DoS
-([GHSA-mm38-5g96-7j6x](https://github.com/vllm-project/vllm/security/advisories/GHSA-mm38-5g96-7j6x),
-missing 5 days) — both published, both absent from the global database and OSV at snapshot.
+still 404 on OSV at 2026-10-15) and a vLLM Nemotron-VL decompression-bomb DoS
+([GHSA-mm38-5g96-7j6x](https://github.com/vllm-project/vllm/security/advisories/GHSA-mm38-5g96-7j6x)) —
+both published, both absent from the global database and OSV at snapshot.
+
+## Is the gap special to AI/ML tools?
+
+That is pre-registered and under test. [`PREREGISTRATION-groups.md`](PREREGISTRATION-groups.md)
+fixes, before any result, a 30-repository non-AI control group and a repository-level
+permutation test, measured the same way as the AI/ML sample (`group_census.py`). The one
+published pipeline study and GitHub's own 2026 notes describe a general review backlog, so
+whether this gap is AI-specific or ecosystem-wide is genuinely open. Results will be added
+when the measurement run completes.
 
 ## Honest limits
 
@@ -126,5 +189,6 @@ github_reviewed_at, days_to_import, days_missing, cve_global_coverage`.
 
 - [self-hosted-ai-security-checklist](https://github.com/munimtechnologies/self-hosted-ai-security-checklist)
   tracks the same Dependabot-blind-advisory problem for this ecosystem.
-- Three package-mapping corrections MV2 contributed to github/advisory-database so that
-  critical Flowise CVE records become visible to Dependabot: PRs #10347, #10348, #10350.
+- A plain-language write-up of this census is published on DEV:
+  [31.6% of security advisories for self-hosted AI tools never reach the database your
+  scanner reads](https://dev.to/munimv2/316-of-security-advisories-for-self-hosted-ai-tools-never-reach-the-database-your-scanner-reads-4cfh).

@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use this dataset or the census method, please cite it as below."
+message: "If you use this dataset, the census method or the blindspot tool, please cite it as below."
 title: "advisory-import-census: a reproducible census of maintainer-published GitHub security advisories that never reach the global Advisory Database for self-hosted AI/ML tools"
 abstract: >-
   A reproducible, public-data census measuring the "advisory-import gap":
@@ -9,13 +9,15 @@ abstract: >-
   pip-audit and OSV. The 2026-10-14 snapshot surveys 30 widely used self-hosted
   AI/ML projects: of 618 published advisories, 195 (31.6%) are not present in the
   global database under their own GHSA ID, with a median of 91.1 days missing.
+  Version 0.2.0 adds blindspot.py, a standard-library tool that runs the same
+  check on any project's own dependencies.
 authors:
   - name: "MV2 of Munim, Inc."
     city: "Orange"
     region: "CT"
     country: "US"
-version: "0.1.0"
-date-released: "2026-10-14"
+version: "0.2.0"
+date-released: "2026-10-15"
 license: Apache-2.0
 repository-code: "https://github.com/munimtechnologies/advisory-import-census"
 type: dataset
