@@ -104,6 +104,24 @@ class TestRender(unittest.TestCase):
         self.assertIn("1 blind spot", md)  # the un-accepted one
         self.assertIn("1 accepted blind spot", md)
 
+    def test_unchecked_repos_make_the_report_incomplete(self):
+        rep = _report([_finding(scanner_visible=True)],
+                      unchecked_repos=["langgenius/dify", "o/other"])
+        md = A.render_markdown(rep)
+        self.assertIn("Incomplete: 2 repos not checked", md)
+        self.assertIn("`langgenius/dify`, `o/other`", md)
+        self.assertIn("No blind spots in the repos that were checked", md)
+
+    def test_long_unchecked_list_is_capped(self):
+        repos = ["o/r%d" % i for i in range(A.MAX_UNCHECKED_LISTED + 5)]
+        md = A.render_markdown(_report([], unchecked_repos=repos))
+        self.assertIn("and 5 more", md)
+        self.assertNotIn("`o/r%d`" % (A.MAX_UNCHECKED_LISTED + 4), md)
+
+    def test_old_report_without_unchecked_key(self):
+        md = A.render_markdown(_report([_finding(scanner_visible=True)]))
+        self.assertNotIn("Incomplete", md)
+
 
 class TestMain(unittest.TestCase):
     def _run(self, report, fail_on_blind):
@@ -142,6 +160,14 @@ class TestMain(unittest.TestCase):
         rc, summary = self._run(rep, "true")
         self.assertEqual(rc, 0)
         self.assertIn("accepted", summary)
+
+    def test_incomplete_check_fails_the_gate(self):
+        rep = _report([_finding(scanner_visible=True)], unchecked_repos=["langgenius/dify"])
+        rc, summary = self._run(rep, "true")
+        self.assertEqual(rc, 1)  # no blind spot found, but not everything was checked
+        self.assertIn("Incomplete", summary)
+        rc, _ = self._run(rep, "false")
+        self.assertEqual(rc, 0)
 
     def test_missing_arg_returns_2(self):
         self.assertEqual(A.main([]), 2)

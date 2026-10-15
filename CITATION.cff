@@ -17,13 +17,17 @@ abstract: >-
   0.5.0 writes the blind spots as SARIF 2.1.0, so they show as GitHub code
   scanning alerts on the manifest line that declares each dependency; version
   0.6.0 adds --ignore / --ignore-file (and an Action input) to accept a known
-  blind spot without disabling the CI gate.
+  blind spot without disabling the CI gate; version 0.7.0 reads lock files
+  (uv.lock, poetry.lock, PEP 751 pylock.toml, Pipfile.lock, package-lock.json,
+  npm-shrinkwrap.json, yarn.lock, pnpm-lock.yaml) so every transitive dependency
+  is checked at its exact version, keeps the pins in hashed requirements files,
+  and reports a GitHub rate-limited run as incomplete instead of passing it.
 authors:
   - name: "MV2 of Munim, Inc."
     city: "Orange"
     region: "CT"
     country: "US"
-version: "0.6.0"
+version: "0.7.0"
 date-released: "2026-10-15"
 license: Apache-2.0
 repository-code: "https://github.com/munimtechnologies/advisory-import-census"
@@ -36,6 +40,7 @@ keywords:
   - "Dependabot"
   - "OSV"
   - "SARIF"
+  - "lock files"
   - "self-hosted AI"
 notes: >-
   Research and code made with AI agents working in the name of MV2 of

@@ -21,6 +21,9 @@ Usage:
   python blindspot.py -r requirements.txt
   python blindspot.py --npm package-lock.json
   python blindspot.py --pyproject pyproject.toml
+  python blindspot.py --lock uv.lock      (also poetry.lock, pylock.toml,
+                      Pipfile.lock, yarn.lock, pnpm-lock.yaml: exact versions
+                      of every direct and transitive dependency)
   python blindspot.py --package pip:vllm==0.10.1 --package npm:flowise@3.1.3
   python blindspot.py --package repo:langgenius/dify@1.4.0   (apps, not packages)
   add --json for machine-readable output, --fail-on-blind for CI, and
@@ -31,9 +34,12 @@ Usage:
 
 Set GITHUB_TOKEN in the environment to raise GitHub's unauthenticated limit of
 60 requests an hour (one request per repo); it is only sent to api.github.com.
+If the limit is reached anyway, the repos left are reported as not checked
+(and --fail-on-blind fails), rather than silently passing.
 
 Public, read-only metadata only. Standard library only (reading a pyproject.toml
-needs Python 3.11+ for the standard-library tomllib, or the `tomli` backport).
+or a TOML lock file needs Python 3.11+ for the standard-library tomllib, or the
+`tomli` backport).
 
 Made with AI agents working for MV2 of Munim, Inc. Apache-2.0.
 """
@@ -49,7 +55,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -76,6 +82,10 @@ GITHUB_REPO_RE = re.compile(
 NOT_REPO_OWNERS = {"sponsors", "orgs", "users", "features", "marketplace", "apps"}
 PYPI_URL_KEYS = ("source", "source code", "repository", "code", "github", "homepage",
                  "home", "bug tracker", "issues", "tracker")
+
+
+class RateLimited(RuntimeError):
+    """GitHub's API rate limit was reached."""
 
 
 # ---------------------------------------------------------------- versions
@@ -160,12 +170,16 @@ def in_range(version, range_text):
 
 def parse_requirements(text):
     """Return [(name, version-or-None)] from a requirements.txt. Only an exact
-    `==` pin gives a version; other specifiers check every version."""
+    `==` pin gives a version; other specifiers check every version. Reads the
+    hashed output of `pip-compile --generate-hashes` / `uv pip compile` too:
+    `\\` line continuations are joined and per-requirement options such as
+    --hash are dropped, so the pin is kept."""
     deps = []
-    for raw in text.splitlines():
+    for raw in re.sub(r"\\[ \t]*\r?\n", " ", text or "").splitlines():
         line = raw.split(" #", 1)[0].strip()
         if not line or line.startswith(("#", "-", "git+", "http:", "https:", "file:")):
             continue
+        line = re.split(r"\s--", line, maxsplit=1)[0]
         line = line.split(";", 1)[0].strip()
         m = re.match(r"^([A-Za-z0-9][A-Za-z0-9._-]*)\s*(?:\[[^\]]*\])?\s*(.*)$", line)
         if not m:
@@ -284,6 +298,128 @@ def parse_pyproject(data):
     return deps
 
 
+# ---------------------------------------------------------------- lock files
+
+LOCK_FILES = ("uv.lock", "poetry.lock", "pylock.toml", "Pipfile.lock", "package-lock.json",
+              "npm-shrinkwrap.json", "yarn.lock", "pnpm-lock.yaml")
+# A uv/poetry/PEP 751 package from one of these sources is the project's own code.
+LOCAL_SOURCE_KEYS = ("editable", "virtual", "directory", "path")
+# yarn ranges that point at local code or patch another entry, not a registry release.
+YARN_LOCAL = ("workspace:", "link:", "portal:", "file:", "patch:", "exec:")
+
+
+def parse_toml_lock(data):
+    """Return [(name, version)] from a parsed uv.lock, poetry.lock or PEP 751
+    pylock.toml: every locked package that has a version, leaving out the
+    project itself and other local-directory packages."""
+    deps = set()
+    for key in ("package", "packages"):
+        entries = data.get(key)
+        for pkg in (entries if isinstance(entries, list) else []):
+            if not isinstance(pkg, dict) or not pkg.get("name") or not pkg.get("version"):
+                continue
+            source = pkg.get("source") if isinstance(pkg.get("source"), dict) else {}
+            if (any(k in source for k in LOCAL_SOURCE_KEYS) or "directory" in pkg
+                    or source.get("type") in ("directory", "file")):
+                continue
+            deps.add((str(pkg["name"]), str(pkg["version"])))
+    return sorted(deps)
+
+
+def parse_pipfile_lock(data):
+    """Return [(name, version)] from a Pipfile.lock (default and develop).
+    Entries with no `==` version (local paths, VCS) are left out."""
+    deps = set()
+    for section in ("default", "develop"):
+        for name, info in (data.get(section) or {}).items():
+            if not isinstance(info, dict):
+                continue
+            pin = re.match(r"^===?\s*([^\s,;*]+)$", str(info.get("version") or "").strip())
+            if pin:
+                deps.add((name, pin.group(1)))
+    return sorted(deps)
+
+
+def _split_spec(spec):
+    """'name@range' or '@scope/name@range' -> (name, range); (None, None) if
+    there is no '@' after the first character."""
+    at = spec.find("@", 1)
+    if at <= 0:
+        return None, None
+    return spec[:at], spec[at + 1:]
+
+
+def parse_yarn_lock(text):
+    """Return [(name, version)] from a yarn.lock, classic (v1) or Berry (v2+).
+    Each entry is a header line (`name@range, name@range2:`) followed by an
+    indented `version "x"` (v1) or `version: x` (Berry). npm aliases
+    (`alias@npm:real@^1`) count as the real package; workspace, link, file and
+    patch entries are left out."""
+    deps, name = set(), None
+    for line in (text or "").splitlines():
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        if not line[0].isspace():
+            name = None
+            first = line.rstrip().rstrip(":").split(",")[0].strip().strip('"')
+            spec_name, rng = _split_spec(first)
+            if spec_name and not rng.startswith(YARN_LOCAL):
+                if rng.startswith("npm:"):
+                    spec_name = _split_spec(rng[4:])[0] or spec_name
+                name = spec_name
+            continue
+        m = re.match(r'^  version:?\s+"?([^"\s]+)"?\s*$', line)
+        if name and m and re.match(r"^\d", m.group(1)):
+            deps.add((name, m.group(1)))
+            name = None
+    return sorted(deps)
+
+
+def parse_pnpm_lock(text):
+    """Return [(name, version)] from a pnpm-lock.yaml (lockfile v5, v6 or v9):
+    the keys of its top-level `packages:` map, e.g. `/flowise/3.1.3` (v5),
+    `/flowise@3.1.3` (v6) or `flowise@3.1.3` (v9). Peer-dependency suffixes
+    (`(react@18.2.0)`, `_react@18.2.0`) are dropped. Read line by line, so no
+    YAML library is needed."""
+    deps, inside = set(), False
+    for line in (text or "").splitlines():
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        if not line[0].isspace():
+            inside = line.rstrip() == "packages:"
+            continue
+        m = re.match(r"^  (\S.*?):\s*$", line)
+        if not inside or not m:
+            continue
+        key = m.group(1).strip("'\"").lstrip("/").split("(", 1)[0]
+        v5 = re.match(r"^(@[^/@]+/[^/@]+|[^@/][^/@]*)/(\d[^/]*)$", key)
+        if v5:
+            name, version = v5.group(1), v5.group(2).split("_", 1)[0]
+        else:
+            name, version = _split_spec(key)
+        if name and version and re.match(r"^\d", version):
+            deps.add((name, version))
+    return sorted(deps)
+
+
+def parse_lock(path, text):
+    """(ecosystem, [(name, version)]) from a lock file, chosen by its file name.
+    Raises ValueError for a file name it does not know."""
+    base = os.path.basename(path).lower()
+    if base in ("uv.lock", "poetry.lock") or re.match(r"^pylock\.([^.]+\.)?toml$", base):
+        return "pip", parse_toml_lock(load_toml(text))
+    if base == "pipfile.lock":
+        return "pip", parse_pipfile_lock(json.loads(text))
+    if base in ("package-lock.json", "npm-shrinkwrap.json"):
+        return "npm", parse_package_lock(json.loads(text))
+    if base == "yarn.lock":
+        return "npm", parse_yarn_lock(text)
+    if base == "pnpm-lock.yaml":
+        return "npm", parse_pnpm_lock(text)
+    raise ValueError("not a supported lock file name (supported: %s, pylock.NAME.toml)"
+                     % ", ".join(LOCK_FILES))
+
+
 # ---------------------------------------------------------------- network
 
 def http_json(url, data=None, headers=None, timeout=30, retries=4):
@@ -304,8 +440,8 @@ def http_json(url, data=None, headers=None, timeout=30, retries=4):
             if e.code == 404:
                 return 404, None
             if e.code in (403, 429) and e.headers.get("X-RateLimit-Remaining") == "0":
-                raise RuntimeError("GitHub API rate limit reached; set GITHUB_TOKEN "
-                                   "or wait for the hourly reset") from None
+                raise RateLimited("GitHub API rate limit reached; set GITHUB_TOKEN "
+                                  "or wait for the hourly reset") from None
             last = e
             if e.code not in (429, 500, 502, 503, 504):
                 break
@@ -371,8 +507,8 @@ def list_repo_advisories(repo):
             if e.code == 404:
                 return out
             if e.code in (403, 429) and e.headers.get("X-RateLimit-Remaining") == "0":
-                raise RuntimeError("GitHub API rate limit reached; set GITHUB_TOKEN "
-                                   "or wait for the hourly reset") from None
+                raise RateLimited("GitHub API rate limit reached; set GITHUB_TOKEN "
+                                  "or wait for the hourly reset") from None
             raise
         if not isinstance(page, list):
             break
@@ -420,19 +556,30 @@ def check(deps, resolve_repo, get_advisories, package_ids, id_lookup, ignore=Non
     are injected so the logic is testable offline. `ignore` is an iterable of
     advisory IDs (GHSA or CVE, matched case-insensitively) to accept: those
     findings are marked "ignored" and left out of blind_spots, so a known gap
-    does not fail --fail-on-blind. Returns a report dict."""
+    does not fail --fail-on-blind. If get_advisories raises RateLimited, that
+    repo and every repo not yet listed are recorded in unchecked_repos
+    (without further GitHub requests) instead of failing the whole run.
+    Returns a report dict."""
     ignore_ids = {i.upper() for i in (ignore or [])}
-    findings, unmapped, repos_seen = [], [], {}
+    findings, unmapped, repos_seen, unchecked = [], [], {}, []
+    limited = False
     for eco, name, version in deps:
         repo = name if eco == "repo" else resolve_repo(eco, name)
         if not repo:
             unmapped.append({"ecosystem": eco, "package": name, "version": version})
             continue
         if repo not in repos_seen:
-            repos_seen[repo] = get_advisories(repo)
+            repos_seen[repo] = None
+            if not limited:
+                try:
+                    repos_seen[repo] = get_advisories(repo)
+                except RateLimited:
+                    limited = True
+            if repos_seen[repo] is None:
+                unchecked.append(repo)
         want = normalize_name(eco, name)
         osv_ids = None
-        for adv in repos_seen[repo]:
+        for adv in repos_seen[repo] or []:
             matches = []
             vulns = adv.get("vulnerabilities") or []
             if eco == "repo" and not vulns:
@@ -492,6 +639,7 @@ def check(deps, resolve_repo, get_advisories, package_ids, id_lookup, ignore=Non
         "advisories_that_apply": len(findings),
         "blind_spots": len(blind),
         "ignored_blind_spots": len(accepted),
+        "unchecked_repos": unchecked,
         "findings": findings,
         "unmapped": unmapped,
     }
@@ -502,6 +650,13 @@ def render_text(report):
              "Dependencies: %d, mapped to a GitHub repo: %d, repos with published advisories: %d"
              % (report["dependencies_checked"], report["mapped_to_repo"],
                 report["repos_with_advisories"]), ""]
+    unchecked = report.get("unchecked_repos") or []
+    if unchecked:
+        lines.append("INCOMPLETE: GitHub's API rate limit was reached, so %d repo(s) were NOT "
+                     "checked. Set GITHUB_TOKEN (or wait for the hourly reset) and re-run:"
+                     % len(unchecked))
+        lines.append("  " + ", ".join(unchecked))
+        lines.append("")
     findings = report["findings"]
     groups = [("BLIND SPOTS: published by the maintainers, not reported by OSV for this package",
                [f for f in findings if not f["scanner_visible"] and not f.get("ignored")]),
@@ -679,11 +834,14 @@ def main(argv=None):
         description="List security advisories your dependencies' maintainers published "
                     "that OSV-based scanners do not report.")
     ap.add_argument("-r", "--requirements", action="append", default=[],
-                    help="a pip requirements.txt")
+                    help="a pip requirements.txt (hashed pip-compile output is fine)")
     ap.add_argument("--npm", action="append", default=[],
                     help="a package-lock.json or package.json")
     ap.add_argument("--pyproject", action="append", default=[],
                     help="a pyproject.toml (PEP 621 or Poetry dependencies)")
+    ap.add_argument("--lock", action="append", default=[],
+                    help="a lock file, recognised by name: " + ", ".join(LOCK_FILES)
+                         + " (every locked package, at its exact version)")
     ap.add_argument("--package", action="append", default=[],
                     help="ECOSYSTEM:NAME[==VERSION], e.g. pip:vllm==0.10.1, "
                          "npm:flowise@3.1.3, repo:langgenius/dify@1.4.0")
@@ -697,7 +855,8 @@ def main(argv=None):
                     help="a file of advisory ids to accept, one per line (# comments allowed)")
     ap.add_argument("--json", action="store_true", help="print JSON instead of text")
     ap.add_argument("--fail-on-blind", action="store_true",
-                    help="exit 1 if any blind spot is found (for CI)")
+                    help="exit 1 if any blind spot is found, or if the GitHub rate limit "
+                         "left repos unchecked (for CI)")
     ap.add_argument("--sarif", metavar="PATH",
                     help="also write the blind spots as SARIF 2.1.0 to PATH, for GitHub "
                          "code scanning (github/codeql-action/upload-sarif)")
@@ -730,11 +889,19 @@ def main(argv=None):
         with open(path, encoding="utf-8") as fh:
             texts[path] = fh.read()
         add("pip", parse_pyproject(load_toml(texts[path])), path)
+    for path in args.lock:
+        with open(path, encoding="utf-8") as fh:
+            texts[path] = fh.read()
+        try:
+            eco, parsed = parse_lock(path, texts[path])
+        except ValueError as e:
+            ap.error("--lock %s: %s" % (path, e))
+        add(eco, parsed, path)
     for text in args.package:
         eco, name, version = parse_package_arg(text)
         add(eco, [(name, version)], None)
     if not deps:
-        ap.error("give at least one of -r, --npm, --pyproject or --package")
+        ap.error("give at least one of -r, --npm, --pyproject, --lock or --package")
     anchor = args.sarif_anchor or next(iter(texts), None)
     if args.sarif and args.package and not anchor:
         ap.error("--sarif with only --package specs needs --sarif-anchor FILE "
@@ -770,6 +937,9 @@ def main(argv=None):
     report = check(unique, resolve, list_repo_advisories, osv_package_ids, osv_has_id,
                    ignore=ignore)
     print(json.dumps(report, indent=2) if args.json else render_text(report))
+    if report["unchecked_repos"]:
+        print("blindspot: GitHub rate limit reached; %d repo(s) not checked (see "
+              "unchecked_repos)" % len(report["unchecked_repos"]), file=sys.stderr)
 
     if args.sarif:
         def locate(f):
@@ -787,7 +957,8 @@ def main(argv=None):
         with open(args.sarif, "w", encoding="utf-8") as fh:
             json.dump(render_sarif(report, locate), fh, indent=2)
             fh.write("\n")
-    return 1 if (args.fail_on_blind and report["blind_spots"]) else 0
+    failed = report["blind_spots"] or report["unchecked_repos"]
+    return 1 if (args.fail_on_blind and failed) else 0
 
 
 if __name__ == "__main__":

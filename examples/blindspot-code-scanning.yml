@@ -1,8 +1,8 @@
 # Example consumer workflow: show blind spots as code scanning alerts in your
 # repository's Security tab. Copy this into your own repository at
 # .github/workflows/blindspot-code-scanning.yml . Each alert points at the line
-# of your manifest that declares the dependency, and closes by itself once the
-# advisory reaches OSV (or you upgrade past the affected range).
+# of your manifest or lock file that declares the dependency, and closes by
+# itself once the advisory reaches OSV (or you upgrade past the affected range).
 #
 # Code scanning is free for public repositories; private repositories need
 # GitHub Code Security.
@@ -27,9 +27,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: munimtechnologies/advisory-import-census@v0.6.0
+      - uses: munimtechnologies/advisory-import-census@v0.7.0
         with:
-          requirements: requirements.txt   # or npm / pyproject / packages
+          lock: package-lock.json          # or requirements / npm / pyproject / packages
           sarif: blindspot.sarif
           fail-on-blind: "false"           # let the Security tab carry the alerts
           # Accept a reviewed blind spot by id (no alert is raised for it):

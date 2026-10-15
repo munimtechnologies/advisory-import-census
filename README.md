@@ -52,6 +52,40 @@ vulnerabilities whose advisories a dependency scanner will never surface.
 Full per-repo counts are in [`out/summary.json`](out/summary.json); one row per advisory is
 in [`out/gra_census.csv`](out/gra_census.csv).
 
+### Per-repo coverage, with the date it was pulled
+
+The 31.6% is one moment for one sample, and each project moves on its own (an import or a
+new advisory changes its row), so each per-repo figure carries the time it was pulled.
+Quote a row with its date. (A reader of the DEV write-up suggested dating figures per repo;
+this table is that change.) The other 11 of the 30 surveyed repos had no published
+repository advisories at the snapshot.
+
+| Repo | Published advisories | Not in global DB under own GHSA | Share missing | Pulled (UTC) |
+|---|---:|---:|---:|---|
+| open-webui/open-webui | 165 | 21 | 12.7% | 2026-10-14 14:01 |
+| FlowiseAI/Flowise | 130 | 28 | 21.5% | 2026-10-14 14:01 |
+| vllm-project/vllm | 104 | 35 | 33.7% | 2026-10-14 14:01 |
+| langflow-ai/langflow | 37 | 4 | 10.8% | 2026-10-14 14:01 |
+| danny-avila/LibreChat | 29 | 29 | 100% | 2026-10-14 14:01 |
+| gradio-app/gradio | 29 | 1 | 3.4% | 2026-10-14 14:01 |
+| Mintplex-Labs/anything-llm | 25 | 25 | 100% | 2026-10-14 14:01 |
+| langgenius/dify | 21 | 21 | 100% | 2026-10-14 14:01 |
+| BerriAI/litellm | 17 | 3 | 17.6% | 2026-10-14 14:01 |
+| oobabooga/text-generation-webui | 12 | 12 | 100% | 2026-10-14 14:01 |
+| bentoml/BentoML | 11 | 0 | 0% | 2026-10-14 14:01 |
+| mlflow/mlflow | 10 | 3 | 30.0% | 2026-10-14 14:01 |
+| langchain-ai/langchain | 9 | 0 | 0% | 2026-10-14 14:01 |
+| infiniflow/ragflow | 8 | 8 | 100% | 2026-10-14 14:01 |
+| comfyanonymous/ComfyUI | 4 | 4 | 100% | 2026-10-14 14:01 |
+| ray-project/ray | 4 | 0 | 0% | 2026-10-14 14:01 |
+| deepset-ai/haystack | 1 | 0 | 0% | 2026-10-14 14:01 |
+| xorbitsai/inference | 1 | 0 | 0% | 2026-10-14 14:01 |
+| feast-dev/feast | 1 | 1 | 100% | 2026-10-14 14:01 |
+| **All 19** | **618** | **195** | **31.6%** | 2026-10-14 14:01 |
+
+To see where one project stands today, run `python blindspot.py --package repo:OWNER/REPO`
+— it lists that repo's published advisories and which of them OSV serves right now.
+
 ## Check your own dependencies: `blindspot.py`
 
 The census measures the gap across a fixed sample. `blindspot.py` turns the same method on
@@ -59,7 +93,12 @@ The census measures the gap across a fixed sample. `blindspot.py` turns the same
 OSV-based scanner will not report to you.
 
 ```
-# a Python project
+# best: a lock file, so every direct and transitive dependency is checked
+# at its exact version (see "Lock files" below for the formats)
+python blindspot.py --lock uv.lock
+python blindspot.py --lock package-lock.json
+
+# a Python project (hashed `pip-compile --generate-hashes` output is fine)
 python blindspot.py -r requirements.txt
 
 # a Python project that declares its dependencies in pyproject.toml
@@ -67,8 +106,8 @@ python blindspot.py -r requirements.txt
 #  tomllib, or `pip install tomli` on older Python)
 python blindspot.py --pyproject pyproject.toml
 
-# a Node project
-python blindspot.py --npm package-lock.json
+# a Node project's package.json (ranges like ^1.2.0 check every version)
+python blindspot.py --npm package.json
 
 # ad-hoc, pin a version to filter by affected range
 python blindspot.py --package pip:vllm==0.10.1 --package npm:flowise@3.1.3
@@ -77,14 +116,14 @@ python blindspot.py --package pip:vllm==0.10.1 --package npm:flowise@3.1.3
 python blindspot.py --package repo:langgenius/dify@1.4.0
 
 # machine-readable, and a CI gate
-python blindspot.py -r requirements.txt --json --fail-on-blind
+python blindspot.py --lock uv.lock --json --fail-on-blind
 
 # accept a known blind spot without turning the gate off
-python blindspot.py -r requirements.txt --fail-on-blind \
+python blindspot.py --lock uv.lock --fail-on-blind \
   --ignore GHSA-xxxx-xxxx-xxxx --ignore-file blindspot-ignore.txt
 
 # also write the blind spots as SARIF 2.1.0, for GitHub code scanning
-python blindspot.py -r requirements.txt --sarif blindspot.sarif
+python blindspot.py --lock uv.lock --sarif blindspot.sarif
 ```
 
 Installed from this repo (`pip install .`), the same tool is also the `advisory-blindspot`
@@ -100,10 +139,43 @@ How it works, per dependency:
    that advisory — by its GHSA ID or its CVE alias.
 
 An advisory that affects you but that OSV does **not** report is a **blind spot**, printed
-first. Standard library only, Python 3.8+ (reading a `pyproject.toml` needs Python 3.11+ for
-the stdlib `tomllib`, or the `tomli` backport), public read-only metadata, no install. Set
-`GITHUB_TOKEN` in the environment (sent only to `api.github.com`) to raise GitHub's
-unauthenticated limit of 60 requests/hour; the tool makes one request per repo.
+first. Standard library only, Python 3.9+ (reading a `pyproject.toml` or a TOML lock file
+needs Python 3.11+ for the stdlib `tomllib`, or the `tomli` backport), public read-only
+metadata, no install. Set `GITHUB_TOKEN` in the environment (sent only to `api.github.com`)
+to raise GitHub's unauthenticated limit of 60 requests/hour; the tool makes one request per
+repo.
+
+### Lock files (`--lock`)
+
+A manifest with ranges (`flask>=2`, `^1.2.0`) can't say which version you run, so every
+advisory for that package is listed as *range unclear*; and a manifest names only your
+**direct** dependencies. A lock file gives the exact version of every package you install,
+transitive ones included, so each advisory is matched against the version you actually
+ship. `--lock` (repeatable) recognises the file by its name:
+
+| File | Ecosystem | Notes |
+|---|---|---|
+| `uv.lock`, `poetry.lock` | PyPI | the project itself and local `directory`/`editable` packages are left out |
+| `pylock.toml`, `pylock.NAME.toml` | PyPI | [PEP 751](https://peps.python.org/pep-0751/); packages with no `version` are left out |
+| `Pipfile.lock` | PyPI | `default` and `develop`; path/VCS entries with no `==` version are left out |
+| `package-lock.json`, `npm-shrinkwrap.json` | npm | lockfile v1, v2 and v3 |
+| `yarn.lock` | npm | classic (v1) and Berry (v2+); `npm:` aliases count as the real package; workspace, link, file and patch entries are left out |
+| `pnpm-lock.yaml` | npm | lockfile v5, v6 and v9 (the `packages:` map; peer suffixes dropped); read line by line, no YAML library |
+
+**Big lock files and GitHub's rate limit.** Each distinct GitHub repo behind your
+dependencies costs one API request. Without a token the limit is 60 an hour; the workflow
+token in GitHub Actions allows 1,000 an hour per repository
+([GitHub docs](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api)).
+If the limit is reached, blindspot stops asking GitHub and reports the remaining repos as
+**not checked** (`unchecked_repos` in the JSON, an *Incomplete* warning in the text and job
+summary). `--fail-on-blind` then fails, because a check that could not see everything must
+not pass the gate. Re-run after the hourly reset.
+
+**Correction (0.7.0).** Earlier versions read a hashed requirements file
+(`pip-compile --generate-hashes`, `uv pip compile --generate-hashes`) as if nothing was
+pinned: the `\` line continuation hid the `==` pin, so every advisory for those packages was
+reported as *range unclear* instead of being matched to your version. 0.7.0 joins
+continuation lines and drops per-requirement options such as `--hash`, so the pin is kept.
 
 ### Accepting a known blind spot (`--ignore`)
 
@@ -146,24 +218,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: munimtechnologies/advisory-import-census@v0.6.0
+      - uses: munimtechnologies/advisory-import-census@v0.7.0
         with:
-          requirements: requirements.txt   # or: npm: package-lock.json
-          # pyproject: pyproject.toml       # PEP 621 or Poetry deps
+          lock: uv.lock          # or package-lock.json, yarn.lock, pnpm-lock.yaml, ...
+          # requirements: requirements.txt
+          # pyproject: pyproject.toml
           fail-on-blind: "true"
 ```
 
-Inputs: `requirements`, `npm`, `pyproject`, and `packages` (any whitespace-separated list,
-matching the CLI's `-r`, `--npm`, `--pyproject`, and `--package`); `map` for `NAME=OWNER/REPO`
-overrides; `ignore` (whitespace- or newline-separated advisory ids to accept as known blind
-spots, matching the CLI's `--ignore`); `fail-on-blind` (default `true`) to fail the job when a
-blind spot is found; `sarif` to also write a SARIF file (below); and `github-token` (defaults
-to the workflow token, only sent to `api.github.com`). The runner's `python3` is 3.11+, so
-`pyproject` files are read with the standard-library `tomllib` and no install. Every run writes
-a Markdown table to the **job summary**: blind spots first, then any accepted blind spots, then
-a collapsed list of advisories OSV does report. A weekly `schedule:` trigger is worth adding —
-an advisory can be published upstream *after* you merged a dependency, and the gap has a median
-life of 91 days, so a one-off check goes stale.
+Inputs: `lock`, `requirements`, `npm`, `pyproject`, and `packages` (any whitespace-separated
+list, matching the CLI's `--lock`, `-r`, `--npm`, `--pyproject`, and `--package`); `map` for
+`NAME=OWNER/REPO` overrides; `ignore` (whitespace- or newline-separated advisory ids to accept
+as known blind spots, matching the CLI's `--ignore`); `fail-on-blind` (default `true`) to fail
+the job when a blind spot is found or the check was incomplete; `sarif` to also write a SARIF
+file (below); and `github-token` (defaults to the workflow token, only sent to
+`api.github.com`). The runner's `python3` is 3.11+, so `pyproject` files and TOML lock files
+are read with the standard-library `tomllib` and no install. Every run writes a Markdown table
+to the **job summary**: an *Incomplete* warning if the rate limit was reached, blind spots
+first, then any accepted blind spots, then a collapsed list of advisories OSV does report. A
+weekly `schedule:` trigger is worth adding — an advisory can be published upstream *after* you
+merged a dependency, and the gap has a median life of 91 days, so a one-off check goes stale.
 
 Offline unit tests for the summary renderer: `python -m unittest -v test_action_summary`.
 
@@ -182,9 +256,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: munimtechnologies/advisory-import-census@v0.6.0
+      - uses: munimtechnologies/advisory-import-census@v0.7.0
         with:
-          requirements: requirements.txt
+          lock: package-lock.json
           sarif: blindspot.sarif
           fail-on-blind: "false"
       - uses: github/codeql-action/upload-sarif@v4
@@ -194,9 +268,9 @@ jobs:
           category: advisory-blindspot
 ```
 
-- **Where the alert points.** Each alert sits on the line of your manifest that declares the
-  dependency. `packages` specs have no manifest, so their alerts point at the workflow file
-  that lists them (the CLI's `--sarif-anchor FILE` does the same by hand).
+- **Where the alert points.** Each alert sits on the line of your manifest or lock file that
+  declares the dependency. `packages` specs have no manifest, so their alerts point at the
+  workflow file that lists them (the CLI's `--sarif-anchor FILE` does the same by hand).
 - **What is in it.** One rule per advisory, carrying its GHSA ID, summary, affected and
   patched ranges, and a link to the maintainers' advisory. GitHub's critical / high / medium /
   low comes from the advisory's own severity (`security-severity` 9.5 / 8.0 / 5.5 / 2.0).
@@ -291,6 +365,8 @@ when the measurement run completes.
   means "not present under its own ID at snapshot time," not "wrongly withheld." No vendor or
   maintainer is blamed; the gap is a pipeline-coverage measurement.
 - Unauthenticated API data only; repos with zero published advisories contribute nothing.
+- `blindspot.py` finds a package's repo from PyPI / npm metadata. Lock files for other
+  ecosystems (Cargo, Go, Composer, ...) are not read yet; use `--package` with `--map`.
 
 ## Dataset schema (`out/gra_census.csv`)
 

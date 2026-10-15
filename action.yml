@@ -10,7 +10,7 @@ branding:
 
 inputs:
   requirements:
-    description: "Whitespace-separated pip requirements.txt paths to check."
+    description: "Whitespace-separated pip requirements.txt paths to check (hashed pip-compile output is fine)."
     required: false
     default: ""
   npm:
@@ -22,6 +22,15 @@ inputs:
       Whitespace-separated pyproject.toml paths to check (PEP 621 [project]
       dependencies or legacy Poetry). The runner's python3 is 3.11+, so the
       standard-library tomllib reads them with no install.
+    required: false
+    default: ""
+  lock:
+    description: >-
+      Whitespace-separated lock files to check, recognised by file name:
+      uv.lock, poetry.lock, pylock.toml (PEP 751), Pipfile.lock,
+      package-lock.json, npm-shrinkwrap.json, yarn.lock (classic or Berry) and
+      pnpm-lock.yaml. Every locked package, direct and transitive, is checked
+      at its exact version.
     required: false
     default: ""
   packages:
@@ -45,7 +54,9 @@ inputs:
     required: false
     default: ""
   fail-on-blind:
-    description: "Fail the job (exit 1) if any blind spot is found."
+    description: >-
+      Fail the job (exit 1) if any blind spot is found, or if GitHub's API rate
+      limit left some repos unchecked (an incomplete check does not pass).
     required: false
     default: "true"
   sarif:
@@ -78,6 +89,7 @@ runs:
         BLINDSPOT_REQUIREMENTS: ${{ inputs.requirements }}
         BLINDSPOT_NPM: ${{ inputs.npm }}
         BLINDSPOT_PYPROJECT: ${{ inputs.pyproject }}
+        BLINDSPOT_LOCK: ${{ inputs.lock }}
         BLINDSPOT_PACKAGES: ${{ inputs.packages }}
         BLINDSPOT_MAP: ${{ inputs.map }}
         BLINDSPOT_IGNORE: ${{ inputs.ignore }}
@@ -89,10 +101,11 @@ runs:
         for f in $BLINDSPOT_REQUIREMENTS; do args+=(-r "$f"); done
         for f in $BLINDSPOT_NPM; do args+=(--npm "$f"); done
         for f in $BLINDSPOT_PYPROJECT; do args+=(--pyproject "$f"); done
+        for f in $BLINDSPOT_LOCK; do args+=(--lock "$f"); done
         for p in $BLINDSPOT_PACKAGES; do args+=(--package "$p"); done
         for m in $BLINDSPOT_MAP; do args+=(--map "$m"); done
         if [ ${#args[@]} -eq 0 ]; then
-          echo "advisory-import-census: set at least one of requirements, npm, pyproject or packages." >&2
+          echo "advisory-import-census: set at least one of requirements, npm, pyproject, lock or packages." >&2
           exit 2
         fi
         for i in $BLINDSPOT_IGNORE; do args+=(--ignore "$i"); done

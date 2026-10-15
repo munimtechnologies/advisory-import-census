@@ -6,9 +6,10 @@ Reads the report path from argv[1], appends a Markdown summary to the file named
 by $GITHUB_STEP_SUMMARY (when set), prints a one-line result to stdout, and exits
 1 when $BLINDSPOT_FAIL_ON_BLIND is truthy and at least one blind spot was found
 (so a pull request that pulls in a dependency with an unreported advisory fails
-CI). Blind spots accepted with the `ignore` input are listed separately and do
-not fail the job. Standard library only; the rendering is a pure function so it
-is testable with no network and no GitHub runner.
+CI), or when GitHub's rate limit left repos unchecked (an incomplete check must
+not pass the gate). Blind spots accepted with the `ignore` input are listed
+separately and do not fail the job. Standard library only; the rendering is a
+pure function so it is testable with no network and no GitHub runner.
 
 Made with AI agents working for MV2 of Munim, Inc. Apache-2.0.
 """
@@ -17,6 +18,7 @@ import os
 import sys
 
 MAX_SUMMARY = 90
+MAX_UNCHECKED_LISTED = 30
 
 
 def truthy(value):
@@ -51,6 +53,7 @@ def render_markdown(report):
     blind = [f for f in findings if not f.get("scanner_visible") and not f.get("ignored")]
     accepted = [f for f in findings if not f.get("scanner_visible") and f.get("ignored")]
     visible = [f for f in findings if f.get("scanner_visible")]
+    unchecked = report.get("unchecked_repos") or []
     out = [
         "## Advisory blind-spot check",
         "",
@@ -60,6 +63,16 @@ def render_markdown(report):
             report.get("repos_with_advisories", 0))),
         "",
     ]
+    if unchecked:
+        listed = ", ".join("`%s`" % _cell(r) for r in unchecked[:MAX_UNCHECKED_LISTED])
+        if len(unchecked) > MAX_UNCHECKED_LISTED:
+            listed += " and %d more" % (len(unchecked) - MAX_UNCHECKED_LISTED)
+        out.append("### \u26A0\uFE0F Incomplete: %d repo%s not checked"
+                   % (len(unchecked), "" if len(unchecked) == 1 else "s"))
+        out.append("GitHub's API rate limit was reached, so the advisories of these repos were "
+                   "not read and their blind spots are unknown: %s. Re-run after the hourly "
+                   "reset, or check fewer files per job." % listed)
+        out.append("")
     header = ["| Severity | Package | Version | Advisory | Summary |",
               "|---|---|---|---|---|"]
     if blind:
@@ -70,7 +83,8 @@ def render_markdown(report):
         out.append("")
         out += header + [_row(f) for f in blind] + [""]
     else:
-        out.append("### \u2705 No blind spots")
+        out.append("### \u2705 No blind spots%s" % (" in the repos that were checked"
+                                                    if unchecked else ""))
         out.append("Every advisory that applies to your dependencies is also served by OSV%s."
                    % (" or was accepted with `ignore`" if accepted else ""))
         out.append("")
@@ -107,11 +121,14 @@ def main(argv=None):
             fh.write(md + "\n")
     blind = report.get("blind_spots", 0)
     accepted = report.get("ignored_blind_spots", 0)
-    print("blind spots: %d%s (of %d advisories that apply to %d dependencies)"
+    unchecked = len(report.get("unchecked_repos") or [])
+    print("blind spots: %d%s (of %d advisories that apply to %d dependencies)%s"
           % (blind, (" (+%d accepted)" % accepted) if accepted else "",
              report.get("advisories_that_apply", 0),
-             report.get("dependencies_checked", 0)))
-    if truthy(os.environ.get("BLINDSPOT_FAIL_ON_BLIND")) and blind:
+             report.get("dependencies_checked", 0),
+             ("; INCOMPLETE: %d repo(s) not checked (GitHub rate limit)" % unchecked)
+             if unchecked else ""))
+    if truthy(os.environ.get("BLINDSPOT_FAIL_ON_BLIND")) and (blind or unchecked):
         return 1
     return 0
 
