@@ -6,8 +6,9 @@ Reads the report path from argv[1], appends a Markdown summary to the file named
 by $GITHUB_STEP_SUMMARY (when set), prints a one-line result to stdout, and exits
 1 when $BLINDSPOT_FAIL_ON_BLIND is truthy and at least one blind spot was found
 (so a pull request that pulls in a dependency with an unreported advisory fails
-CI). Standard library only; the rendering is a pure function so it is testable
-with no network and no GitHub runner.
+CI). Blind spots accepted with the `ignore` input are listed separately and do
+not fail the job. Standard library only; the rendering is a pure function so it
+is testable with no network and no GitHub runner.
 
 Made with AI agents working for MV2 of Munim, Inc. Apache-2.0.
 """
@@ -47,7 +48,8 @@ def _row(f):
 
 def render_markdown(report):
     findings = report.get("findings", []) or []
-    blind = [f for f in findings if not f.get("scanner_visible")]
+    blind = [f for f in findings if not f.get("scanner_visible") and not f.get("ignored")]
+    accepted = [f for f in findings if not f.get("scanner_visible") and f.get("ignored")]
     visible = [f for f in findings if f.get("scanner_visible")]
     out = [
         "## Advisory blind-spot check",
@@ -69,8 +71,14 @@ def render_markdown(report):
         out += header + [_row(f) for f in blind] + [""]
     else:
         out.append("### \u2705 No blind spots")
-        out.append("Every advisory that applies to your dependencies is also served by OSV.")
+        out.append("Every advisory that applies to your dependencies is also served by OSV%s."
+                   % (" or was accepted with `ignore`" if accepted else ""))
         out.append("")
+    if accepted:
+        out.append("<details><summary>%d accepted blind spot%s (via `ignore`, not failing the "
+                   "job)</summary>" % (len(accepted), "" if len(accepted) == 1 else "s"))
+        out.append("")
+        out += header + [_row(f) for f in accepted] + ["", "</details>", ""]
     if visible:
         out.append("<details><summary>%d advisory(ies) that apply and OSV does report</summary>"
                    % len(visible))
@@ -98,8 +106,10 @@ def main(argv=None):
         with open(summary_path, "a", encoding="utf-8") as fh:
             fh.write(md + "\n")
     blind = report.get("blind_spots", 0)
-    print("blind spots: %d (of %d advisories that apply to %d dependencies)"
-          % (blind, report.get("advisories_that_apply", 0),
+    accepted = report.get("ignored_blind_spots", 0)
+    print("blind spots: %d%s (of %d advisories that apply to %d dependencies)"
+          % (blind, (" (+%d accepted)" % accepted) if accepted else "",
+             report.get("advisories_that_apply", 0),
              report.get("dependencies_checked", 0)))
     if truthy(os.environ.get("BLINDSPOT_FAIL_ON_BLIND")) and blind:
         return 1

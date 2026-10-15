@@ -27,11 +27,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: munimtechnologies/advisory-import-census@v0.5.0
+      - uses: munimtechnologies/advisory-import-census@v0.6.0
         with:
           requirements: requirements.txt   # or npm / pyproject / packages
           sarif: blindspot.sarif
           fail-on-blind: "false"           # let the Security tab carry the alerts
+          # Accept a reviewed blind spot by id (no alert is raised for it):
+          # ignore: |
+          #   GHSA-xxxx-xxxx-xxxx
 
       - uses: github/codeql-action/upload-sarif@v4
         if: always()

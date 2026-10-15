@@ -36,6 +36,14 @@ inputs:
       has no GitHub link.
     required: false
     default: ""
+  ignore:
+    description: >-
+      Whitespace- or newline-separated advisory ids (GHSA or CVE) to accept as
+      known blind spots: each is still listed, as accepted, but does not count
+      and does not fail the job. Use for a gap you have reviewed and chosen to
+      accept, instead of turning fail-on-blind off for everything.
+    required: false
+    default: ""
   fail-on-blind:
     description: "Fail the job (exit 1) if any blind spot is found."
     required: false
@@ -72,6 +80,7 @@ runs:
         BLINDSPOT_PYPROJECT: ${{ inputs.pyproject }}
         BLINDSPOT_PACKAGES: ${{ inputs.packages }}
         BLINDSPOT_MAP: ${{ inputs.map }}
+        BLINDSPOT_IGNORE: ${{ inputs.ignore }}
         BLINDSPOT_FAIL_ON_BLIND: ${{ inputs.fail-on-blind }}
         BLINDSPOT_SARIF: ${{ inputs.sarif }}
       run: |
@@ -86,6 +95,7 @@ runs:
           echo "advisory-import-census: set at least one of requirements, npm, pyproject or packages." >&2
           exit 2
         fi
+        for i in $BLINDSPOT_IGNORE; do args+=(--ignore "$i"); done
         if [ -n "$BLINDSPOT_SARIF" ]; then
           args+=(--sarif "$BLINDSPOT_SARIF")
           # `packages` specs are listed in the workflow file, so their alerts point there.

@@ -79,6 +79,10 @@ python blindspot.py --package repo:langgenius/dify@1.4.0
 # machine-readable, and a CI gate
 python blindspot.py -r requirements.txt --json --fail-on-blind
 
+# accept a known blind spot without turning the gate off
+python blindspot.py -r requirements.txt --fail-on-blind \
+  --ignore GHSA-xxxx-xxxx-xxxx --ignore-file blindspot-ignore.txt
+
 # also write the blind spots as SARIF 2.1.0, for GitHub code scanning
 python blindspot.py -r requirements.txt --sarif blindspot.sarif
 ```
@@ -100,6 +104,23 @@ first. Standard library only, Python 3.8+ (reading a `pyproject.toml` needs Pyth
 the stdlib `tomllib`, or the `tomli` backport), public read-only metadata, no install. Set
 `GITHUB_TOKEN` in the environment (sent only to `api.github.com`) to raise GitHub's
 unauthenticated limit of 60 requests/hour; the tool makes one request per repo.
+
+### Accepting a known blind spot (`--ignore`)
+
+Some blind spots you can't fix today: there may be no patched version yet, or you have
+reviewed the advisory and accepted the risk. Rather than turn `--fail-on-blind` off for
+everything, accept that advisory by id and keep the gate on for the rest:
+
+- `--ignore GHSA-...` (repeatable) accepts one advisory, matched by its **GHSA or CVE id**,
+  case-insensitively.
+- `--ignore-file PATH` reads a file of ids, one per line (blank lines and `#` comments are
+  skipped, so you can note *why* each is accepted).
+
+An accepted advisory is still listed — under **Accepted blind spots** — but it is not counted
+in `blind_spots`, does not fail `--fail-on-blind`, and is left out of the SARIF output, so no
+code scanning alert is raised for a gap you have chosen to accept. The JSON report adds an
+`ignored` flag per finding and an `ignored_blind_spots` total. Accept by id, not by package,
+so a *new* advisory on the same dependency still trips the gate.
 
 **A live example you can reproduce.** As of **2026-10-15**, `api.osv.dev/v1/vulns/GHSA-vcwp-f9rq-3887`
 returns **404**. That GHSA is a critical Flowise repository advisory (authenticated RCE via a
@@ -125,7 +146,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: munimtechnologies/advisory-import-census@v0.5.0
+      - uses: munimtechnologies/advisory-import-census@v0.6.0
         with:
           requirements: requirements.txt   # or: npm: package-lock.json
           # pyproject: pyproject.toml       # PEP 621 or Poetry deps
@@ -134,14 +155,15 @@ jobs:
 
 Inputs: `requirements`, `npm`, `pyproject`, and `packages` (any whitespace-separated list,
 matching the CLI's `-r`, `--npm`, `--pyproject`, and `--package`); `map` for `NAME=OWNER/REPO`
-overrides; `fail-on-blind` (default `true`) to fail the job when a blind spot is found;
-`sarif` to also write a SARIF file (below); and `github-token` (defaults to the workflow
-token, only sent to `api.github.com`). The runner's `python3` is 3.11+, so `pyproject` files
-are read with the standard-library `tomllib` and no install. Every run writes a Markdown
-table to the **job summary**: blind spots first, then a collapsed list of advisories OSV does
-report. A weekly `schedule:` trigger is worth adding — an advisory can be published upstream
-*after* you merged a dependency, and the gap has a median life of 91 days, so a one-off check
-goes stale.
+overrides; `ignore` (whitespace- or newline-separated advisory ids to accept as known blind
+spots, matching the CLI's `--ignore`); `fail-on-blind` (default `true`) to fail the job when a
+blind spot is found; `sarif` to also write a SARIF file (below); and `github-token` (defaults
+to the workflow token, only sent to `api.github.com`). The runner's `python3` is 3.11+, so
+`pyproject` files are read with the standard-library `tomllib` and no install. Every run writes
+a Markdown table to the **job summary**: blind spots first, then any accepted blind spots, then
+a collapsed list of advisories OSV does report. A weekly `schedule:` trigger is worth adding —
+an advisory can be published upstream *after* you merged a dependency, and the gap has a median
+life of 91 days, so a one-off check goes stale.
 
 Offline unit tests for the summary renderer: `python -m unittest -v test_action_summary`.
 
@@ -160,7 +182,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: munimtechnologies/advisory-import-census@v0.5.0
+      - uses: munimtechnologies/advisory-import-census@v0.6.0
         with:
           requirements: requirements.txt
           sarif: blindspot.sarif
@@ -179,11 +201,11 @@ jobs:
   patched ranges, and a link to the maintainers' advisory. GitHub's critical / high / medium /
   low comes from the advisory's own severity (`security-severity` 9.5 / 8.0 / 5.5 / 2.0).
   Advisories that OSV *does* report are left out, because an OSV-based scanner already alerts
-  on them.
+  on them; advisories accepted with `ignore` are left out too.
 - **When it closes.** Fingerprints are stable per advisory, package, version and manifest, so
   an alert stays one alert across runs. A run with no blind spots still uploads an empty
-  result set, so an alert closes by itself once the advisory reaches OSV or you upgrade past
-  the affected range.
+  result set, so an alert closes by itself once the advisory reaches OSV, you upgrade past
+  the affected range, or you accept it with `ignore`.
 - Code scanning is free for public repositories; private repositories need GitHub Code
   Security.
 
@@ -223,6 +245,8 @@ If you reproduce the membership test by querying OSV per ID instead of cloning, 
 returns a record, but the upper-cased `GHSA-39MP-8HJ3-5C49` returns 404. Normalising GHSA
 IDs to upper case before querying OSV makes every lookup miss and can wrongly report 100%
 of advisories as "missing." `blindspot.py` and `census.py` preserve the ID as published.
+(The `--ignore` list is matched case-insensitively against the advisory id — that comparison
+is local and never a key into OSV, so it is safe to accept `ghsa-...` or `GHSA-...` either way.)
 
 ### Independent cross-check with OSV
 

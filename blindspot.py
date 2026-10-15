@@ -26,6 +26,8 @@ Usage:
   add --json for machine-readable output, --fail-on-blind for CI, and
   --sarif blindspot.sarif to write the blind spots as SARIF 2.1.0 for GitHub
   code scanning (they then show as alerts in the repository's Security tab).
+  Accept a known blind spot without turning the gate off with
+  --ignore GHSA-... (repeatable) or --ignore-file blindspot-ignore.txt.
 
 Set GITHUB_TOKEN in the environment to raise GitHub's unauthenticated limit of
 60 requests an hour (one request per repo); it is only sent to api.github.com.
@@ -47,7 +49,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.5.0"
+__version__ = "0.6.0"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -227,6 +229,18 @@ def parse_package_arg(text):
     return eco, name.strip(), (version.strip() or None) if version else None
 
 
+def parse_ignore_file(text):
+    """Return the advisory IDs listed in an ignore file: one GHSA or CVE ID per
+    line, with blank lines and `#` comments skipped (an inline `# ...` after an
+    ID is stripped too, so you can note why an ID is accepted)."""
+    ids = []
+    for raw in (text or "").splitlines():
+        line = raw.split("#", 1)[0].strip()
+        if line:
+            ids.append(line)
+    return ids
+
+
 def load_toml(text):
     """Parse TOML text to a dict. Uses the standard-library tomllib on Python
     3.11+, or the `tomli` backport if installed; raises a clear error on older
@@ -398,12 +412,16 @@ def osv_has_id(vuln_id):
 
 # ---------------------------------------------------------------- core
 
-def check(deps, resolve_repo, get_advisories, package_ids, id_lookup):
+def check(deps, resolve_repo, get_advisories, package_ids, id_lookup, ignore=None):
     """Classify every advisory that applies to each dependency.
 
     deps: [(ecosystem, name, version-or-None)]; ecosystem "repo" means name is
     owner/repo and every advisory of that repo applies. The four callables
-    are injected so the logic is testable offline. Returns a report dict."""
+    are injected so the logic is testable offline. `ignore` is an iterable of
+    advisory IDs (GHSA or CVE, matched case-insensitively) to accept: those
+    findings are marked "ignored" and left out of blind_spots, so a known gap
+    does not fail --fail-on-blind. Returns a report dict."""
+    ignore_ids = {i.upper() for i in (ignore or [])}
     findings, unmapped, repos_seen = [], [], {}
     for eco, name, version in deps:
         repo = name if eco == "repo" else resolve_repo(eco, name)
@@ -448,6 +466,8 @@ def check(deps, resolve_repo, get_advisories, package_ids, id_lookup):
                 seen = osv_ids
                 cve_hit = bool(cve and cve in seen)
             visible = ghsa in seen or cve_hit
+            ignored = bool((ghsa and ghsa.upper() in ignore_ids)
+                           or (cve and cve.upper() in ignore_ids))
             findings.append({
                 "ecosystem": eco, "package": name, "version": version, "repo": repo,
                 "ghsa_id": ghsa, "cve_id": cve or "", "severity": adv.get("severity") or "",
@@ -457,18 +477,21 @@ def check(deps, resolve_repo, get_advisories, package_ids, id_lookup):
                 "patched": "; ".join(v.get("patched_versions") or "?" for v in matches),
                 "affects_your_version": "yes" if affected else "unknown",
                 "scanner_visible": visible,
+                "ignored": ignored,
                 "url": adv.get("html_url") or "",
             })
     sev = {"critical": 0, "high": 1, "medium": 2, "moderate": 2, "low": 3}
     findings.sort(key=lambda f: (f["scanner_visible"], sev.get(f["severity"], 4),
                                  f["package"], f["ghsa_id"] or ""))
-    blind = [f for f in findings if not f["scanner_visible"]]
+    blind = [f for f in findings if not f["scanner_visible"] and not f["ignored"]]
+    accepted = [f for f in findings if not f["scanner_visible"] and f["ignored"]]
     return {
         "dependencies_checked": len(deps),
         "mapped_to_repo": len(deps) - len(unmapped),
         "repos_with_advisories": sum(1 for a in repos_seen.values() if a),
         "advisories_that_apply": len(findings),
         "blind_spots": len(blind),
+        "ignored_blind_spots": len(accepted),
         "findings": findings,
         "unmapped": unmapped,
     }
@@ -479,10 +502,14 @@ def render_text(report):
              "Dependencies: %d, mapped to a GitHub repo: %d, repos with published advisories: %d"
              % (report["dependencies_checked"], report["mapped_to_repo"],
                 report["repos_with_advisories"]), ""]
+    findings = report["findings"]
     groups = [("BLIND SPOTS: published by the maintainers, not reported by OSV for this package",
-               [f for f in report["findings"] if not f["scanner_visible"]]),
+               [f for f in findings if not f["scanner_visible"] and not f.get("ignored")]),
               ("Also apply, and OSV reports them",
-               [f for f in report["findings"] if f["scanner_visible"]])]
+               [f for f in findings if f["scanner_visible"]])]
+    accepted = [f for f in findings if not f["scanner_visible"] and f.get("ignored")]
+    if accepted:
+        groups.append(("Accepted blind spots (--ignore: not counted, do not fail CI)", accepted))
     for title, items in groups:
         lines.append("%s (%d)" % (title, len(items)))
         for f in items:
@@ -562,11 +589,13 @@ def render_sarif(report, locate):
     (github/codeql-action/upload-sarif). One rule per advisory, one result per
     affected dependency. locate(finding) -> (uri, line, line_length) says where
     the dependency is declared. Advisories OSV does report are left out: an
-    OSV-based scanner already alerts on them. An empty result list is still
-    written, so code scanning closes alerts once an advisory is imported."""
+    OSV-based scanner already alerts on them. Advisories accepted with --ignore
+    are left out too, so no alert is raised for a gap you have chosen to accept.
+    An empty result list is still written, so code scanning closes alerts once
+    an advisory is imported (or accepted)."""
     rules, rule_index, results = [], {}, []
     for f in report.get("findings", []):
-        if f.get("scanner_visible"):
+        if f.get("scanner_visible") or f.get("ignored"):
             continue
         sev = (f.get("severity") or "").lower()
         rule_id = f.get("ghsa_id") or f.get("cve_id") or "advisory-blindspot/unknown"
@@ -660,6 +689,12 @@ def main(argv=None):
                          "npm:flowise@3.1.3, repo:langgenius/dify@1.4.0")
     ap.add_argument("--map", action="append", default=[],
                     help="NAME=OWNER/REPO for packages whose registry has no GitHub link")
+    ap.add_argument("--ignore", action="append", default=[], metavar="ID",
+                    help="accept a known blind spot by its GHSA or CVE id (case-insensitive): "
+                         "it is still listed, as accepted, but is not counted and does not "
+                         "fail --fail-on-blind. Repeatable.")
+    ap.add_argument("--ignore-file", action="append", default=[], metavar="PATH",
+                    help="a file of advisory ids to accept, one per line (# comments allowed)")
     ap.add_argument("--json", action="store_true", help="print JSON instead of text")
     ap.add_argument("--fail-on-blind", action="store_true",
                     help="exit 1 if any blind spot is found (for CI)")
@@ -711,6 +746,11 @@ def main(argv=None):
             seen.add(key)
             unique.append(d)
 
+    ignore = list(args.ignore)
+    for path in args.ignore_file:
+        with open(path, encoding="utf-8") as fh:
+            ignore += parse_ignore_file(fh.read())
+
     overrides = {}
     for m in args.map:
         name, _, repo = m.partition("=")
@@ -727,7 +767,8 @@ def main(argv=None):
             print("  could not look up %s:%s (%s)" % (eco, name, e), file=sys.stderr)
             return None
 
-    report = check(unique, resolve, list_repo_advisories, osv_package_ids, osv_has_id)
+    report = check(unique, resolve, list_repo_advisories, osv_package_ids, osv_has_id,
+                   ignore=ignore)
     print(json.dumps(report, indent=2) if args.json else render_text(report))
 
     if args.sarif:

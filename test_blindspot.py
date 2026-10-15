@@ -100,6 +100,19 @@ class TestManifests(unittest.TestCase):
         with self.assertRaises(ValueError):
             bs.parse_package_arg("cobol:x==1")
 
+    def test_parse_ignore_file(self):
+        text = "\n".join([
+            "# accepted blind spots",
+            "GHSA-aaaa-aaaa-aaaa",
+            "",
+            "CVE-2026-3   # known, maintainers say no fix is planned",
+            "   # a whole-line comment",
+            "   ",
+        ])
+        self.assertEqual(bs.parse_ignore_file(text),
+                         ["GHSA-aaaa-aaaa-aaaa", "CVE-2026-3"])
+        self.assertEqual(bs.parse_ignore_file(""), [])
+
     def test_pyproject_pep621(self):
         data = {"project": {
             "dependencies": ["vllm==0.10.1", "litellm>=1.0", "requests"],
@@ -180,7 +193,7 @@ ADVISORIES = {
 
 
 class TestCheck(unittest.TestCase):
-    def run_check(self, deps):
+    def run_check(self, deps, ignore=None):
         calls = {"repos": [], "osv": []}
 
         def get_advisories(repo):
@@ -195,7 +208,8 @@ class TestCheck(unittest.TestCase):
             return {"GHSA-ffff-ffff-ffff"} if vid == "GHSA-ffff-ffff-ffff" else set()
 
         resolve = lambda eco, name: {"flowise": "FlowiseAI/Flowise"}.get(name.lower())
-        return bs.check(deps, resolve, get_advisories, package_ids, id_lookup), calls
+        return bs.check(deps, resolve, get_advisories, package_ids, id_lookup,
+                        ignore=ignore), calls
 
     def test_package_mode(self):
         report, calls = self.run_check([("npm", "flowise", "3.1.3"), ("npm", "Flowise", "3.1.3")])
@@ -209,6 +223,42 @@ class TestCheck(unittest.TestCase):
         # Blind spots sort first.
         self.assertEqual(ids[0], ("GHSA-aaaa-aaaa-aaaa", False))
         self.assertEqual(report["blind_spots"], 2)
+        self.assertEqual(report["ignored_blind_spots"], 0)
+        self.assertTrue(all(f["ignored"] is False for f in report["findings"]))
+
+    def test_ignore_accepts_blind_spot_by_ghsa(self):
+        # In this fake OSV reports GHSA-bbbb and CVE-2026-3, so aaaa is the only
+        # blind spot. Accept it by GHSA (matched case-insensitively).
+        report, _ = self.run_check(
+            [("npm", "flowise", "3.1.3")], ignore=["ghsa-AAAA-aaaa-AAAA"])
+        byid = {f["ghsa_id"]: f for f in report["findings"]}
+        self.assertTrue(byid["GHSA-aaaa-aaaa-aaaa"]["ignored"])
+        self.assertFalse(byid["GHSA-cccc-cccc-cccc"]["ignored"])  # visible, untouched
+        self.assertEqual(report["blind_spots"], 0)
+        self.assertEqual(report["ignored_blind_spots"], 1)
+
+    def test_ignore_by_cve_alias(self):
+        # CVE-2026-1 is the CVE of the blind GHSA-aaaa; accept it by its CVE.
+        report, _ = self.run_check([("npm", "flowise", "3.1.3")], ignore=["cve-2026-1"])
+        byid = {f["ghsa_id"]: f for f in report["findings"]}
+        self.assertTrue(byid["GHSA-aaaa-aaaa-aaaa"]["ignored"])
+        self.assertEqual(report["ignored_blind_spots"], 1)
+        self.assertEqual(report["blind_spots"], 0)
+
+    def test_ignore_does_not_touch_visible(self):
+        # Ignoring a visible advisory (GHSA-bbbb) is a no-op for the gate: it was
+        # never a blind spot, so the real gap (aaaa) still counts.
+        report, _ = self.run_check(
+            [("npm", "flowise", "3.1.3")], ignore=["GHSA-bbbb-bbbb-bbbb"])
+        self.assertEqual(report["blind_spots"], 1)
+        self.assertEqual(report["ignored_blind_spots"], 0)
+
+    def test_render_text_shows_accepted_group(self):
+        report, _ = self.run_check([("npm", "flowise", "3.1.3")],
+                                   ignore=["GHSA-aaaa-aaaa-aaaa"])
+        text = bs.render_text(report)
+        self.assertIn("Accepted blind spots", text)
+        self.assertIn("GHSA-aaaa-aaaa-aaaa", text)
 
     def test_unpinned_is_unknown_not_dropped(self):
         report, _ = self.run_check([("npm", "flowise", None)])
@@ -232,8 +282,8 @@ FINGERPRINT_RE = re.compile(r"^[0-9a-f]{16}:1$")
 
 
 class TestSarif(unittest.TestCase):
-    def report(self, deps):
-        return TestCheck.run_check(self, deps)[0]
+    def report(self, deps, ignore=None):
+        return TestCheck.run_check(self, deps, ignore=ignore)[0]
 
     def test_find_line(self):
         text = "# open-webui pinned below\nflowise-components==1.0\nOpen_WebUI[all]==0.6.5\n"
@@ -277,6 +327,13 @@ class TestSarif(unittest.TestCase):
         self.assertEqual(again["runs"][0]["results"][0]["partialFingerprints"]
                          ["primaryLocationLineHash"], fp)
 
+    def test_ignored_blind_spot_left_out_of_sarif(self):
+        # aaaa is the only blind spot in this fake; accepting it leaves no alert.
+        report = self.report([("npm", "flowise", "3.1.3")], ignore=["GHSA-aaaa-aaaa-aaaa"])
+        run = bs.render_sarif(report, lambda f: ("package.json", 3, 25))["runs"][0]
+        self.assertEqual(run["results"], [])
+        self.assertEqual(run["tool"]["driver"]["rules"], [])
+
     def test_one_rule_per_advisory(self):
         report = self.report([("npm", "flowise", "3.1.3"), ("npm", "flowise", "3.1.2")])
         run = bs.render_sarif(report, lambda f: ("package-lock.json", 1, 0))["runs"][0]
@@ -314,23 +371,55 @@ def offline():
 
 
 class TestMain(unittest.TestCase):
+    def _main_json(self, argv):
+        """Run main() offline and return (exit code, parsed --json report)."""
+        patches = offline()
+        for p in patches:
+            p.start()
+        try:
+            out = io.StringIO()
+            with redirect_stdout(out):
+                code = bs.main(argv)
+        finally:
+            for p in patches:
+                p.stop()
+        return code, json.loads(out.getvalue())
+
     def test_cli_end_to_end_offline(self):
         with tempfile.TemporaryDirectory() as d:
             path = os.path.join(d, "package.json")
             with open(path, "w", encoding="utf-8") as fh:
                 json.dump({"dependencies": {"flowise": "3.1.3"}}, fh)
-            with mock.patch.object(bs, "list_repo_advisories",
-                                   lambda repo: ADVISORIES.get(repo, [])), \
-                 mock.patch.object(bs, "osv_package_ids", lambda e, n, v: {"GHSA-bbbb-bbbb-bbbb"}), \
-                 mock.patch.object(bs, "osv_has_id", lambda i: set()), \
-                 mock.patch.object(bs, "registry_repo", lambda e, n: None):
-                out = io.StringIO()
-                with redirect_stdout(out):
-                    code = bs.main(["--npm", path, "--json", "--fail-on-blind"])
-            report = json.loads(out.getvalue())
+            code, report = self._main_json(["--npm", path, "--json", "--fail-on-blind"])
             self.assertEqual(code, 1)
             self.assertEqual(report["findings"][0]["repo"], "FlowiseAI/Flowise")
             self.assertEqual(report["findings"][0]["ghsa_id"], "GHSA-aaaa-aaaa-aaaa")
+
+    def test_cli_ignore_passes_the_gate(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "package.json")
+            with open(path, "w", encoding="utf-8") as fh:
+                json.dump({"dependencies": {"flowise": "3.1.3"}}, fh)
+            code, report = self._main_json(
+                ["--npm", path, "--json", "--fail-on-blind",
+                 "--ignore", "GHSA-aaaa-aaaa-aaaa", "--ignore", "GHSA-cccc-cccc-cccc"])
+            self.assertEqual(report["blind_spots"], 0)
+            self.assertEqual(report["ignored_blind_spots"], 2)
+            self.assertEqual(code, 0)
+
+    def test_cli_ignore_file(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "package.json")
+            with open(path, "w", encoding="utf-8") as fh:
+                json.dump({"dependencies": {"flowise": "3.1.3"}}, fh)
+            ignore_path = os.path.join(d, "blindspot-ignore.txt")
+            with open(ignore_path, "w", encoding="utf-8") as fh:
+                fh.write("# accepted, maintainers confirmed no fix\nGHSA-aaaa-aaaa-aaaa\n")
+            code, report = self._main_json(
+                ["--npm", path, "--json", "--fail-on-blind", "--ignore-file", ignore_path])
+            self.assertEqual(report["ignored_blind_spots"], 1)
+            self.assertEqual(report["blind_spots"], 1)  # GHSA-cccc still a gap
+            self.assertEqual(code, 1)
 
     def test_cli_pyproject_offline(self):
         with tempfile.TemporaryDirectory() as d:
@@ -382,13 +471,23 @@ class TestMain(unittest.TestCase):
         self.assertEqual(loc["artifactLocation"]["uri"], "package.json")
         self.assertEqual(loc["region"]["startLine"], 3)
 
+    def test_cli_sarif_omits_ignored(self):
+        with tempfile.TemporaryDirectory() as d:
+            with open(os.path.join(d, "package.json"), "w", encoding="utf-8") as fh:
+                json.dump({"dependencies": {"flowise": "3.1.3"}}, fh, indent=2)
+            self.run_in(d, ["--npm", "package.json", "--sarif", "out.sarif",
+                            "--ignore", "GHSA-aaaa-aaaa-aaaa"])
+            with open(os.path.join(d, "out.sarif"), encoding="utf-8") as fh:
+                run = json.load(fh)["runs"][0]
+        self.assertEqual([r["ruleId"] for r in run["results"]], ["GHSA-cccc-cccc-cccc"])
+
     def test_cli_sarif_package_specs_point_at_anchor(self):
         with tempfile.TemporaryDirectory() as d:
             os.makedirs(os.path.join(d, ".github", "workflows"))
             with open(os.path.join(d, ".github", "workflows", "ci.yml"), "w",
                       encoding="utf-8") as fh:
                 fh.write("jobs:\n  x:\n    steps:\n"
-                         "      - uses: munimtechnologies/advisory-import-census@v0.5.0\n"
+                         "      - uses: munimtechnologies/advisory-import-census@v0.6.0\n"
                          "        with:\n"
                          "          packages: \"npm:flowise@3.1.3\"\n")
             self.run_in(d, ["--package", "npm:flowise@3.1.3", "--sarif", "out.sarif",

@@ -15,13 +15,15 @@ abstract: >-
   0.4.0 adds pyproject.toml support (PEP 621 and Poetry) to both the tool and the
   Action, and ships blindspot as the console command advisory-blindspot; version
   0.5.0 writes the blind spots as SARIF 2.1.0, so they show as GitHub code
-  scanning alerts on the manifest line that declares each dependency.
+  scanning alerts on the manifest line that declares each dependency; version
+  0.6.0 adds --ignore / --ignore-file (and an Action input) to accept a known
+  blind spot without disabling the CI gate.
 authors:
   - name: "MV2 of Munim, Inc."
     city: "Orange"
     region: "CT"
     country: "US"
-version: "0.5.0"
+version: "0.6.0"
 date-released: "2026-10-15"
 license: Apache-2.0
 repository-code: "https://github.com/munimtechnologies/advisory-import-census"

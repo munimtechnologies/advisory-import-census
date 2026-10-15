@@ -17,7 +17,7 @@ def _finding(**kw):
         "repo": "FlowiseAI/Flowise", "ghsa_id": "GHSA-vcwp-f9rq-3887",
         "cve_id": "", "severity": "critical", "summary": "Authenticated RCE via MCP npx",
         "published_at": "2026-09-01", "vulnerable_range": "<= 3.1.4", "patched": "?",
-        "affects_your_version": "yes", "scanner_visible": False, "url":
+        "affects_your_version": "yes", "scanner_visible": False, "ignored": False, "url":
         "https://github.com/FlowiseAI/Flowise/security/advisories/GHSA-vcwp-f9rq-3887",
     }
     base.update(kw)
@@ -25,11 +25,11 @@ def _finding(**kw):
 
 
 def _report(findings, **kw):
-    blind = [f for f in findings if not f["scanner_visible"]]
+    blind = [f for f in findings if not f["scanner_visible"] and not f.get("ignored")]
     rep = {
         "dependencies_checked": 1, "mapped_to_repo": 1, "repos_with_advisories": 1,
         "advisories_that_apply": len(findings), "blind_spots": len(blind),
-        "findings": findings, "unmapped": [],
+        "ignored_blind_spots": 0, "findings": findings, "unmapped": [],
     }
     rep.update(kw)
     return rep
@@ -88,6 +88,22 @@ class TestRender(unittest.TestCase):
         self.assertIn("…", md)
         self.assertNotIn("x" * 200, md)
 
+    def test_accepted_blind_spot_in_its_own_section(self):
+        rep = _report([_finding(ignored=True)], blind_spots=0, ignored_blind_spots=1)
+        md = A.render_markdown(rep)
+        # The gate is clean (the only gap was accepted), but it is still shown.
+        self.assertIn("No blind spots", md)
+        self.assertIn("accepted with `ignore`", md)
+        self.assertIn("1 accepted blind spot", md)
+        self.assertIn("GHSA-vcwp-f9rq-3887", md)
+
+    def test_accepted_alongside_a_real_blind_spot(self):
+        rep = _report([_finding(), _finding(ghsa_id="GHSA-x7x8-95gh-42xm", ignored=True)],
+                      blind_spots=1, ignored_blind_spots=1)
+        md = A.render_markdown(rep)
+        self.assertIn("1 blind spot", md)  # the un-accepted one
+        self.assertIn("1 accepted blind spot", md)
+
 
 class TestMain(unittest.TestCase):
     def _run(self, report, fail_on_blind):
@@ -120,6 +136,12 @@ class TestMain(unittest.TestCase):
         rc, summary = self._run(_report([_finding(scanner_visible=True)]), "true")
         self.assertEqual(rc, 0)
         self.assertIn("No blind spots", summary)
+
+    def test_accepted_only_passes_the_gate(self):
+        rep = _report([_finding(ignored=True)], blind_spots=0, ignored_blind_spots=1)
+        rc, summary = self._run(rep, "true")
+        self.assertEqual(rc, 0)
+        self.assertIn("accepted", summary)
 
     def test_missing_arg_returns_2(self):
         self.assertEqual(A.main([]), 2)
