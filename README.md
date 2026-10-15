@@ -98,6 +98,37 @@ warn you. Re-run it any time; the day the advisory is imported, the tool stops f
 
 Offline unit tests (GitHub and OSV faked, no network): `python -m unittest -v test_blindspot`.
 
+## Run it in CI: the GitHub Action
+
+This repository is also a composite GitHub Action, so you can gate pull requests on the same
+check without installing anything (`blindspot.py` is standard-library only). Add
+`.github/workflows/blindspot.yml` to your project
+([full example](examples/blindspot-ci.yml)):
+
+```yaml
+permissions:
+  contents: read
+jobs:
+  blindspot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: munimtechnologies/advisory-import-census@v0.3.0
+        with:
+          requirements: requirements.txt   # or: npm: package-lock.json
+          fail-on-blind: "true"
+```
+
+Inputs: `requirements`, `npm`, and `packages` (any whitespace-separated list, matching the
+CLI's `-r`, `--npm`, and `--package`); `map` for `NAME=OWNER/REPO` overrides; `fail-on-blind`
+(default `true`) to fail the job when a blind spot is found; and `github-token` (defaults to
+the workflow token, only sent to `api.github.com`). Every run writes a Markdown table to the
+**job summary**: blind spots first, then a collapsed list of advisories OSV does report. A
+weekly `schedule:` trigger is worth adding — an advisory can be published upstream *after* you
+merged a dependency, and the gap has a median life of 91 days, so a one-off check goes stale.
+
+Offline unit tests for the summary renderer: `python -m unittest -v test_action_summary`.
+
 ## Method
 
 All data is public, unauthenticated, and read-only metadata. No system is scanned, probed,

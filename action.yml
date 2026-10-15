@@ -1,0 +1,68 @@
+name: "Advisory blind-spot check"
+description: >-
+  Flag security advisories your dependencies' maintainers published on GitHub
+  that OSV-based scanners (Dependabot, pip-audit, osv-scanner, npm audit) do not
+  report. Public, read-only metadata; standard library only; no install.
+author: "MV2 of Munim, Inc."
+branding:
+  icon: "eye-off"
+  color: "purple"
+
+inputs:
+  requirements:
+    description: "Whitespace-separated pip requirements.txt paths to check."
+    required: false
+    default: ""
+  npm:
+    description: "Whitespace-separated package-lock.json / package.json paths to check."
+    required: false
+    default: ""
+  packages:
+    description: >-
+      Whitespace-separated ECOSYSTEM:NAME[==VERSION] specs, e.g.
+      'pip:vllm==0.10.1 npm:flowise@3.1.3 repo:langgenius/dify@1.4.0'.
+    required: false
+    default: ""
+  map:
+    description: >-
+      Whitespace-separated NAME=OWNER/REPO overrides for packages whose registry
+      has no GitHub link.
+    required: false
+    default: ""
+  fail-on-blind:
+    description: "Fail the job (exit 1) if any blind spot is found."
+    required: false
+    default: "true"
+  github-token:
+    description: >-
+      Token for api.github.com, to raise the 60 requests/hour anonymous limit.
+      Only sent to api.github.com. Defaults to the workflow token.
+    required: false
+    default: ${{ github.token }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run advisory blind-spot check
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        BLINDSPOT_REQUIREMENTS: ${{ inputs.requirements }}
+        BLINDSPOT_NPM: ${{ inputs.npm }}
+        BLINDSPOT_PACKAGES: ${{ inputs.packages }}
+        BLINDSPOT_MAP: ${{ inputs.map }}
+        BLINDSPOT_FAIL_ON_BLIND: ${{ inputs.fail-on-blind }}
+      run: |
+        set -euo pipefail
+        args=()
+        for f in $BLINDSPOT_REQUIREMENTS; do args+=(-r "$f"); done
+        for f in $BLINDSPOT_NPM; do args+=(--npm "$f"); done
+        for p in $BLINDSPOT_PACKAGES; do args+=(--package "$p"); done
+        for m in $BLINDSPOT_MAP; do args+=(--map "$m"); done
+        if [ ${#args[@]} -eq 0 ]; then
+          echo "advisory-import-census: set at least one of requirements, npm or packages." >&2
+          exit 2
+        fi
+        report="${RUNNER_TEMP:-/tmp}/blindspot-report.json"
+        python3 "${GITHUB_ACTION_PATH}/blindspot.py" "${args[@]}" --json | tee "$report"
+        python3 "${GITHUB_ACTION_PATH}/action_summary.py" "$report"

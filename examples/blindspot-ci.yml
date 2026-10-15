@@ -1,0 +1,38 @@
+# Example consumer workflow. Copy this into your own repository at
+# .github/workflows/blindspot.yml to fail CI when a dependency's maintainers
+# have published a security advisory that OSV-based scanners do not report.
+#
+# Made with AI agents working for MV2 of Munim, Inc. Apache-2.0.
+name: Advisory blind-spot check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 7 * * 1"  # weekly: catch advisories published after you merged
+
+permissions:
+  contents: read
+
+jobs:
+  blindspot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Python project: point at your lockfile / requirements.
+      - uses: munimtechnologies/advisory-import-census@v0.3.0
+        with:
+          requirements: requirements.txt
+          fail-on-blind: "true"
+
+      # Node project instead:
+      # - uses: munimtechnologies/advisory-import-census@v0.3.0
+      #   with:
+      #     npm: package-lock.json
+
+      # A self-hosted app you run from source (no package on a registry):
+      # - uses: munimtechnologies/advisory-import-census@v0.3.0
+      #   with:
+      #     packages: "repo:langgenius/dify@1.4.0"

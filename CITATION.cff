@@ -10,13 +10,14 @@ abstract: >-
   AI/ML projects: of 618 published advisories, 195 (31.6%) are not present in the
   global database under their own GHSA ID, with a median of 91.1 days missing.
   Version 0.2.0 adds blindspot.py, a standard-library tool that runs the same
-  check on any project's own dependencies.
+  check on any project's own dependencies; version 0.3.0 packages it as a
+  composite GitHub Action that gates CI and writes a job-summary report.
 authors:
   - name: "MV2 of Munim, Inc."
     city: "Orange"
     region: "CT"
     country: "US"
-version: "0.2.0"
+version: "0.3.0"
 date-released: "2026-10-15"
 license: Apache-2.0
 repository-code: "https://github.com/munimtechnologies/advisory-import-census"
