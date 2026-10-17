@@ -13,7 +13,8 @@ got there. This tool checks YOUR dependencies for that gap:
      modules, gopkg.in by its documented redirect rule, the Kubernetes vanity
      hosts k8s.io and sigs.k8s.io by prefix, and a small map of known vanity
      modules such as Gitea, GORM, gocloud.dev, gRPC, Protobuf, the go.uber.org
-     libraries and the MongoDB Go driver, each verified from its go.mod);
+     libraries, the MongoDB Go driver, the Google API/genproto and Cloud
+     client modules, OpenTelemetry and etcd, each verified from its go.mod);
   2. list that repo's published security advisories (public REST API);
   3. keep the ones whose affected range covers your version;
   4. ask OSV.dev, with the same package and version a scanner would send,
@@ -64,7 +65,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.9.4"
+__version__ = "0.9.5"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -584,6 +585,20 @@ GO_VANITY_OWNER_PREFIX = {
 #     yarpc/yarpc-go (a different owner, so it is an exact entry, not a prefix)
 #   go.mongodb.org/mongo-driver -> mongodb/mongo-go-driver (its master module
 #     path is go.mongodb.org/mongo-driver/v2; the /vN is stripped before lookup)
+# New in 0.9.5, each verified from its go.mod `module` line (2026-10-17):
+#   google.golang.org is NOT a prefix host (grpc, protobuf, api and genproto all
+#     live in different repos): google.golang.org/api -> googleapis/
+#     google-api-go-client; google.golang.org/genproto and its common
+#     sub-modules .../googleapis/{api,rpc} -> googleapis/go-genproto
+#   cloud.google.com/go -> googleapis/google-cloud-go (the root client module;
+#     its many sub-modules live in the same monorepo but are left unmapped
+#     unless individually verified, so no path is guessed)
+#   go.opentelemetry.io is NOT a prefix host (contrib and collector live in
+#     other repos): go.opentelemetry.io/otel and its {trace,metric,sdk}
+#     sub-modules -> open-telemetry/opentelemetry-go
+#   go.etcd.io is NOT a prefix host: go.etcd.io/etcd and its {api,client,server,
+#     pkg} sub-modules (each a /vN module, stripped before lookup) ->
+#     etcd-io/etcd, but go.etcd.io/bbolt -> etcd-io/bbolt (a different repo)
 GO_VANITY_REPOS = {
     "code.gitea.io/gitea": "go-gitea/gitea",
     "gitea.dev": "go-gitea/gitea",
@@ -596,11 +611,26 @@ GO_VANITY_REPOS = {
     "gocloud.dev": "google/go-cloud",
     "google.golang.org/grpc": "grpc/grpc-go",
     "google.golang.org/protobuf": "protocolbuffers/protobuf-go",
+    "google.golang.org/api": "googleapis/google-api-go-client",
+    "google.golang.org/genproto": "googleapis/go-genproto",
+    "google.golang.org/genproto/googleapis/api": "googleapis/go-genproto",
+    "google.golang.org/genproto/googleapis/rpc": "googleapis/go-genproto",
+    "cloud.google.com/go": "googleapis/google-cloud-go",
     "go.uber.org/zap": "uber-go/zap",
     "go.uber.org/multierr": "uber-go/multierr",
     "go.uber.org/atomic": "uber-go/atomic",
     "go.uber.org/yarpc": "yarpc/yarpc-go",
     "go.mongodb.org/mongo-driver": "mongodb/mongo-go-driver",
+    "go.opentelemetry.io/otel": "open-telemetry/opentelemetry-go",
+    "go.opentelemetry.io/otel/trace": "open-telemetry/opentelemetry-go",
+    "go.opentelemetry.io/otel/metric": "open-telemetry/opentelemetry-go",
+    "go.opentelemetry.io/otel/sdk": "open-telemetry/opentelemetry-go",
+    "go.etcd.io/etcd": "etcd-io/etcd",
+    "go.etcd.io/etcd/api": "etcd-io/etcd",
+    "go.etcd.io/etcd/client": "etcd-io/etcd",
+    "go.etcd.io/etcd/server": "etcd-io/etcd",
+    "go.etcd.io/etcd/pkg": "etcd-io/etcd",
+    "go.etcd.io/bbolt": "etcd-io/bbolt",
 }
 
 # A gopkg.in package element carries a major-version selector, e.g. "yaml.v3".
@@ -651,9 +681,10 @@ def go_module_repo(module):
     deeper sub-package path) the repo is OWNER/REPO. gopkg.in paths follow
     gopkg.in's documented redirect rule, the Kubernetes vanity hosts k8s.io and
     sigs.k8s.io a prefix rule, and a small map of well-known vanity hosts
-    (Gitea, GORM, gocloud.dev, gRPC, Protobuf, the go.uber.org libraries and the
-    MongoDB Go driver) verified from their go.mod is applied, with a trailing
-    /vN major version stripped before the exact lookup. Other hosts
+    (Gitea, GORM, gocloud.dev, gRPC, Protobuf, the go.uber.org libraries, the
+    MongoDB Go driver, the Google API/genproto and Cloud client modules,
+    OpenTelemetry and etcd) verified from their go.mod is applied, with a
+    trailing /vN major version stripped before the exact lookup. Other hosts
     (golang.org/x/..., gopkg.in without a version, a private host) are not
     mapped, so they are reported as unmapped rather than guessed. No network
     request."""

@@ -1,4 +1,4 @@
-"""Tests for Go vanity-host module mapping in blindspot.py (v0.9.4).
+"""Tests for Go vanity-host module mapping in blindspot.py (v0.9.5).
 
 Before 0.9.2, a Go module whose path was not github.com/OWNER/REPO was always
 reported "unmapped", so its maintainer's GitHub repository security advisories
@@ -6,7 +6,9 @@ were never checked -- even for gopkg.in packages (in almost every Go project)
 and well-known vanity hosts such as Gitea. 0.9.2 added gopkg.in and a small
 map of vanity hosts. 0.9.3 adds the whole Kubernetes ecosystem by prefix and a
 few more exact vanity entries. 0.9.4 adds exact entries for gRPC, Protobuf, the
-go.uber.org libraries and the MongoDB Go driver. These tests pin the behaviour:
+go.uber.org libraries and the MongoDB Go driver. 0.9.5 adds the Google
+API/genproto and Cloud client modules, OpenTelemetry and etcd. These tests pin
+the behaviour:
 
   - gopkg.in follows its own documented redirect rule
     (gopkg.in/pkg.vN -> github.com/go-pkg/pkg; gopkg.in/user/pkg.vN ->
@@ -23,6 +25,12 @@ go.uber.org libraries and the MongoDB Go driver. These tests pin the behaviour:
     -> grpc/grpc-go; google.golang.org/protobuf -> protocolbuffers/protobuf-go;
     go.uber.org/{zap,multierr,atomic} -> uber-go/{...}; go.uber.org/yarpc ->
     yarpc/yarpc-go; go.mongodb.org/mongo-driver -> mongodb/mongo-go-driver;
+    google.golang.org/api -> googleapis/google-api-go-client;
+    google.golang.org/genproto (+ .../googleapis/{api,rpc}) ->
+    googleapis/go-genproto; cloud.google.com/go -> googleapis/google-cloud-go;
+    go.opentelemetry.io/otel (+ /{trace,metric,sdk}) ->
+    open-telemetry/opentelemetry-go; go.etcd.io/etcd (+ /{api,client,server,
+    pkg}) -> etcd-io/etcd; go.etcd.io/bbolt -> etcd-io/bbolt;
   - everything else (golang.org/x/..., private hosts) stays unmapped, so the
     tool never guesses a repo.
 
@@ -231,6 +239,115 @@ class TestGrpcProtobufUberMongoVanity(unittest.TestCase):
         f = report["findings"][0]
         self.assertEqual(f["repo"], "grpc/grpc-go")
         self.assertEqual(f["ghsa_id"], "GHSA-gggg-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
+        self.assertFalse(f["scanner_visible"])
+
+
+class TestGoogleOtelEtcdVanity(unittest.TestCase):
+    """Exact vanity entries added in 0.9.5, each verified from the project's
+    go.mod `module` line on 2026-10-17:
+      google.golang.org/api                       -> googleapis/google-api-go-client
+      google.golang.org/genproto                  -> googleapis/go-genproto
+      google.golang.org/genproto/googleapis/api   -> googleapis/go-genproto
+      google.golang.org/genproto/googleapis/rpc   -> googleapis/go-genproto
+      cloud.google.com/go                         -> googleapis/google-cloud-go
+      go.opentelemetry.io/otel{,/trace,/metric,/sdk} -> open-telemetry/opentelemetry-go
+      go.etcd.io/etcd{,/api,/client,/server,/pkg} -> etcd-io/etcd
+      go.etcd.io/bbolt                            -> etcd-io/bbolt
+    """
+
+    def test_google_api_and_genproto(self):
+        self.assertEqual(bs.go_module_repo("google.golang.org/api"),
+                         "googleapis/google-api-go-client")
+        self.assertEqual(bs.go_module_repo("google.golang.org/genproto"),
+                         "googleapis/go-genproto")
+        self.assertEqual(bs.go_module_repo("google.golang.org/genproto/googleapis/api"),
+                         "googleapis/go-genproto")
+        self.assertEqual(bs.go_module_repo("google.golang.org/genproto/googleapis/rpc"),
+                         "googleapis/go-genproto")
+
+    def test_google_golang_org_is_not_a_prefix(self):
+        # grpc, protobuf, api and genproto all live in DIFFERENT repos, so the
+        # host must never be treated as a prefix; an unverified path stays None.
+        self.assertEqual(bs.go_module_repo("google.golang.org/grpc"), "grpc/grpc-go")
+        self.assertEqual(bs.go_module_repo("google.golang.org/api"),
+                         "googleapis/google-api-go-client")
+        self.assertIsNone(bs.go_module_repo("google.golang.org/somethingelse"))
+
+    def test_cloud_google_com_go(self):
+        self.assertEqual(bs.go_module_repo("cloud.google.com/go"),
+                         "googleapis/google-cloud-go")
+        # A sub-module we did not individually verify is left unmapped, not
+        # guessed (it lives in the same monorepo, but the tool never guesses).
+        self.assertIsNone(bs.go_module_repo("cloud.google.com/go/storage"))
+
+    def test_opentelemetry(self):
+        self.assertEqual(bs.go_module_repo("go.opentelemetry.io/otel"),
+                         "open-telemetry/opentelemetry-go")
+        self.assertEqual(bs.go_module_repo("go.opentelemetry.io/otel/trace"),
+                         "open-telemetry/opentelemetry-go")
+        self.assertEqual(bs.go_module_repo("go.opentelemetry.io/otel/metric"),
+                         "open-telemetry/opentelemetry-go")
+        self.assertEqual(bs.go_module_repo("go.opentelemetry.io/otel/sdk"),
+                         "open-telemetry/opentelemetry-go")
+
+    def test_opentelemetry_is_not_a_prefix(self):
+        # contrib and collector live in other repos, so an unverified
+        # go.opentelemetry.io path is left unmapped.
+        self.assertIsNone(bs.go_module_repo("go.opentelemetry.io/contrib"))
+        self.assertIsNone(bs.go_module_repo("go.opentelemetry.io/collector"))
+
+    def test_etcd_root_and_submodules_with_major_version(self):
+        # Every etcd module is a /vN module (go.etcd.io/etcd/v3,
+        # go.etcd.io/etcd/client/v3, ...); the trailing /vN is stripped before
+        # the exact lookup, so the base path must be the map key.
+        self.assertEqual(bs.go_module_repo("go.etcd.io/etcd/v3"), "etcd-io/etcd")
+        self.assertEqual(bs.go_module_repo("go.etcd.io/etcd/api/v3"), "etcd-io/etcd")
+        self.assertEqual(bs.go_module_repo("go.etcd.io/etcd/client/v3"), "etcd-io/etcd")
+        self.assertEqual(bs.go_module_repo("go.etcd.io/etcd/client/v2"), "etcd-io/etcd")
+        self.assertEqual(bs.go_module_repo("go.etcd.io/etcd/server/v3"), "etcd-io/etcd")
+        self.assertEqual(bs.go_module_repo("go.etcd.io/etcd/pkg/v3"), "etcd-io/etcd")
+
+    def test_etcd_bbolt_is_a_different_repo(self):
+        # go.etcd.io is NOT a prefix host: bbolt lives at etcd-io/bbolt, not
+        # etcd-io/etcd, so it must come from its own exact entry.
+        self.assertEqual(bs.go_module_repo("go.etcd.io/bbolt"), "etcd-io/bbolt")
+
+    def test_etcd_unverified_path_not_guessed(self):
+        self.assertIsNone(bs.go_module_repo("go.etcd.io/somethingelse"))
+
+    def test_otel_blind_spot_end_to_end(self):
+        # A go.opentelemetry.io/otel dependency now maps to
+        # open-telemetry/opentelemetry-go, so a maintainer advisory OSV does not
+        # report is surfaced (fully offline).
+        advisories = {
+            "open-telemetry/opentelemetry-go": [{
+                "ghsa_id": "GHSA-oooo-0000-0000",
+                "cve_id": "CVE-2026-33333",
+                "severity": "high",
+                "summary": "example go.opentelemetry.io/otel advisory",
+                "html_url": "https://github.com/open-telemetry/opentelemetry-go/security/advisories/GHSA-oooo-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go", "name": "go.opentelemetry.io/otel"},
+                    "vulnerable_version_range": "< 1.28.0",
+                    "patched_versions": "1.28.0",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "go.opentelemetry.io/otel", "v1.27.0")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "open-telemetry/opentelemetry-go")
+        self.assertEqual(f["ghsa_id"], "GHSA-oooo-0000-0000")
         self.assertEqual(f["affects_your_version"], "yes")
         self.assertFalse(f["scanner_visible"])
 
