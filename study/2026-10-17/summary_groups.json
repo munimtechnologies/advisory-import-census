@@ -1,0 +1,812 @@
+{
+  "snapshot_utc": "2026-10-17T00:56:37+00:00",
+  "package_query": true,
+  "canary": "GHSA-39mp-8hj3-5c49",
+  "min_age_days": 14,
+  "period_split": "2026-05-01",
+  "rows": 2039,
+  "errors": 0,
+  "repos": {
+    "FlowiseAI/Flowise": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 130
+    },
+    "langgenius/dify": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 21
+    },
+    "langflow-ai/langflow": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 37
+    },
+    "vllm-project/vllm": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 104
+    },
+    "comfyanonymous/ComfyUI": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 4
+    },
+    "open-webui/open-webui": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 165
+    },
+    "BerriAI/litellm": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 17
+    },
+    "sgl-project/sglang": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 0
+    },
+    "invoke-ai/InvokeAI": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 0
+    },
+    "oobabooga/text-generation-webui": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 12
+    },
+    "mudler/LocalAI": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 0
+    },
+    "infiniflow/ragflow": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 8
+    },
+    "Mintplex-Labs/anything-llm": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 25
+    },
+    "danny-avila/LibreChat": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 29
+    },
+    "h2oai/h2ogpt": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 0
+    },
+    "mlflow/mlflow": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 10
+    },
+    "ray-project/ray": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 4
+    },
+    "gradio-app/gradio": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 29
+    },
+    "run-llama/llama_index": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 0
+    },
+    "langchain-ai/langchain": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 9
+    },
+    "mem0ai/mem0": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 0
+    },
+    "zylon-ai/private-gpt": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 0
+    },
+    "deepset-ai/haystack": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 1
+    },
+    "microsoft/autogen": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 0
+    },
+    "crewAIInc/crewAI": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 0
+    },
+    "xorbitsai/inference": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 3
+    },
+    "huggingface/transformers": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 0
+    },
+    "feast-dev/feast": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 1
+    },
+    "bentoml/BentoML": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 11
+    },
+    "zenml-io/zenml": {
+      "group": "ai",
+      "status": "ok",
+      "advisories": 0
+    },
+    "mastodon/mastodon": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 57
+    },
+    "discourse/discourse": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 297
+    },
+    "go-gitea/gitea": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 143
+    },
+    "TryGhost/Ghost": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 80
+    },
+    "directus/directus": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 78
+    },
+    "strapi/strapi": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 21
+    },
+    "nocodb/nocodb": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 48
+    },
+    "louislam/uptime-kuma": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 19
+    },
+    "jellyfin/jellyfin": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 23
+    },
+    "home-assistant/core": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 25
+    },
+    "filebrowser/filebrowser": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 62
+    },
+    "zulip/zulip": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 41
+    },
+    "outline/outline": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 26
+    },
+    "metabase/metabase": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 44
+    },
+    "grafana/grafana": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 28
+    },
+    "vercel/next.js": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 72
+    },
+    "vitejs/vite": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 22
+    },
+    "sveltejs/kit": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 22
+    },
+    "nuxt/nuxt": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 31
+    },
+    "expressjs/express": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 3
+    },
+    "aio-libs/aiohttp": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 55
+    },
+    "urllib3/urllib3": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 15
+    },
+    "pallets/werkzeug": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 10
+    },
+    "pallets/jinja": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 5
+    },
+    "encode/starlette": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 10
+    },
+    "tornadoweb/tornado": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 20
+    },
+    "wagtail/wagtail": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 30
+    },
+    "traefik/traefik": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 88
+    },
+    "caddyserver/caddy": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 18
+    },
+    "rails/rails": {
+      "group": "control",
+      "status": "ok",
+      "advisories": 26
+    }
+  },
+  "groups": {
+    "ai": {
+      "advisories": 620,
+      "eligible": 596,
+      "repos_with_eligible_advisories": 19,
+      "scanner_blind": {
+        "k": 207,
+        "n": 596,
+        "pct": 34.7,
+        "ci95": [
+          0.3102,
+          0.3864
+        ]
+      },
+      "own_id_not_in_osv": {
+        "k": 173,
+        "n": 596,
+        "pct": 29.0,
+        "ci95": [
+          0.2553,
+          0.328
+        ]
+      },
+      "classes": {
+        "scanner_visible": 389,
+        "package_not_in_osv": 102,
+        "no_package": 105
+      },
+      "by_period": {
+        "before_2026_05": {
+          "scanner_blind": {
+            "k": 101,
+            "n": 251,
+            "pct": 40.2,
+            "ci95": [
+              0.3436,
+              0.4641
+            ]
+          },
+          "own_id_not_in_osv": {
+            "k": 71,
+            "n": 251,
+            "pct": 28.3,
+            "ci95": [
+              0.2307,
+              0.3415
+            ]
+          }
+        },
+        "from_2026_05": {
+          "scanner_blind": {
+            "k": 106,
+            "n": 345,
+            "pct": 30.7,
+            "ci95": [
+              0.2609,
+              0.3578
+            ]
+          },
+          "own_id_not_in_osv": {
+            "k": 102,
+            "n": 345,
+            "pct": 29.6,
+            "ci95": [
+              0.25,
+              0.3458
+            ]
+          }
+        }
+      },
+      "repo_median_blind_pct": 25.4,
+      "repos_all_blind": [
+        "Mintplex-Labs/anything-llm",
+        "comfyanonymous/ComfyUI",
+        "danny-avila/LibreChat",
+        "feast-dev/feast",
+        "infiniflow/ragflow",
+        "langgenius/dify",
+        "oobabooga/text-generation-webui"
+      ],
+      "repos_none_blind": [
+        "deepset-ai/haystack",
+        "ray-project/ray",
+        "xorbitsai/inference"
+      ],
+      "blind_by_severity": {
+        "high": 69,
+        "medium": 88,
+        "critical": 37,
+        "low": 13
+      },
+      "per_repo": {
+        "BerriAI/litellm": {
+          "eligible": 17,
+          "blind": 3,
+          "own_id_not_in_osv": 3
+        },
+        "FlowiseAI/Flowise": {
+          "eligible": 130,
+          "blind": 33,
+          "own_id_not_in_osv": 28
+        },
+        "Mintplex-Labs/anything-llm": {
+          "eligible": 25,
+          "blind": 25,
+          "own_id_not_in_osv": 25
+        },
+        "bentoml/BentoML": {
+          "eligible": 11,
+          "blind": 1,
+          "own_id_not_in_osv": 0
+        },
+        "comfyanonymous/ComfyUI": {
+          "eligible": 4,
+          "blind": 4,
+          "own_id_not_in_osv": 4
+        },
+        "danny-avila/LibreChat": {
+          "eligible": 29,
+          "blind": 29,
+          "own_id_not_in_osv": 29
+        },
+        "deepset-ai/haystack": {
+          "eligible": 1,
+          "blind": 0,
+          "own_id_not_in_osv": 0
+        },
+        "feast-dev/feast": {
+          "eligible": 1,
+          "blind": 1,
+          "own_id_not_in_osv": 1
+        },
+        "gradio-app/gradio": {
+          "eligible": 29,
+          "blind": 3,
+          "own_id_not_in_osv": 1
+        },
+        "infiniflow/ragflow": {
+          "eligible": 7,
+          "blind": 7,
+          "own_id_not_in_osv": 7
+        },
+        "langchain-ai/langchain": {
+          "eligible": 9,
+          "blind": 2,
+          "own_id_not_in_osv": 0
+        },
+        "langflow-ai/langflow": {
+          "eligible": 37,
+          "blind": 14,
+          "own_id_not_in_osv": 4
+        },
+        "langgenius/dify": {
+          "eligible": 21,
+          "blind": 21,
+          "own_id_not_in_osv": 21
+        },
+        "mlflow/mlflow": {
+          "eligible": 7,
+          "blind": 2,
+          "own_id_not_in_osv": 0
+        },
+        "oobabooga/text-generation-webui": {
+          "eligible": 12,
+          "blind": 12,
+          "own_id_not_in_osv": 12
+        },
+        "open-webui/open-webui": {
+          "eligible": 165,
+          "blind": 33,
+          "own_id_not_in_osv": 21
+        },
+        "ray-project/ray": {
+          "eligible": 4,
+          "blind": 0,
+          "own_id_not_in_osv": 0
+        },
+        "vllm-project/vllm": {
+          "eligible": 86,
+          "blind": 17,
+          "own_id_not_in_osv": 17
+        },
+        "xorbitsai/inference": {
+          "eligible": 1,
+          "blind": 0,
+          "own_id_not_in_osv": 0
+        }
+      }
+    },
+    "control": {
+      "advisories": 1419,
+      "eligible": 1352,
+      "repos_with_eligible_advisories": 30,
+      "scanner_blind": {
+        "k": 768,
+        "n": 1352,
+        "pct": 56.8,
+        "ci95": [
+          0.5415,
+          0.5942
+        ]
+      },
+      "own_id_not_in_osv": {
+        "k": 627,
+        "n": 1352,
+        "pct": 46.4,
+        "ci95": [
+          0.4373,
+          0.4904
+        ]
+      },
+      "classes": {
+        "scanner_visible": 584,
+        "package_not_in_osv": 187,
+        "no_package": 581
+      },
+      "by_period": {
+        "before_2026_05": {
+          "scanner_blind": {
+            "k": 504,
+            "n": 820,
+            "pct": 61.5,
+            "ci95": [
+              0.5809,
+              0.6473
+            ]
+          },
+          "own_id_not_in_osv": {
+            "k": 397,
+            "n": 820,
+            "pct": 48.4,
+            "ci95": [
+              0.4501,
+              0.5183
+            ]
+          }
+        },
+        "from_2026_05": {
+          "scanner_blind": {
+            "k": 264,
+            "n": 532,
+            "pct": 49.6,
+            "ci95": [
+              0.4539,
+              0.5386
+            ]
+          },
+          "own_id_not_in_osv": {
+            "k": 230,
+            "n": 532,
+            "pct": 43.2,
+            "ci95": [
+              0.3909,
+              0.4748
+            ]
+          }
+        }
+      },
+      "repo_median_blind_pct": 22.7,
+      "repos_all_blind": [
+        "discourse/discourse",
+        "grafana/grafana",
+        "jellyfin/jellyfin",
+        "mastodon/mastodon",
+        "metabase/metabase",
+        "outline/outline",
+        "zulip/zulip"
+      ],
+      "repos_none_blind": [
+        "aio-libs/aiohttp",
+        "encode/starlette",
+        "expressjs/express",
+        "nuxt/nuxt",
+        "pallets/jinja",
+        "pallets/werkzeug",
+        "strapi/strapi",
+        "sveltejs/kit",
+        "urllib3/urllib3",
+        "vitejs/vite"
+      ],
+      "blind_by_severity": {
+        "medium": 406,
+        "high": 216,
+        "low": 108,
+        "critical": 38
+      },
+      "per_repo": {
+        "TryGhost/Ghost": {
+          "eligible": 80,
+          "blind": 24,
+          "own_id_not_in_osv": 24
+        },
+        "aio-libs/aiohttp": {
+          "eligible": 47,
+          "blind": 0,
+          "own_id_not_in_osv": 0
+        },
+        "caddyserver/caddy": {
+          "eligible": 17,
+          "blind": 9,
+          "own_id_not_in_osv": 1
+        },
+        "directus/directus": {
+          "eligible": 78,
+          "blind": 24,
+          "own_id_not_in_osv": 19
+        },
+        "discourse/discourse": {
+          "eligible": 297,
+          "blind": 297,
+          "own_id_not_in_osv": 297
+        },
+        "encode/starlette": {
+          "eligible": 10,
+          "blind": 0,
+          "own_id_not_in_osv": 0
+        },
+        "expressjs/express": {
+          "eligible": 3,
+          "blind": 0,
+          "own_id_not_in_osv": 0
+        },
+        "filebrowser/filebrowser": {
+          "eligible": 62,
+          "blind": 19,
+          "own_id_not_in_osv": 19
+        },
+        "go-gitea/gitea": {
+          "eligible": 114,
+          "blind": 47,
+          "own_id_not_in_osv": 41
+        },
+        "grafana/grafana": {
+          "eligible": 28,
+          "blind": 28,
+          "own_id_not_in_osv": 7
+        },
+        "home-assistant/core": {
+          "eligible": 25,
+          "blind": 24,
+          "own_id_not_in_osv": 16
+        },
+        "jellyfin/jellyfin": {
+          "eligible": 23,
+          "blind": 23,
+          "own_id_not_in_osv": 22
+        },
+        "louislam/uptime-kuma": {
+          "eligible": 18,
+          "blind": 17,
+          "own_id_not_in_osv": 7
+        },
+        "mastodon/mastodon": {
+          "eligible": 57,
+          "blind": 57,
+          "own_id_not_in_osv": 57
+        },
+        "metabase/metabase": {
+          "eligible": 44,
+          "blind": 44,
+          "own_id_not_in_osv": 44
+        },
+        "nocodb/nocodb": {
+          "eligible": 48,
+          "blind": 4,
+          "own_id_not_in_osv": 0
+        },
+        "nuxt/nuxt": {
+          "eligible": 26,
+          "blind": 0,
+          "own_id_not_in_osv": 0
+        },
+        "outline/outline": {
+          "eligible": 26,
+          "blind": 26,
+          "own_id_not_in_osv": 26
+        },
+        "pallets/jinja": {
+          "eligible": 5,
+          "blind": 0,
+          "own_id_not_in_osv": 0
+        },
+        "pallets/werkzeug": {
+          "eligible": 10,
+          "blind": 0,
+          "own_id_not_in_osv": 0
+        },
+        "rails/rails": {
+          "eligible": 26,
+          "blind": 4,
+          "own_id_not_in_osv": 0
+        },
+        "strapi/strapi": {
+          "eligible": 21,
+          "blind": 0,
+          "own_id_not_in_osv": 0
+        },
+        "sveltejs/kit": {
+          "eligible": 18,
+          "blind": 0,
+          "own_id_not_in_osv": 0
+        },
+        "tornadoweb/tornado": {
+          "eligible": 20,
+          "blind": 2,
+          "own_id_not_in_osv": 0
+        },
+        "traefik/traefik": {
+          "eligible": 75,
+          "blind": 71,
+          "own_id_not_in_osv": 5
+        },
+        "urllib3/urllib3": {
+          "eligible": 15,
+          "blind": 0,
+          "own_id_not_in_osv": 0
+        },
+        "vercel/next.js": {
+          "eligible": 69,
+          "blind": 4,
+          "own_id_not_in_osv": 1
+        },
+        "vitejs/vite": {
+          "eligible": 19,
+          "blind": 0,
+          "own_id_not_in_osv": 0
+        },
+        "wagtail/wagtail": {
+          "eligible": 30,
+          "blind": 3,
+          "own_id_not_in_osv": 0
+        },
+        "zulip/zulip": {
+          "eligible": 41,
+          "blind": 41,
+          "own_id_not_in_osv": 41
+        }
+      }
+    }
+  },
+  "comparison": {
+    "scanner_blind": {
+      "difference_pct_points": -22.1,
+      "p_two_sided": 0.3018,
+      "permutations": 10000,
+      "seed": 20261015,
+      "unit": "repository",
+      "repositories": 49
+    },
+    "own_id_not_in_osv": {
+      "difference_pct_points": -17.3,
+      "p_two_sided": 0.5522,
+      "permutations": 10000,
+      "seed": 20261015,
+      "unit": "repository",
+      "repositories": 49
+    }
+  },
+  "comparison_by_period": {
+    "before_2026_05": {
+      "scanner_blind": {
+        "difference_pct_points": -21.2,
+        "p_two_sided": 0.4989,
+        "permutations": 10000,
+        "seed": 20261015,
+        "unit": "repository",
+        "repositories": 46
+      },
+      "own_id_not_in_osv": {
+        "difference_pct_points": -20.1,
+        "p_two_sided": 0.6839,
+        "permutations": 10000,
+        "seed": 20261015,
+        "unit": "repository",
+        "repositories": 46
+      }
+    },
+    "from_2026_05": {
+      "scanner_blind": {
+        "difference_pct_points": -18.9,
+        "p_two_sided": 0.2563,
+        "permutations": 10000,
+        "seed": 20261015,
+        "unit": "repository",
+        "repositories": 42
+      },
+      "own_id_not_in_osv": {
+        "difference_pct_points": -13.7,
+        "p_two_sided": 0.3983,
+        "permutations": 10000,
+        "seed": 20261015,
+        "unit": "repository",
+        "repositories": 42
+      }
+    }
+  },
+  "requests": {
+    "github": 67,
+    "osv": 2097,
+    "osv_packages_queried": 56
+  }
+}
