@@ -16,6 +16,10 @@ got there. This tool checks YOUR dependencies for that gap:
      whether it reports that advisory (by GHSA ID or its CVE alias).
 
 An advisory that affects you but that OSV does not report is a blind spot.
+Maintainers type the advisory's package name by hand; when it is free text
+that no package can have (Go "Traefik" rather than
+github.com/traefik/traefik/v3), the advisory is still reported for a
+dependency from that repo, marked as naming its package only in free text.
 
 Usage:
   python blindspot.py -r requirements.txt
@@ -56,7 +60,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.8.0"
+__version__ = "0.9.1"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -99,6 +103,28 @@ def normalize_name(ecosystem, name):
     if ecosystem in ("npm", "rubygems", "rust", "composer", "nuget", "pub", "erlang"):
         return name.lower()
     return name
+
+
+# A PEP 508 project name; anything else in a pip advisory's package field is free text.
+PIP_NAME_RE = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$")
+
+
+def free_text_package(ecosystem, name):
+    """True if an advisory's package name is free text that no package in
+    `ecosystem` can have: Go "Traefik" or "gitea.dev" (a Go module path has a
+    '/'), pip "Home Assistant" or "bentoml/BentoML" (not a PEP 508 name), or
+    any name with a space. Maintainers type this field by hand, and matching
+    it exactly would silently drop the advisory."""
+    name = (name or "").strip()
+    if not name:
+        return False
+    if re.search(r"\s", name):
+        return True
+    if ecosystem == "go":
+        return "/" not in name
+    if ecosystem == "pip":
+        return not PIP_NAME_RE.match(name)
+    return False
 
 
 def version_key(v):
@@ -643,7 +669,10 @@ def check(deps, resolve_repo, get_advisories, package_ids, id_lookup, ignore=Non
     findings are marked "ignored" and left out of blind_spots, so a known gap
     does not fail --fail-on-blind. If get_advisories raises RateLimited, that
     repo and every repo not yet listed are recorded in unchecked_repos
-    (without further GitHub requests) instead of failing the whole run.
+    (without further GitHub requests) instead of failing the whole run. An
+    advisory that names the dependency's ecosystem but gives its package in
+    free text (see free_text_package) is kept, with package_named False,
+    unless another of its entries names the package exactly.
     Returns a report dict."""
     ignore_ids = {i.upper() for i in (ignore or [])}
     findings, unmapped, repos_seen, unchecked = [], [], {}, []
@@ -665,17 +694,24 @@ def check(deps, resolve_repo, get_advisories, package_ids, id_lookup, ignore=Non
         want = normalize_name(eco, name)
         osv_ids = None
         for adv in repos_seen[repo] or []:
-            matches = []
+            matches, free_text = [], []
             vulns = adv.get("vulnerabilities") or []
             if eco == "repo" and not vulns:
                 vulns = [{}]  # an app advisory naming no package still applies
             for vuln in vulns:
                 pkg = vuln.get("package") or {}
+                pkg_eco = (pkg.get("ecosystem") or "").lower()
                 if eco != "repo" and (
-                        (pkg.get("ecosystem") or "").lower() != eco
-                        or normalize_name(eco, pkg.get("name") or "") != want):
+                        pkg_eco != eco or normalize_name(eco, pkg.get("name") or "") != want):
+                    if pkg_eco == eco and free_text_package(eco, pkg.get("name")):
+                        free_text.append(vuln)
                     continue
                 matches.append(vuln)
+            # The maintainers named the package in free text ("Traefik"), so it
+            # can't be matched by name; the dependency comes from their repo,
+            # so report the advisory, marked, rather than drop it.
+            named = bool(matches)
+            matches = matches or free_text
             if not matches:
                 continue
             if version:
@@ -708,6 +744,7 @@ def check(deps, resolve_repo, get_advisories, package_ids, id_lookup, ignore=Non
                                               for v in matches),
                 "patched": "; ".join(v.get("patched_versions") or "?" for v in matches),
                 "affects_your_version": "yes" if affected else "unknown",
+                "package_named": named,
                 "scanner_visible": visible,
                 "ignored": ignored,
                 "url": adv.get("html_url") or "",
@@ -754,10 +791,12 @@ def render_text(report):
         lines.append("%s (%d)" % (title, len(items)))
         for f in items:
             ver = f["version"] or "any version"
-            lines.append("  %-8s %s %s  %s %s  affected: %s  fixed: %s%s" % (
+            lines.append("  %-8s %s %s  %s %s  affected: %s  fixed: %s%s%s" % (
                 f["severity"] or "?", f["package"], ver, f["ghsa_id"], f["cve_id"],
                 f["vulnerable_range"], f["patched"],
-                "" if f["affects_your_version"] == "yes" else "  (version not pinned or range unclear)"))
+                "" if f["affects_your_version"] == "yes" else "  (version not pinned or range unclear)",
+                "" if f.get("package_named", True)
+                else "  (the advisory names its package only in free text)"))
             lines.append("           %s" % f["url"])
         lines.append("")
     if report["unmapped"]:
@@ -872,13 +911,16 @@ def render_sarif(report, locate):
             where = "OSV.dev does not report it for this package and version"
         message = ("%s %s is affected by %s (%s severity), published by the maintainers of "
                    "%s, but %s, so OSV-based scanners (%s) cannot alert on it. Affected: %s; "
-                   "%s.%s" % (
+                   "%s.%s%s" % (
                        f.get("package"), version or "(any version)", ident, sev or "unknown",
                        f.get("repo"), where, SCANNERS, f.get("vulnerable_range") or "?",
                        _fixed_text(f.get("patched")),
                        "" if f.get("affects_your_version") == "yes"
                        else " The version is not pinned or the range is unclear, so check "
-                            "which version you install."))
+                            "which version you install.",
+                       "" if f.get("package_named", True)
+                       else " The advisory names its package only in free text, so check "
+                            "that it means this one."))
         key = "|".join([rule_id, f.get("ecosystem") or "",
                         normalize_name(f.get("ecosystem") or "", f.get("package") or ""),
                         version or "", uri])
