@@ -447,7 +447,10 @@ class TestGo(unittest.TestCase):
         self.assertEqual(bs.go_module_repo("github.com/aws/aws-sdk-go-v2/service/s3"),
                          "aws/aws-sdk-go-v2")
         self.assertEqual(bs.go_module_repo("github.com/foo/bar/v2"), "foo/bar")
-        self.assertIsNone(bs.go_module_repo("golang.org/x/text"))
+        # golang.org/x is a vanity prefix (added in 0.9.6): x/<repo> -> golang/<repo>.
+        self.assertEqual(bs.go_module_repo("golang.org/x/text"), "golang/text")
+        # A non-github, non-vanity host is still unmapped, never guessed.
+        self.assertIsNone(bs.go_module_repo("example.com/private/thing"))
         self.assertIsNone(bs.go_module_repo("github.com/sponsors/someone"))
         self.assertIsNone(bs.go_module_repo(""))
 
@@ -479,11 +482,13 @@ class TestGo(unittest.TestCase):
         self.assertEqual(f["affects_your_version"], "yes")
 
     def test_go_module_unmapped_non_github(self):
+        # A module on a host the tool does not know (not github.com, not a
+        # verified vanity host) is left unmapped rather than guessed.
         resolve = lambda eco, name: bs.go_module_repo(name)
-        report = bs.check([("go", "golang.org/x/text", "v0.14.0")],
+        report = bs.check([("go", "example.com/private/thing", "v0.14.0")],
                           resolve, lambda r: [], lambda e, n, v: set(), lambda i: set())
         self.assertEqual(report["mapped_to_repo"], 0)
-        self.assertEqual(report["unmapped"][0]["package"], "golang.org/x/text")
+        self.assertEqual(report["unmapped"][0]["package"], "example.com/private/thing")
 
 
 class TestRepoUrls(unittest.TestCase):

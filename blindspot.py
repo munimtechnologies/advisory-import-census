@@ -11,10 +11,12 @@ got there. This tool checks YOUR dependencies for that gap:
   1. map each package to its GitHub repo (registry metadata, a small built-in
      map, --map name=owner/repo, or, for a Go module, its path -- github.com
      modules, gopkg.in by its documented redirect rule, the Kubernetes vanity
-     hosts k8s.io and sigs.k8s.io by prefix, and a small map of known vanity
-     modules such as Gitea, GORM, gocloud.dev, gRPC, Protobuf, the go.uber.org
-     libraries, the MongoDB Go driver, the Google API/genproto and Cloud
-     client modules, OpenTelemetry and etcd, each verified from its go.mod);
+     hosts k8s.io and sigs.k8s.io and the Go sub-repositories under golang.org/x
+     by prefix, and a small map of known vanity modules such as Gitea, GORM,
+     gocloud.dev, gRPC, Protobuf, the go.uber.org libraries, the MongoDB Go
+     driver, the Google API/genproto/Cloud/App Engine client modules,
+     OpenTelemetry (core, collector and the net/http contrib) and etcd, each
+     verified from its go.mod);
   2. list that repo's published security advisories (public REST API);
   3. keep the ones whose affected range covers your version;
   4. ask OSV.dev, with the same package and version a scanner would send,
@@ -65,7 +67,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.9.5"
+__version__ = "0.9.6"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -555,26 +557,35 @@ def repo_from_urls(urls):
     return None
 
 
-# Vanity hosts whose <host>/<repo> import path maps to one fixed GitHub owner
-# by prefix substitution: the repo is the first path element after the host,
+# Vanity hosts whose <prefix>/<repo> import path maps to one fixed GitHub owner
+# by prefix substitution: the repo is the first path element after the prefix,
 # and any /vN major version or deeper sub-package path that follows does not
-# change it. Verified from each project's go.mod `module` line (2026-10-17):
+# change it. A prefix may be one path element (k8s.io) or two (golang.org/x).
+# Verified from each project's go.mod `module` line (2026-10-17):
 #   k8s.io/api, k8s.io/apimachinery, k8s.io/client-go, k8s.io/klog/v2,
 #     k8s.io/apiserver          -> kubernetes/<repo>
 #   sigs.k8s.io/yaml, sigs.k8s.io/controller-runtime,
 #     sigs.k8s.io/structured-merge-diff/v7 -> kubernetes-sigs/<repo>
+#   golang.org/x/<repo> (the Go project's own sub-repositories: crypto, net,
+#     sys, text, oauth2, tools, sync, ...) -> golang/<repo> (new in 0.9.6; a
+#     two-element prefix, so the repo is the element after golang.org/x).
+#     Verified from the go.mod `module` line of golang/{net,crypto,sys,text,
+#     oauth2} (each reads `module golang.org/x/<repo>`), 2026-10-17. Only the
+#     golang.org/x namespace is treated as a prefix; other golang.org/* paths
+#     stay unmapped.
 # NB go.uber.org is NOT a prefix host: most of its libraries live under
 # github.com/uber-go/<repo>, but go.uber.org/yarpc lives at yarpc/yarpc-go
 # (verified 2026-10-17), so its modules are mapped by exact entries below.
 GO_VANITY_OWNER_PREFIX = {
     "k8s.io": "kubernetes",
     "sigs.k8s.io": "kubernetes-sigs",
+    "golang.org/x": "golang",
 }
 
 # Well-known Go vanity module hosts whose code lives on GitHub. gopkg.in follows
 # a documented redirect rule (handled by gopkg_in_repo) and the Kubernetes hosts
-# a prefix rule (GO_VANITY_OWNER_PREFIX); these exact entries are verified from
-# each project's go.mod `module` line (checked 2026-10-17):
+# and golang.org/x a prefix rule (GO_VANITY_OWNER_PREFIX); these exact entries
+# are verified from each project's go.mod `module` line (checked 2026-10-17):
 #   code.gitea.io/gitea (releases) and gitea.dev (current main) -> go-gitea/gitea
 #   gorm.io/gorm -> go-gorm/gorm; gorm.io/driver/{mysql,postgres,sqlite,
 #     sqlserver} -> go-gorm/{mysql,...}; gorm.io/datatypes -> go-gorm/datatypes
@@ -585,7 +596,7 @@ GO_VANITY_OWNER_PREFIX = {
 #     yarpc/yarpc-go (a different owner, so it is an exact entry, not a prefix)
 #   go.mongodb.org/mongo-driver -> mongodb/mongo-go-driver (its master module
 #     path is go.mongodb.org/mongo-driver/v2; the /vN is stripped before lookup)
-# New in 0.9.5, each verified from its go.mod `module` line (2026-10-17):
+# From 0.9.5, each verified from its go.mod `module` line (2026-10-17):
 #   google.golang.org is NOT a prefix host (grpc, protobuf, api and genproto all
 #     live in different repos): google.golang.org/api -> googleapis/
 #     google-api-go-client; google.golang.org/genproto and its common
@@ -599,6 +610,14 @@ GO_VANITY_OWNER_PREFIX = {
 #   go.etcd.io is NOT a prefix host: go.etcd.io/etcd and its {api,client,server,
 #     pkg} sub-modules (each a /vN module, stripped before lookup) ->
 #     etcd-io/etcd, but go.etcd.io/bbolt -> etcd-io/bbolt (a different repo)
+# New in 0.9.6, each verified from its go.mod `module` line (2026-10-17):
+#   google.golang.org/appengine -> golang/appengine (its v2 module path is
+#     google.golang.org/appengine/v2; the /vN is stripped before lookup)
+#   go.opentelemetry.io/collector -> open-telemetry/opentelemetry-collector
+#   go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp ->
+#     open-telemetry/opentelemetry-go-contrib (the most common contrib
+#     instrumentation module; other contrib sub-modules stay unmapped unless
+#     individually verified, so no path is guessed)
 GO_VANITY_REPOS = {
     "code.gitea.io/gitea": "go-gitea/gitea",
     "gitea.dev": "go-gitea/gitea",
@@ -615,6 +634,7 @@ GO_VANITY_REPOS = {
     "google.golang.org/genproto": "googleapis/go-genproto",
     "google.golang.org/genproto/googleapis/api": "googleapis/go-genproto",
     "google.golang.org/genproto/googleapis/rpc": "googleapis/go-genproto",
+    "google.golang.org/appengine": "golang/appengine",
     "cloud.google.com/go": "googleapis/google-cloud-go",
     "go.uber.org/zap": "uber-go/zap",
     "go.uber.org/multierr": "uber-go/multierr",
@@ -625,6 +645,9 @@ GO_VANITY_REPOS = {
     "go.opentelemetry.io/otel/trace": "open-telemetry/opentelemetry-go",
     "go.opentelemetry.io/otel/metric": "open-telemetry/opentelemetry-go",
     "go.opentelemetry.io/otel/sdk": "open-telemetry/opentelemetry-go",
+    "go.opentelemetry.io/collector": "open-telemetry/opentelemetry-collector",
+    "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp":
+        "open-telemetry/opentelemetry-go-contrib",
     "go.etcd.io/etcd": "etcd-io/etcd",
     "go.etcd.io/etcd/api": "etcd-io/etcd",
     "go.etcd.io/etcd/client": "etcd-io/etcd",
@@ -658,20 +681,22 @@ def gopkg_in_repo(module):
 
 def go_vanity_prefix_repo(module):
     """The GitHub owner/repo for a Go module on a vanity host that maps every
-    <host>/<repo> path to one fixed GitHub owner by prefix substitution (the
-    Kubernetes hosts in GO_VANITY_OWNER_PREFIX: k8s.io -> kubernetes,
-    sigs.k8s.io -> kubernetes-sigs). The repo is the first path element after
-    the host; a /vN major version or a deeper sub-package path follows it and
-    does not change the repo (k8s.io/klog/v2 -> kubernetes/klog,
-    k8s.io/client-go/kubernetes -> kubernetes/client-go). None for any other
+    <prefix>/<repo> path to one fixed GitHub owner by prefix substitution (the
+    entries in GO_VANITY_OWNER_PREFIX: k8s.io -> kubernetes, sigs.k8s.io ->
+    kubernetes-sigs, golang.org/x -> golang). A prefix may be one path element
+    (k8s.io) or two (golang.org/x); the longest matching prefix wins. The repo
+    is the first path element after the prefix; a /vN major version or a deeper
+    sub-package path follows it and does not change the repo (k8s.io/klog/v2 ->
+    kubernetes/klog, golang.org/x/net/http2 -> golang/net). None for any other
     host. No network request."""
     parts = (module or "").split("/")
-    if len(parts) < 2:
-        return None
-    owner = GO_VANITY_OWNER_PREFIX.get(parts[0].lower())
-    repo = parts[1]
-    if owner and repo and not re.match(r"^v\d+$", repo):
-        return "%s/%s" % (owner, repo)
+    for n in (2, 1):          # try the longer (two-element) prefix first
+        if len(parts) <= n:
+            continue
+        owner = GO_VANITY_OWNER_PREFIX.get("/".join(parts[:n]).lower())
+        repo = parts[n]
+        if owner and repo and not re.match(r"^v\d+$", repo):
+            return "%s/%s" % (owner, repo)
     return None
 
 
@@ -680,14 +705,14 @@ def go_module_repo(module):
     github.com/OWNER/REPO (optionally with a /vN major-version suffix or a
     deeper sub-package path) the repo is OWNER/REPO. gopkg.in paths follow
     gopkg.in's documented redirect rule, the Kubernetes vanity hosts k8s.io and
-    sigs.k8s.io a prefix rule, and a small map of well-known vanity hosts
-    (Gitea, GORM, gocloud.dev, gRPC, Protobuf, the go.uber.org libraries, the
-    MongoDB Go driver, the Google API/genproto and Cloud client modules,
-    OpenTelemetry and etcd) verified from their go.mod is applied, with a
-    trailing /vN major version stripped before the exact lookup. Other hosts
-    (golang.org/x/..., gopkg.in without a version, a private host) are not
-    mapped, so they are reported as unmapped rather than guessed. No network
-    request."""
+    sigs.k8s.io and the golang.org/x sub-repositories a prefix rule, and a small
+    map of well-known vanity hosts (Gitea, GORM, gocloud.dev, gRPC, Protobuf,
+    the go.uber.org libraries, the MongoDB Go driver, the Google
+    API/genproto/Cloud/App Engine client modules, OpenTelemetry and etcd)
+    verified from their go.mod is applied, with a trailing /vN major version
+    stripped before the exact lookup. Other hosts (other golang.org paths,
+    gopkg.in without a version, a private host) are not mapped, so they are
+    reported as unmapped rather than guessed. No network request."""
     module = (module or "").strip()
     parts = module.split("/")
     if len(parts) >= 3 and parts[0].lower() == "github.com":

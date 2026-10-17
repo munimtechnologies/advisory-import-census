@@ -1,4 +1,4 @@
-"""Tests for Go vanity-host module mapping in blindspot.py (v0.9.5).
+"""Tests for Go vanity-host module mapping in blindspot.py (v0.9.6).
 
 Before 0.9.2, a Go module whose path was not github.com/OWNER/REPO was always
 reported "unmapped", so its maintainer's GitHub repository security advisories
@@ -7,8 +7,10 @@ and well-known vanity hosts such as Gitea. 0.9.2 added gopkg.in and a small
 map of vanity hosts. 0.9.3 adds the whole Kubernetes ecosystem by prefix and a
 few more exact vanity entries. 0.9.4 adds exact entries for gRPC, Protobuf, the
 go.uber.org libraries and the MongoDB Go driver. 0.9.5 adds the Google
-API/genproto and Cloud client modules, OpenTelemetry and etcd. These tests pin
-the behaviour:
+API/genproto and Cloud client modules, OpenTelemetry and etcd. 0.9.6 adds the
+golang.org/x sub-repositories by (two-element) prefix, and exact entries for
+App Engine, the OpenTelemetry Collector and the net/http contrib module. These
+tests pin the behaviour:
 
   - gopkg.in follows its own documented redirect rule
     (gopkg.in/pkg.vN -> github.com/go-pkg/pkg; gopkg.in/user/pkg.vN ->
@@ -17,6 +19,8 @@ the behaviour:
     github.com/kubernetes/<repo> and sigs.k8s.io/<repo> ->
     github.com/kubernetes-sigs/<repo>, with a /vN major version or a deeper
     sub-package path leaving the repo unchanged (new in 0.9.3);
+  - the Go project's own sub-repositories map by a two-element prefix:
+    golang.org/x/<repo> -> github.com/golang/<repo> (new in 0.9.6);
   - a small map of exact vanity paths verified from each project's go.mod
     `module` line (2026-10-17): code.gitea.io/gitea and gitea.dev ->
     go-gitea/gitea; gorm.io/gorm -> go-gorm/gorm; gorm.io/driver/{mysql,
@@ -31,8 +35,12 @@ the behaviour:
     go.opentelemetry.io/otel (+ /{trace,metric,sdk}) ->
     open-telemetry/opentelemetry-go; go.etcd.io/etcd (+ /{api,client,server,
     pkg}) -> etcd-io/etcd; go.etcd.io/bbolt -> etcd-io/bbolt;
-  - everything else (golang.org/x/..., private hosts) stays unmapped, so the
-    tool never guesses a repo.
+    google.golang.org/appengine -> golang/appengine;
+    go.opentelemetry.io/collector -> open-telemetry/opentelemetry-collector;
+    go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp ->
+    open-telemetry/opentelemetry-go-contrib;
+  - everything else (other golang.org paths, private hosts) stays unmapped, so
+    the tool never guesses a repo.
 
 Offline only: no network, no tokens.
 """
@@ -94,7 +102,8 @@ class TestGoVanityRepos(unittest.TestCase):
         # Existing behaviour must not regress.
         self.assertEqual(bs.go_module_repo("github.com/gin-gonic/gin"), "gin-gonic/gin")
         self.assertEqual(bs.go_module_repo("github.com/foo/bar/v2"), "foo/bar")
-        self.assertIsNone(bs.go_module_repo("golang.org/x/text"))
+        # Only golang.org/x is a prefix; other golang.org paths stay unmapped.
+        self.assertIsNone(bs.go_module_repo("golang.org/dl"))
         self.assertIsNone(bs.go_module_repo("example.com/private/thing"))
         self.assertIsNone(bs.go_module_repo(""))
 
@@ -143,6 +152,68 @@ class TestKubernetesPrefixRule(unittest.TestCase):
         self.assertIsNone(bs.go_vanity_prefix_repo("k8s.io.evil/foo"))
         self.assertIsNone(bs.go_vanity_prefix_repo(""))
         self.assertIsNone(bs.go_vanity_prefix_repo(None))
+
+
+class TestGolangOrgXPrefixRule(unittest.TestCase):
+    """golang.org/x/<repo> -> github.com/golang/<repo> (new in 0.9.6). Unlike
+    the Kubernetes hosts this is a TWO-element prefix (golang.org/x), so the
+    repo is the element after it. Verified from the go.mod `module` line of
+    golang/{net,crypto,sys,text,oauth2} on 2026-10-17: each reads `module
+    golang.org/x/<repo>`."""
+
+    def test_common_x_modules(self):
+        self.assertEqual(bs.go_module_repo("golang.org/x/net"), "golang/net")
+        self.assertEqual(bs.go_module_repo("golang.org/x/crypto"), "golang/crypto")
+        self.assertEqual(bs.go_module_repo("golang.org/x/sys"), "golang/sys")
+        self.assertEqual(bs.go_module_repo("golang.org/x/text"), "golang/text")
+        self.assertEqual(bs.go_module_repo("golang.org/x/oauth2"), "golang/oauth2")
+
+    def test_subpackage_keeps_repo(self):
+        # A deeper import path (golang.org/x/net/http2) is still the net repo.
+        self.assertEqual(bs.go_module_repo("golang.org/x/net/http2"), "golang/net")
+        self.assertEqual(bs.go_module_repo("golang.org/x/crypto/ssh"), "golang/crypto")
+
+    def test_helper_directly_and_edges(self):
+        self.assertEqual(bs.go_vanity_prefix_repo("golang.org/x/net"), "golang/net")
+        # golang.org/x with no repo element, or a non-x golang.org path -> None.
+        self.assertIsNone(bs.go_vanity_prefix_repo("golang.org/x"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("golang.org/dl"))
+        # A bare /vN after the prefix is a version, not a repo -> None.
+        self.assertIsNone(bs.go_vanity_prefix_repo("golang.org/x/v2"))
+
+    def test_x_blind_spot_end_to_end(self):
+        # A golang.org/x/crypto dependency now maps to golang/crypto, so a
+        # maintainer advisory OSV does not report is surfaced (fully offline).
+        advisories = {
+            "golang/crypto": [{
+                "ghsa_id": "GHSA-xxxx-0000-0000",
+                "cve_id": "CVE-2026-44444",
+                "severity": "high",
+                "summary": "example golang.org/x/crypto advisory",
+                "html_url": "https://github.com/golang/crypto/security/advisories/GHSA-xxxx-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go", "name": "golang.org/x/crypto"},
+                    "vulnerable_version_range": "< 0.31.0",
+                    "patched_versions": "0.31.0",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "golang.org/x/crypto", "v0.30.0")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "golang/crypto")
+        self.assertEqual(f["ghsa_id"], "GHSA-xxxx-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
+        self.assertFalse(f["scanner_visible"])
 
 
 class TestGormAndGoCloudVanity(unittest.TestCase):
@@ -292,10 +363,11 @@ class TestGoogleOtelEtcdVanity(unittest.TestCase):
                          "open-telemetry/opentelemetry-go")
 
     def test_opentelemetry_is_not_a_prefix(self):
-        # contrib and collector live in other repos, so an unverified
-        # go.opentelemetry.io path is left unmapped.
+        # The otel core, collector and net/http contrib module each have their
+        # own exact entry; any OTHER, unverified go.opentelemetry.io path
+        # (including the bare contrib root) is left unmapped, never guessed.
         self.assertIsNone(bs.go_module_repo("go.opentelemetry.io/contrib"))
-        self.assertIsNone(bs.go_module_repo("go.opentelemetry.io/collector"))
+        self.assertIsNone(bs.go_module_repo("go.opentelemetry.io/somethingelse"))
 
     def test_etcd_root_and_submodules_with_major_version(self):
         # Every etcd module is a /vN module (go.etcd.io/etcd/v3,
@@ -350,6 +422,40 @@ class TestGoogleOtelEtcdVanity(unittest.TestCase):
         self.assertEqual(f["ghsa_id"], "GHSA-oooo-0000-0000")
         self.assertEqual(f["affects_your_version"], "yes")
         self.assertFalse(f["scanner_visible"])
+
+
+class TestAppengineCollectorContribVanity(unittest.TestCase):
+    """Exact vanity entries added in 0.9.6, each verified from the project's
+    go.mod `module` line on 2026-10-17:
+      google.golang.org/appengine                 -> golang/appengine
+      go.opentelemetry.io/collector               -> open-telemetry/opentelemetry-collector
+      go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
+                                                  -> open-telemetry/opentelemetry-go-contrib
+    """
+
+    def test_appengine_v1_and_v2(self):
+        self.assertEqual(bs.go_module_repo("google.golang.org/appengine"),
+                         "golang/appengine")
+        # v2 module path is google.golang.org/appengine/v2; /vN stripped before
+        # the exact lookup.
+        self.assertEqual(bs.go_module_repo("google.golang.org/appengine/v2"),
+                         "golang/appengine")
+
+    def test_otel_collector(self):
+        self.assertEqual(bs.go_module_repo("go.opentelemetry.io/collector"),
+                         "open-telemetry/opentelemetry-collector")
+
+    def test_otelhttp_contrib_module(self):
+        self.assertEqual(
+            bs.go_module_repo("go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"),
+            "open-telemetry/opentelemetry-go-contrib")
+
+    def test_other_contrib_paths_not_guessed(self):
+        # Only the verified otelhttp module is mapped; other contrib paths are
+        # left unmapped rather than guessed (they are in the same monorepo, but
+        # the tool never guesses a path it did not verify).
+        self.assertIsNone(
+            bs.go_module_repo("go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"))
 
 
 class TestVanityBlindSpotEndToEnd(unittest.TestCase):
