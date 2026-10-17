@@ -11,7 +11,7 @@ Every mapping here was verified from the project's own `go.mod` `module` line on
 module on any host not listed below is reported as *unmapped* (add it with
 `--map NAME=OWNER/REPO`), rather than silently skipped or mapped to a wrong repo.
 
-This file documents `blindspot` as of advisory-import-census **0.9.8**.
+This file documents `blindspot` as of advisory-import-census **0.9.9**.
 
 ## 1. Direct GitHub modules
 
@@ -59,12 +59,30 @@ longest matching prefix wins.
 | `cloud.google.com/go` | `googleapis/google-cloud-go` | 0.9.7 |
 | `go.etcd.io/etcd` | `etcd-io/etcd` | 0.9.7 |
 | `go.opentelemetry.io/contrib` | `open-telemetry/opentelemetry-go-contrib` | 0.9.8 |
+| `go.opentelemetry.io/otel` | `open-telemetry/opentelemetry-go` | 0.9.9 |
+| `go.opentelemetry.io/collector` | `open-telemetry/opentelemetry-collector` | 0.9.9 |
+| `go.opentelemetry.io/proto` | `open-telemetry/opentelemetry-proto-go` | 0.9.9 |
+| `go.opentelemetry.io/auto` | `open-telemetry/opentelemetry-go-instrumentation` | 0.9.9 |
+| `go.opentelemetry.io/ebpf-profiler` | `open-telemetry/opentelemetry-ebpf-profiler` | 0.9.9 |
 
-`go.opentelemetry.io/contrib` covers every instrumentation, exporter and
-detector sub-module. Siblings outside the `contrib/` prefix keep their own
-repositories: `go.etcd.io/bbolt` → `etcd-io/bbolt` (exact entry below),
-`go.opentelemetry.io/otel*` → `open-telemetry/opentelemetry-go`,
-`go.opentelemetry.io/collector` → `open-telemetry/opentelemetry-collector`.
+**OpenTelemetry.** OpenTelemetry's own vanity-URL configuration
+([`opentelemetry-go-vanityurls`](https://github.com/open-telemetry/opentelemetry-go-vanityurls),
+`go.opentelemetry.io/vanity.yaml`) maps each top-level `go.opentelemetry.io`
+path to one repository and no deeper path to any other, so each subtree is a
+monorepo. Before 0.9.9 only `otel`, `otel/{trace,metric,sdk}` and the bare
+`collector` had exact entries, so widely used modules such as
+`go.opentelemetry.io/otel/sdk/metric`, the OTLP exporters
+(`otel/exporters/otlp/...`) and `go.opentelemetry.io/collector/pdata` were
+reported as unmapped and their advisories were never checked. Verified sub-modules:
+`otel/{sdk/metric,log,exporters/prometheus,exporters/otlp/otlptrace/otlptracegrpc}`,
+`collector/{pdata,component,confmap}`, `proto/otlp`, `auto`, `ebpf-profiler`.
+
+The Collector's contrib repository declares `github.com/open-telemetry/
+opentelemetry-collector-contrib/...` module paths, so it maps by rule 1 and is
+not under `go.opentelemetry.io/collector`. Matching is path-boundary anchored:
+`go.opentelemetry.io/otelc` (a different repository) is not under `.../otel`.
+`go.etcd.io/bbolt` → `etcd-io/bbolt` is outside `go.etcd.io/etcd` and keeps its
+exact entry below.
 
 ## 5. Exact vanity entries
 
@@ -87,8 +105,6 @@ trailing `/vN` is stripped before the lookup.
 | `go.uber.org/{zap,multierr,atomic}` | `uber-go/{zap,…}` |
 | `go.uber.org/yarpc` | `yarpc/yarpc-go` |
 | `go.mongodb.org/mongo-driver` | `mongodb/mongo-go-driver` |
-| `go.opentelemetry.io/otel` (+ `/{trace,metric,sdk}`) | `open-telemetry/opentelemetry-go` |
-| `go.opentelemetry.io/collector` | `open-telemetry/opentelemetry-collector` |
 | `go.etcd.io/bbolt` | `etcd-io/bbolt` |
 
 `google.golang.org` is **not** a prefix host (grpc, protobuf, api and genproto

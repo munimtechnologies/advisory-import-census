@@ -14,8 +14,10 @@ adds a monorepo-prefix rule and moves cloud.google.com/go and go.etcd.io/etcd
 to it, so every sub-module of those two monorepos now maps to the one repo. 0.9.8
 adds go.opentelemetry.io/contrib as a monorepo prefix (the whole OpenTelemetry Go
 contrib repo -- every instrumentation, exporter and detector module), replacing
-the single exact net/http otelhttp entry from 0.9.6. These tests pin the
-behaviour:
+the single exact net/http otelhttp entry from 0.9.6. 0.9.9 makes the other
+go.opentelemetry.io subtrees (otel, collector, proto, auto, ebpf-profiler)
+monorepo prefixes too, replacing the exact otel{,/trace,/metric,/sdk} and
+collector entries. These tests pin the behaviour:
 
   - gopkg.in follows its own documented redirect rule
     (gopkg.in/pkg.vN -> github.com/go-pkg/pkg; gopkg.in/user/pkg.vN ->
@@ -37,11 +39,12 @@ behaviour:
     google.golang.org/api -> googleapis/google-api-go-client;
     google.golang.org/genproto (+ .../googleapis/{api,rpc}) ->
     googleapis/go-genproto; cloud.google.com/go -> googleapis/google-cloud-go;
-    go.opentelemetry.io/otel (+ /{trace,metric,sdk}) ->
-    open-telemetry/opentelemetry-go; go.etcd.io/etcd (+ /{api,client,server,
+    go.opentelemetry.io/otel (+ /{trace,metric,sdk}; the whole subtree from
+    0.9.9) -> open-telemetry/opentelemetry-go; go.etcd.io/etcd (+ /{api,client,server,
     pkg}) -> etcd-io/etcd; go.etcd.io/bbolt -> etcd-io/bbolt;
     google.golang.org/appengine -> golang/appengine;
-    go.opentelemetry.io/collector -> open-telemetry/opentelemetry-collector;
+    go.opentelemetry.io/collector (the whole subtree from 0.9.9) ->
+    open-telemetry/opentelemetry-collector;
     go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp ->
     open-telemetry/opentelemetry-go-contrib;
   - everything else (other golang.org paths, private hosts) stays unmapped, so
@@ -373,11 +376,12 @@ class TestGoogleOtelEtcdVanity(unittest.TestCase):
         self.assertEqual(bs.go_module_repo("go.opentelemetry.io/otel/sdk"),
                          "open-telemetry/opentelemetry-go")
 
-    def test_opentelemetry_core_is_not_a_prefix(self):
-        # The otel core keeps exact entries, so any OTHER, unverified
-        # go.opentelemetry.io path outside the mapped subtrees is left unmapped,
-        # never guessed. (The contrib subtree became a monorepo prefix in 0.9.8;
-        # see TestGoVanityMonorepoPrefix. The bare contrib root now maps there.)
+    def test_opentelemetry_host_is_not_a_prefix(self):
+        # go.opentelemetry.io itself is not one repo: only its verified subtrees
+        # map (contrib from 0.9.8, otel/collector/proto/auto/ebpf-profiler from
+        # 0.9.9; see TestGoVanityMonorepoPrefix and TestOtelSubtreeMonorepos), so
+        # any OTHER, unverified go.opentelemetry.io path is left unmapped, never
+        # guessed.
         self.assertIsNone(bs.go_module_repo("go.opentelemetry.io/somethingelse"))
         self.assertEqual(bs.go_module_repo("go.opentelemetry.io/contrib"),
                          "open-telemetry/opentelemetry-go-contrib")
@@ -610,10 +614,12 @@ class TestGoVanityMonorepoPrefix(unittest.TestCase):
 
     def test_otel_contrib_siblings_outside_prefix(self):
         # The otel core and the collector share the go.opentelemetry.io host but
-        # are NOT under the contrib/ prefix, so the contrib monorepo rule must
-        # not claim them; they keep their own (different) repos.
-        self.assertIsNone(bs.go_vanity_monorepo_repo("go.opentelemetry.io/otel"))
-        self.assertIsNone(bs.go_vanity_monorepo_repo("go.opentelemetry.io/collector"))
+        # are NOT under the contrib/ prefix, so they never resolve to the contrib
+        # repo; since 0.9.9 each is its own monorepo prefix with its own repo.
+        self.assertEqual(bs.go_vanity_monorepo_repo("go.opentelemetry.io/otel"),
+                         "open-telemetry/opentelemetry-go")
+        self.assertEqual(bs.go_vanity_monorepo_repo("go.opentelemetry.io/collector"),
+                         "open-telemetry/opentelemetry-collector")
         self.assertIsNone(bs.go_vanity_monorepo_repo("go.opentelemetry.io/contribfoo"))
         self.assertEqual(bs.go_module_repo("go.opentelemetry.io/otel"),
                          "open-telemetry/opentelemetry-go")
@@ -704,6 +710,100 @@ class TestGoVanityMonorepoPrefix(unittest.TestCase):
         f = report["findings"][0]
         self.assertEqual(f["repo"], "open-telemetry/opentelemetry-go-contrib")
         self.assertEqual(f["ghsa_id"], "GHSA-tttt-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
+        self.assertFalse(f["scanner_visible"])
+
+
+class TestOtelSubtreeMonorepos(unittest.TestCase):
+    """New in 0.9.9: every go.opentelemetry.io subtree is a monorepo prefix.
+    OpenTelemetry's own vanity-URL config (open-telemetry/
+    opentelemetry-go-vanityurls, go.opentelemetry.io/vanity.yaml, read
+    2026-10-17) maps each top-level path to one repo and no deeper path to any
+    other repo. Verified from each go.mod `module` line on 2026-10-17:
+      go.opentelemetry.io/otel{,/sdk/metric,/log,/exporters/prometheus,
+        /exporters/otlp/otlptrace/otlptracegrpc} -> open-telemetry/opentelemetry-go
+      go.opentelemetry.io/collector{,/pdata,/component,/confmap}
+                                    -> open-telemetry/opentelemetry-collector
+      go.opentelemetry.io/proto/otlp -> open-telemetry/opentelemetry-proto-go
+      go.opentelemetry.io/auto       -> open-telemetry/opentelemetry-go-instrumentation
+      go.opentelemetry.io/ebpf-profiler -> open-telemetry/opentelemetry-ebpf-profiler
+    Before 0.9.9 only otel{,/trace,/metric,/sdk} and the bare collector had
+    exact entries, so e.g. otel/sdk/metric and collector/pdata were unmapped.
+    """
+
+    def test_otel_core_submodules(self):
+        for sub in ("", "/trace", "/metric", "/sdk", "/sdk/metric", "/log",
+                    "/exporters/prometheus",
+                    "/exporters/otlp/otlptrace/otlptracegrpc"):
+            self.assertEqual(bs.go_module_repo("go.opentelemetry.io/otel" + sub),
+                             "open-telemetry/opentelemetry-go")
+
+    def test_collector_submodules(self):
+        for sub in ("", "/pdata", "/component", "/confmap"):
+            self.assertEqual(bs.go_module_repo("go.opentelemetry.io/collector" + sub),
+                             "open-telemetry/opentelemetry-collector")
+
+    def test_proto_auto_ebpf_profiler(self):
+        self.assertEqual(bs.go_module_repo("go.opentelemetry.io/proto/otlp"),
+                         "open-telemetry/opentelemetry-proto-go")
+        self.assertEqual(bs.go_module_repo("go.opentelemetry.io/auto"),
+                         "open-telemetry/opentelemetry-go-instrumentation")
+        self.assertEqual(bs.go_module_repo("go.opentelemetry.io/ebpf-profiler"),
+                         "open-telemetry/opentelemetry-ebpf-profiler")
+
+    def test_subtrees_do_not_bleed_into_each_other(self):
+        # Path-boundary anchored: otelc (a different repo) is not under otel/,
+        # and collector-contrib is not under collector/; neither is mapped here.
+        self.assertIsNone(bs.go_vanity_monorepo_repo("go.opentelemetry.io/otelc"))
+        self.assertIsNone(bs.go_module_repo("go.opentelemetry.io/otelc"))
+        self.assertIsNone(
+            bs.go_vanity_monorepo_repo("go.opentelemetry.io/collector-contrib"))
+        # Longest prefix: contrib stays contrib, not otel.
+        self.assertEqual(
+            bs.go_module_repo("go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"),
+            "open-telemetry/opentelemetry-go-contrib")
+
+    def test_collector_contrib_maps_as_a_direct_github_module(self):
+        # Its go.mod module paths are github.com/... (root and
+        # receiver/prometheusreceiver checked), so it maps by the GitHub rule.
+        self.assertEqual(
+            bs.go_module_repo("github.com/open-telemetry/opentelemetry-collector-contrib"
+                              "/receiver/prometheusreceiver"),
+            "open-telemetry/opentelemetry-collector-contrib")
+
+    def test_otel_sdk_metric_blind_spot_end_to_end(self):
+        # go.opentelemetry.io/otel/sdk/metric was unmapped before 0.9.9; it now
+        # maps to the core repo, so a maintainer advisory OSV does not report is
+        # surfaced (fully offline).
+        advisories = {
+            "open-telemetry/opentelemetry-go": [{
+                "ghsa_id": "GHSA-mmmm-0000-0000",
+                "cve_id": "CVE-2026-77777",
+                "severity": "high",
+                "summary": "example go.opentelemetry.io/otel/sdk/metric advisory",
+                "html_url": "https://github.com/open-telemetry/opentelemetry-go/security/advisories/GHSA-mmmm-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go",
+                                "name": "go.opentelemetry.io/otel/sdk/metric"},
+                    "vulnerable_version_range": "< 1.30.0",
+                    "patched_versions": "1.30.0",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "go.opentelemetry.io/otel/sdk/metric", "v1.29.0")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "open-telemetry/opentelemetry-go")
+        self.assertEqual(f["ghsa_id"], "GHSA-mmmm-0000-0000")
         self.assertEqual(f["affects_your_version"], "yes")
         self.assertFalse(f["scanner_visible"])
 

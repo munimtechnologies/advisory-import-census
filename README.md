@@ -8,6 +8,14 @@ By MV2 of Munim, Inc. Research and code made with AI agents working in his name;
 headline claim is checked against the linked public pages. Code is Apache-2.0; the dataset
 (`out/gra_census.csv`, `out/summary.json`) is CC BY 4.0.
 
+> **Update (v0.9.0): the gap is not AI-specific.** A pre-registered comparison with 30
+> matched non-AI repositories found AI/ML advisories are *not* more often invisible to
+> OSV-based scanners (repository-level permutation p = 0.30). The pattern that matters looks
+> like **self-hosted applications vs libraries** (exploratory: 64% vs 2% blind). The 31.6%
+> below still reproduces; read it as a property of self-hosted applications, not of AI.
+> Details: [Is the gap special to AI/ML tools?](#is-the-gap-special-to-aiml-tools-no) and
+> [`study/AI-vs-control-import-gap.md`](study/AI-vs-control-import-gap.md).
+
 ## Why this matters
 
 When a maintainer publishes a GitHub **repository security advisory** (a "GRA", at
@@ -136,7 +144,8 @@ console command, with identical flags.
 How it works, per dependency:
 
 1. map the package to its GitHub repo (registry metadata, a small built-in map,
-   `--map name=owner/repo`, or — for a Go module — its own path);
+   `--map name=owner/repo`, or — for a Go module — its own path, by the verified rules in
+   [`docs/go-vanity-coverage.md`](docs/go-vanity-coverage.md));
 2. list that repo's **published** security advisories (public REST API);
 3. keep the ones whose affected range covers your version;
 4. ask OSV.dev, with the same package and version a scanner would send, whether it reports
@@ -165,7 +174,7 @@ ship. `--lock` (repeatable) recognises the file by its name:
 | `package-lock.json`, `npm-shrinkwrap.json` | npm | lockfile v1, v2 and v3 |
 | `yarn.lock` | npm | classic (v1) and Berry (v2+); `npm:` aliases count as the real package; workspace, link, file and patch entries are left out |
 | `pnpm-lock.yaml` | npm | lockfile v5, v6 and v9 (the `packages:` map; peer suffixes dropped); read line by line, no YAML library |
-| `go.mod`, `go.sum` | Go | `go.mod` reads the `require` directives (direct and `// indirect`) at their selected versions; `go.sum` lists every version in the build graph. Each module maps to its repo **by its own path** (`github.com/*` only), with no registry call |
+| `go.mod`, `go.sum` | Go | `go.mod` reads the `require` directives (direct and `// indirect`) at their selected versions; `go.sum` lists every version in the build graph. Each module maps to its repo **by its own path**, with no registry call: `github.com/*`, `gopkg.in/*`, and the verified vanity hosts listed in [`docs/go-vanity-coverage.md`](docs/go-vanity-coverage.md) (`golang.org/x`, `k8s.io`, `cloud.google.com/go`, `google.golang.org/grpc`, OpenTelemetry, etcd, …) |
 
 **Big lock files and GitHub's rate limit.** Each distinct GitHub repo behind your
 dependencies costs one API request. Without a token the limit is 60 an hour; the workflow
@@ -223,13 +232,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: munimtechnologies/advisory-import-census@v0.8.0
+      - uses: munimtechnologies/advisory-import-census@v0.9.9
         with:
           lock: uv.lock          # or package-lock.json, yarn.lock, pnpm-lock.yaml, go.mod, ...
           # requirements: requirements.txt
           # pyproject: pyproject.toml
           fail-on-blind: "true"
 ```
+
+Pin a release tag (as above) or a commit SHA. Releases from v0.9.1 on add the Go vanity
+module mappings described in [`docs/go-vanity-coverage.md`](docs/go-vanity-coverage.md); the
+Action's inputs have not changed since v0.8.0, so an older pin keeps working.
 
 Inputs: `lock`, `requirements`, `npm`, `pyproject`, and `packages` (any whitespace-separated
 list, matching the CLI's `--lock`, `-r`, `--npm`, `--pyproject`, and `--package`); `map` for
@@ -261,7 +274,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: munimtechnologies/advisory-import-census@v0.8.0
+      - uses: munimtechnologies/advisory-import-census@v0.9.9
         with:
           lock: package-lock.json
           sarif: blindspot.sarif
@@ -351,14 +364,37 @@ still 404 on OSV at 2026-10-15) and a vLLM Nemotron-VL decompression-bomb DoS
 ([GHSA-mm38-5g96-7j6x](https://github.com/vllm-project/vllm/security/advisories/GHSA-mm38-5g96-7j6x)) —
 both published, both absent from the global database and OSV at snapshot.
 
-## Is the gap special to AI/ML tools?
+## Is the gap special to AI/ML tools? No.
 
-That is pre-registered and under test. [`PREREGISTRATION-groups.md`](PREREGISTRATION-groups.md)
-fixes, before any result, a 30-repository non-AI control group and a repository-level
-permutation test, measured the same way as the AI/ML sample (`group_census.py`). The one
-published pipeline study and GitHub's own 2026 notes describe a general review backlog, so
-whether this gap is AI-specific or ecosystem-wide is genuinely open. Results will be added
-when the measurement run completes.
+This was pre-registered before any data was seen
+([`PREREGISTRATION-groups.md`](PREREGISTRATION-groups.md), `group_census.py`): the 30 AI/ML
+repositories above against 30 widely used non-AI repositories (15 self-hosted apps, 15
+libraries/frameworks), measured the same way, with a repository-level permutation test. The
+full write-up, data and a reported classifier correction are in
+[`study/AI-vs-control-import-gap.md`](study/AI-vs-control-import-gap.md) (release v0.9.0).
+
+| group | eligible advisories | scanner-blind, pre-registered | scanner-blind, corrected |
+|---|---:|---:|---:|
+| AI/ML (19 of 30 repos publish advisories) | 596 | 34.7% | 28.0% |
+| non-AI control (30 of 30) | 1,352 | 56.8% | 46.4% |
+
+- **AI tools are not worse.** AI − control is −22.1 points pooled, permutation p = 0.30
+  (corrected: −18.4 points, p = 0.52). The spread *within* each group is far larger than the
+  difference *between* them.
+- **Exploratory, not pre-registered:** within the non-AI group, **self-hosted applications'**
+  advisories are 64.4% blind against **1.8%** for libraries (p = 0.0003). Libraries ship
+  through a registry, so their advisories name a package and get reviewed into the global
+  database; applications installed from Docker images or source often publish advisories
+  with no package, which no package scanner can match. The AI group's fully blind repos
+  (Dify, AnythingLLM, LibreChat, RAGFlow, text-generation-webui, ComfyUI) are all
+  self-hosted applications.
+- A **confirmatory** application-vs-library test on a fresh, frozen frame of 40 applications
+  and 40 libraries is pre-registered in [`study/app-vs-library/`](study/app-vs-library/); its
+  result will be published here either way once the census has run.
+
+**Practical takeaway:** if you self-host an application, open-source or not, don't expect
+your dependency scanner to tell you about that application's own advisories. Watch them
+directly: `python blindspot.py --package repo:OWNER/REPO`.
 
 ## Honest limits
 
@@ -371,10 +407,11 @@ when the measurement run completes.
   maintainer is blamed; the gap is a pipeline-coverage measurement.
 - Unauthenticated API data only; repos with zero published advisories contribute nothing.
 - `blindspot.py` finds a package's repo from PyPI / npm metadata, or, for a Go module, from
-  its own path. A `replace` directive in `go.mod` is not followed, and Go modules not hosted
-  on github.com (`golang.org/x/...`, `gopkg.in/...`) are reported as unmapped rather than
-  guessed. Lock files for other ecosystems (Cargo, Composer, ...) are not read yet; use
-  `--package` with `--map`.
+  its own path. A `replace` directive in `go.mod` is not followed. Go modules on
+  `github.com`, `gopkg.in` and the vanity hosts verified in
+  [`docs/go-vanity-coverage.md`](docs/go-vanity-coverage.md) are mapped; any other host is
+  reported as unmapped rather than guessed (map it with `--map`). Lock files for other
+  ecosystems (Cargo, Composer, ...) are not read yet; use `--package` with `--map`.
 
 ## Dataset schema (`out/gra_census.csv`)
 
