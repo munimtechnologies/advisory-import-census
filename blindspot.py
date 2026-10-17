@@ -11,8 +11,9 @@ got there. This tool checks YOUR dependencies for that gap:
   1. map each package to its GitHub repo (registry metadata, a small built-in
      map, --map name=owner/repo, or, for a Go module, its path -- github.com
      modules, gopkg.in by its documented redirect rule, the Kubernetes vanity
-     hosts k8s.io and sigs.k8s.io by prefix, and a few more known vanity hosts
-     such as Gitea, GORM and gocloud.dev);
+     hosts k8s.io and sigs.k8s.io by prefix, and a small map of known vanity
+     modules such as Gitea, GORM, gocloud.dev, gRPC, Protobuf, the go.uber.org
+     libraries and the MongoDB Go driver, each verified from its go.mod);
   2. list that repo's published security advisories (public REST API);
   3. keep the ones whose affected range covers your version;
   4. ask OSV.dev, with the same package and version a scanner would send,
@@ -63,7 +64,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.9.3"
+__version__ = "0.9.4"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -561,6 +562,9 @@ def repo_from_urls(urls):
 #     k8s.io/apiserver          -> kubernetes/<repo>
 #   sigs.k8s.io/yaml, sigs.k8s.io/controller-runtime,
 #     sigs.k8s.io/structured-merge-diff/v7 -> kubernetes-sigs/<repo>
+# NB go.uber.org is NOT a prefix host: most of its libraries live under
+# github.com/uber-go/<repo>, but go.uber.org/yarpc lives at yarpc/yarpc-go
+# (verified 2026-10-17), so its modules are mapped by exact entries below.
 GO_VANITY_OWNER_PREFIX = {
     "k8s.io": "kubernetes",
     "sigs.k8s.io": "kubernetes-sigs",
@@ -574,6 +578,12 @@ GO_VANITY_OWNER_PREFIX = {
 #   gorm.io/gorm -> go-gorm/gorm; gorm.io/driver/{mysql,postgres,sqlite,
 #     sqlserver} -> go-gorm/{mysql,...}; gorm.io/datatypes -> go-gorm/datatypes
 #   gocloud.dev -> google/go-cloud
+#   google.golang.org/grpc -> grpc/grpc-go; google.golang.org/protobuf ->
+#     protocolbuffers/protobuf-go
+#   go.uber.org/{zap,multierr,atomic} -> uber-go/{...}; go.uber.org/yarpc ->
+#     yarpc/yarpc-go (a different owner, so it is an exact entry, not a prefix)
+#   go.mongodb.org/mongo-driver -> mongodb/mongo-go-driver (its master module
+#     path is go.mongodb.org/mongo-driver/v2; the /vN is stripped before lookup)
 GO_VANITY_REPOS = {
     "code.gitea.io/gitea": "go-gitea/gitea",
     "gitea.dev": "go-gitea/gitea",
@@ -584,6 +594,13 @@ GO_VANITY_REPOS = {
     "gorm.io/driver/sqlserver": "go-gorm/sqlserver",
     "gorm.io/datatypes": "go-gorm/datatypes",
     "gocloud.dev": "google/go-cloud",
+    "google.golang.org/grpc": "grpc/grpc-go",
+    "google.golang.org/protobuf": "protocolbuffers/protobuf-go",
+    "go.uber.org/zap": "uber-go/zap",
+    "go.uber.org/multierr": "uber-go/multierr",
+    "go.uber.org/atomic": "uber-go/atomic",
+    "go.uber.org/yarpc": "yarpc/yarpc-go",
+    "go.mongodb.org/mongo-driver": "mongodb/mongo-go-driver",
 }
 
 # A gopkg.in package element carries a major-version selector, e.g. "yaml.v3".
@@ -634,8 +651,10 @@ def go_module_repo(module):
     deeper sub-package path) the repo is OWNER/REPO. gopkg.in paths follow
     gopkg.in's documented redirect rule, the Kubernetes vanity hosts k8s.io and
     sigs.k8s.io a prefix rule, and a small map of well-known vanity hosts
-    (Gitea, GORM, gocloud.dev) verified from their go.mod is applied. Other
-    hosts (golang.org/x/..., gopkg.in without a version, a private host) are not
+    (Gitea, GORM, gocloud.dev, gRPC, Protobuf, the go.uber.org libraries and the
+    MongoDB Go driver) verified from their go.mod is applied, with a trailing
+    /vN major version stripped before the exact lookup. Other hosts
+    (golang.org/x/..., gopkg.in without a version, a private host) are not
     mapped, so they are reported as unmapped rather than guessed. No network
     request."""
     module = (module or "").strip()
