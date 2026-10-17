@@ -1,0 +1,44 @@
+{
+  "built_utc": "2026-10-17T08:30:05+00:00",
+  "target_n_per_group": 40,
+  "selection": {
+    "applications": "awesome-selfhosted-data source_code_url on github, not archived, ranked by stargazers_count desc",
+    "libraries": "ecosyste.ms packages across npmjs.org, pypi.org, proxy.golang.org, mapped to github repository_url, ranked by dependent_repos_count desc, skipping any repo the self-hosted catalogue lists (apps precedence)"
+  },
+  "sources": {
+    "census_exclude": "https://codeload.github.com/munimtechnologies/advisory-import-census/tar.gz/refs/heads/main",
+    "apps": "https://codeload.github.com/awesome-selfhosted/awesome-selfhosted-data/tar.gz/refs/heads/master",
+    "libs_registries": [
+      "npmjs.org",
+      "pypi.org",
+      "proxy.golang.org"
+    ]
+  },
+  "counts": {
+    "exclude": 49,
+    "app_candidates": 1113,
+    "apps_selected": 40,
+    "catalogue_repos": 1132,
+    "libs_selected": 40,
+    "libs_skipped_as_applications": 1
+  },
+  "lib_diagnostics": {
+    "per_registry_candidates": {
+      "npmjs.org": 203,
+      "pypi.org": 249,
+      "proxy.golang.org": 229
+    },
+    "metric_field_counts": {
+      "dependent_repos_count": 681
+    },
+    "unique_repo_candidates": 681,
+    "skipped_as_applications": [
+      {
+        "repo": "jupyterlab/jupyterlab",
+        "registry": "pypi.org",
+        "package": "jupyterlab"
+      }
+    ]
+  },
+  "note": "Selection is blindness- and advisory-independent; the census determines which selected repos have eligible advisories."
+}

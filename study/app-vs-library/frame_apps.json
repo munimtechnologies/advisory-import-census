@@ -1,0 +1,242 @@
+[
+  {
+    "repo": "n8n-io/n8n",
+    "stars": 207708,
+    "name": "n8n",
+    "source_file": "n8n.yml"
+  },
+  {
+    "repo": "ollama/ollama",
+    "stars": 183500,
+    "name": "Ollama",
+    "source_file": "ollama.yml"
+  },
+  {
+    "repo": "immich-app/immich",
+    "stars": 116429,
+    "name": "Immich",
+    "source_file": "immich.yml"
+  },
+  {
+    "repo": "Stirling-Tools/Stirling-PDF",
+    "stars": 94347,
+    "name": "Stirling-PDF",
+    "source_file": "stirling-pdf.yml"
+  },
+  {
+    "repo": "syncthing/syncthing",
+    "stars": 89456,
+    "name": "Syncthing",
+    "source_file": "syncthing.yml"
+  },
+  {
+    "repo": "lobehub/lobehub",
+    "stars": 83276,
+    "name": "LobeHub",
+    "source_file": "lobehub.yml"
+  },
+  {
+    "repo": "hoppscotch/hoppscotch",
+    "stars": 80632,
+    "name": "Hoppscotch Community Edition",
+    "source_file": "hoppscotch-community-edition.yml"
+  },
+  {
+    "repo": "coder/code-server",
+    "stars": 79633,
+    "name": "code-server",
+    "source_file": "code-server.yml"
+  },
+  {
+    "repo": "elastic/elasticsearch",
+    "stars": 78293,
+    "name": "ElasticSearch",
+    "source_file": "elasticsearch.yml"
+  },
+  {
+    "repo": "AppFlowy-IO/appflowy",
+    "stars": 77477,
+    "name": "AppFlowy",
+    "source_file": "appflowy.yml"
+  },
+  {
+    "repo": "apache/superset",
+    "stars": 75171,
+    "name": "Superset",
+    "source_file": "superset.yml"
+  },
+  {
+    "repo": "hakimel/reveal.js",
+    "stars": 72433,
+    "name": "revealjs",
+    "source_file": "revealjs.yml"
+  },
+  {
+    "repo": "dani-garcia/vaultwarden",
+    "stars": 69183,
+    "name": "Vaultwarden",
+    "source_file": "vaultwarden.yml"
+  },
+  {
+    "repo": "usememos/memos",
+    "stars": 63850,
+    "name": "Memos",
+    "source_file": "memos.yml"
+  },
+  {
+    "repo": "pocketbase/pocketbase",
+    "stars": 61449,
+    "name": "PocketBase",
+    "source_file": "pocketbase.yml"
+  },
+  {
+    "repo": "pi-hole/pi-hole",
+    "stars": 61299,
+    "name": "Pi-hole",
+    "source_file": "pi-hole.yml"
+  },
+  {
+    "repo": "penpot/penpot",
+    "stars": 61243,
+    "name": "penpot",
+    "source_file": "penpot.yml"
+  },
+  {
+    "repo": "makeplane/plane",
+    "stars": 60958,
+    "name": "Plane",
+    "source_file": "plane.yml"
+  },
+  {
+    "repo": "meilisearch/MeiliSearch",
+    "stars": 59584,
+    "name": "MeiliSearch",
+    "source_file": "meilisearch.yml"
+  },
+  {
+    "repo": "twentyhq/twenty",
+    "stars": 58426,
+    "name": "Twenty",
+    "source_file": "twenty.yml"
+  },
+  {
+    "repo": "appwrite/appwrite",
+    "stars": 57706,
+    "name": "Appwrite",
+    "source_file": "appwrite.yml"
+  },
+  {
+    "repo": "laurent22/joplin",
+    "stars": 56764,
+    "name": "Joplin",
+    "source_file": "joplin.yml"
+  },
+  {
+    "repo": "odoo/odoo",
+    "stars": 55097,
+    "name": "Odoo",
+    "source_file": "odoo.yml"
+  },
+  {
+    "repo": "huginn/huginn",
+    "stars": 50066,
+    "name": "Huginn",
+    "source_file": "huginn.yml"
+  },
+  {
+    "repo": "mudler/LocalAI",
+    "stars": 49587,
+    "name": "LocalAI",
+    "source_file": "localai.yml"
+  },
+  {
+    "repo": "calcom/cal.diy",
+    "stars": 49078,
+    "name": "Cal.diy",
+    "source_file": "cal.diy.yml"
+  },
+  {
+    "repo": "gogs/gogs",
+    "stars": 47874,
+    "name": "Gogs",
+    "source_file": "gogs.yml"
+  },
+  {
+    "repo": "apache/airflow",
+    "stars": 47193,
+    "name": "Apache Airflow",
+    "source_file": "apache-airflow.yml"
+  },
+  {
+    "repo": "9001/copyparty",
+    "stars": 47054,
+    "name": "copyparty",
+    "source_file": "copyparty.yml"
+  },
+  {
+    "repo": "siyuan-note/siyuan",
+    "stars": 46804,
+    "name": "SiYuan",
+    "source_file": "siyuan.yml"
+  },
+  {
+    "repo": "paperless-ngx/paperless-ngx",
+    "stars": 46765,
+    "name": "Paperless-ngx",
+    "source_file": "paperless-ngx.yml"
+  },
+  {
+    "repo": "DIYgod/RSSHub",
+    "stars": 46548,
+    "name": "RSSHub",
+    "source_file": "rsshub.yml"
+  },
+  {
+    "repo": "RocketChat/Rocket.Chat",
+    "stars": 46280,
+    "name": "Rocket.Chat",
+    "source_file": "rocket.chat.yml"
+  },
+  {
+    "repo": "LibreChat-AI/LibreChat",
+    "stars": 45821,
+    "name": "LibreChat",
+    "source_file": "librechat.yml"
+  },
+  {
+    "repo": "getsentry/sentry",
+    "stars": 45584,
+    "name": "Sentry Self-Hosted",
+    "source_file": "sentry-self-hosted.yml"
+  },
+  {
+    "repo": "juspay/hyperswitch",
+    "stars": 45336,
+    "name": "HyperSwitch",
+    "source_file": "hyperswitch.yml"
+  },
+  {
+    "repo": "payloadcms/payload",
+    "stars": 45291,
+    "name": "Payload CMS",
+    "source_file": "payload-cms.yml"
+  },
+  {
+    "repo": "reactive-resume/reactive-resume",
+    "stars": 44401,
+    "name": "Reactive Resume",
+    "source_file": "reactive-resume.yml"
+  },
+  {
+    "repo": "Kong/kong",
+    "stars": 44274,
+    "name": "Kong",
+    "source_file": "kong.yml"
+  },
+  {
+    "repo": "heyputer/puter",
+    "stars": 43763,
+    "name": "Puter",
+    "source_file": "puter.yml"
+  }
+]

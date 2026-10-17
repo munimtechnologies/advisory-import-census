@@ -1,0 +1,322 @@
+[
+  {
+    "repo": "chalk/supports-color",
+    "registry": "npmjs.org",
+    "package": "supports-color",
+    "metric": "dependent_repos_count",
+    "dependents": 5765200,
+    "registry_rank": 1
+  },
+  {
+    "repo": "psf/requests",
+    "registry": "pypi.org",
+    "package": "requests",
+    "metric": "dependent_repos_count",
+    "dependents": 679836,
+    "registry_rank": 1
+  },
+  {
+    "repo": "pmezard/go-difflib",
+    "registry": "proxy.golang.org",
+    "package": "github.com/pmezard/go-difflib",
+    "metric": "dependent_repos_count",
+    "dependents": 281215,
+    "registry_rank": 1
+  },
+  {
+    "repo": "isaacs/fs.realpath",
+    "registry": "npmjs.org",
+    "package": "fs.realpath",
+    "metric": "dependent_repos_count",
+    "dependents": 5532257,
+    "registry_rank": 2
+  },
+  {
+    "repo": "benjaminp/six",
+    "registry": "pypi.org",
+    "package": "six",
+    "metric": "dependent_repos_count",
+    "dependents": 591238,
+    "registry_rank": 2
+  },
+  {
+    "repo": "davecgh/go-spew",
+    "registry": "proxy.golang.org",
+    "package": "github.com/davecgh/go-spew",
+    "metric": "dependent_repos_count",
+    "dependents": 281169,
+    "registry_rank": 2
+  },
+  {
+    "repo": "jonschlinkert/fill-range",
+    "registry": "npmjs.org",
+    "package": "fill-range",
+    "metric": "dependent_repos_count",
+    "dependents": 5461792,
+    "registry_rank": 3
+  },
+  {
+    "repo": "numpy/numpy",
+    "registry": "pypi.org",
+    "package": "numpy",
+    "metric": "dependent_repos_count",
+    "dependents": 487463,
+    "registry_rank": 3
+  },
+  {
+    "repo": "stretchr/testify",
+    "registry": "proxy.golang.org",
+    "package": "github.com/stretchr/testify",
+    "metric": "dependent_repos_count",
+    "dependents": 280136,
+    "registry_rank": 3
+  },
+  {
+    "repo": "micromatch/to-regex-range",
+    "registry": "npmjs.org",
+    "package": "to-regex-range",
+    "metric": "dependent_repos_count",
+    "dependents": 5300496,
+    "registry_rank": 4
+  },
+  {
+    "repo": "stub42/pytz",
+    "registry": "pypi.org",
+    "package": "pytz",
+    "metric": "dependent_repos_count",
+    "dependents": 464910,
+    "registry_rank": 4
+  },
+  {
+    "repo": "go-check/check",
+    "registry": "proxy.golang.org",
+    "package": "gopkg.in/check.v1",
+    "metric": "dependent_repos_count",
+    "dependents": 273224,
+    "registry_rank": 4
+  },
+  {
+    "repo": "fsevents/fsevents",
+    "registry": "npmjs.org",
+    "package": "fsevents",
+    "metric": "dependent_repos_count",
+    "dependents": 5289351,
+    "registry_rank": 5
+  },
+  {
+    "repo": "certifi/python-certifi",
+    "registry": "pypi.org",
+    "package": "certifi",
+    "metric": "dependent_repos_count",
+    "dependents": 415524,
+    "registry_rank": 5
+  },
+  {
+    "repo": "stretchr/objx",
+    "registry": "proxy.golang.org",
+    "package": "github.com/stretchr/objx",
+    "metric": "dependent_repos_count",
+    "dependents": 267615,
+    "registry_rank": 5
+  },
+  {
+    "repo": "browserify/resolve",
+    "registry": "npmjs.org",
+    "package": "resolve",
+    "metric": "dependent_repos_count",
+    "dependents": 5229428,
+    "registry_rank": 6
+  },
+  {
+    "repo": "kjd/idna",
+    "registry": "pypi.org",
+    "package": "idna",
+    "metric": "dependent_repos_count",
+    "dependents": 408607,
+    "registry_rank": 6
+  },
+  {
+    "repo": "golang/protobuf",
+    "registry": "proxy.golang.org",
+    "package": "github.com/golang/protobuf",
+    "metric": "dependent_repos_count",
+    "dependents": 213436,
+    "registry_rank": 6
+  },
+  {
+    "repo": "jshttp/statuses",
+    "registry": "npmjs.org",
+    "package": "statuses",
+    "metric": "dependent_repos_count",
+    "dependents": 5106018,
+    "registry_rank": 7
+  },
+  {
+    "repo": "dateutil/dateutil",
+    "registry": "pypi.org",
+    "package": "python-dateutil",
+    "metric": "dependent_repos_count",
+    "dependents": 338574,
+    "registry_rank": 7
+  },
+  {
+    "repo": "google/go-cmp",
+    "registry": "proxy.golang.org",
+    "package": "github.com/google/go-cmp",
+    "metric": "dependent_repos_count",
+    "dependents": 201810,
+    "registry_rank": 7
+  },
+  {
+    "repo": "wesleytodd/setprototypeof",
+    "registry": "npmjs.org",
+    "package": "setprototypeof",
+    "metric": "dependent_repos_count",
+    "dependents": 5068682,
+    "registry_rank": 8
+  },
+  {
+    "repo": "pallets/click",
+    "registry": "pypi.org",
+    "package": "click",
+    "metric": "dependent_repos_count",
+    "dependents": 316082,
+    "registry_rank": 8
+  },
+  {
+    "repo": "kr/text",
+    "registry": "proxy.golang.org",
+    "package": "github.com/kr/text",
+    "metric": "dependent_repos_count",
+    "dependents": 198489,
+    "registry_rank": 8
+  },
+  {
+    "repo": "stream-utils/unpipe",
+    "registry": "npmjs.org",
+    "package": "unpipe",
+    "metric": "dependent_repos_count",
+    "dependents": 5053604,
+    "registry_rank": 9
+  },
+  {
+    "repo": "pandas-dev/pandas",
+    "registry": "pypi.org",
+    "package": "pandas",
+    "metric": "dependent_repos_count",
+    "dependents": 310870,
+    "registry_rank": 9
+  },
+  {
+    "repo": "pkg/errors",
+    "registry": "proxy.golang.org",
+    "package": "github.com/pkg/errors",
+    "metric": "dependent_repos_count",
+    "dependents": 198114,
+    "registry_rank": 9
+  },
+  {
+    "repo": "jshttp/fresh",
+    "registry": "npmjs.org",
+    "package": "fresh",
+    "metric": "dependent_repos_count",
+    "dependents": 5019855,
+    "registry_rank": 10
+  },
+  {
+    "repo": "chardet/chardet",
+    "registry": "pypi.org",
+    "package": "chardet",
+    "metric": "dependent_repos_count",
+    "dependents": 284023,
+    "registry_rank": 10
+  },
+  {
+    "repo": "kr/pretty",
+    "registry": "proxy.golang.org",
+    "package": "github.com/kr/pretty",
+    "metric": "dependent_repos_count",
+    "dependents": 195495,
+    "registry_rank": 10
+  },
+  {
+    "repo": "pillarjs/send",
+    "registry": "npmjs.org",
+    "package": "send",
+    "metric": "dependent_repos_count",
+    "dependents": 4993661,
+    "registry_rank": 11
+  },
+  {
+    "repo": "pytest-dev/pytest",
+    "registry": "pypi.org",
+    "package": "pytest",
+    "metric": "dependent_repos_count",
+    "dependents": 283154,
+    "registry_rank": 11
+  },
+  {
+    "repo": "BurntSushi/toml",
+    "registry": "proxy.golang.org",
+    "package": "github.com/BurntSushi/toml",
+    "metric": "dependent_repos_count",
+    "dependents": 185064,
+    "registry_rank": 11
+  },
+  {
+    "repo": "expressjs/serve-static",
+    "registry": "npmjs.org",
+    "package": "serve-static",
+    "metric": "dependent_repos_count",
+    "dependents": 4975561,
+    "registry_rank": 12
+  },
+  {
+    "repo": "benoitc/gunicorn",
+    "registry": "pypi.org",
+    "package": "gunicorn",
+    "metric": "dependent_repos_count",
+    "dependents": 277527,
+    "registry_rank": 12
+  },
+  {
+    "repo": "mattn/go-isatty",
+    "registry": "proxy.golang.org",
+    "package": "github.com/mattn/go-isatty",
+    "metric": "dependent_repos_count",
+    "dependents": 167492,
+    "registry_rank": 12
+  },
+  {
+    "repo": "epoberezkin/fast-deep-equal",
+    "registry": "npmjs.org",
+    "package": "fast-deep-equal",
+    "metric": "dependent_repos_count",
+    "dependents": 4968905,
+    "registry_rank": 13
+  },
+  {
+    "repo": "pyparsing/pyparsing",
+    "registry": "pypi.org",
+    "package": "pyparsing",
+    "metric": "dependent_repos_count",
+    "dependents": 264180,
+    "registry_rank": 13
+  },
+  {
+    "repo": "golang/appengine",
+    "registry": "proxy.golang.org",
+    "package": "google.golang.org/appengine",
+    "metric": "dependent_repos_count",
+    "dependents": 166712,
+    "registry_rank": 13
+  },
+  {
+    "repo": "epoberezkin/fast-json-stable-stringify",
+    "registry": "npmjs.org",
+    "package": "fast-json-stable-stringify",
+    "metric": "dependent_repos_count",
+    "dependents": 4957551,
+    "registry_rank": 14
+  }
+]
