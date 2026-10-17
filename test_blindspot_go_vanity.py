@@ -1,16 +1,24 @@
-"""Tests for Go vanity-host module mapping in blindspot.py (v0.9.2).
+"""Tests for Go vanity-host module mapping in blindspot.py (v0.9.3).
 
 Before 0.9.2, a Go module whose path was not github.com/OWNER/REPO was always
 reported "unmapped", so its maintainer's GitHub repository security advisories
 were never checked -- even for gopkg.in packages (in almost every Go project)
-and well-known vanity hosts such as Gitea. These tests pin the new behaviour:
+and well-known vanity hosts such as Gitea. 0.9.2 added gopkg.in and a small
+map of vanity hosts. 0.9.3 adds the whole Kubernetes ecosystem by prefix and a
+few more exact vanity entries. These tests pin the behaviour:
 
   - gopkg.in follows its own documented redirect rule
     (gopkg.in/pkg.vN -> github.com/go-pkg/pkg; gopkg.in/user/pkg.vN ->
     github.com/user/pkg), verified at https://gopkg.in (2026-10-17);
-  - a small map of vanity hosts verified from each project's go.mod
+  - the Kubernetes vanity hosts map by prefix: k8s.io/<repo> ->
+    github.com/kubernetes/<repo> and sigs.k8s.io/<repo> ->
+    github.com/kubernetes-sigs/<repo>, with a /vN major version or a deeper
+    sub-package path leaving the repo unchanged (new in 0.9.3);
+  - a small map of exact vanity paths verified from each project's go.mod
     `module` line (2026-10-17): code.gitea.io/gitea and gitea.dev ->
-    go-gitea/gitea; gorm.io/gorm -> go-gorm/gorm;
+    go-gitea/gitea; gorm.io/gorm -> go-gorm/gorm; gorm.io/driver/{mysql,
+    postgres,sqlite,sqlserver} -> go-gorm/{...}; gorm.io/datatypes ->
+    go-gorm/datatypes; gocloud.dev -> google/go-cloud;
   - everything else (golang.org/x/..., private hosts) stays unmapped, so the
     tool never guesses a repo.
 
@@ -79,6 +87,74 @@ class TestGoVanityRepos(unittest.TestCase):
         self.assertIsNone(bs.go_module_repo(""))
 
 
+class TestKubernetesPrefixRule(unittest.TestCase):
+    """k8s.io/<repo> -> kubernetes/<repo>, sigs.k8s.io/<repo> ->
+    kubernetes-sigs/<repo>. Each module path below was verified from its repo's
+    go.mod `module` line on 2026-10-17."""
+
+    def test_k8s_io_modules(self):
+        self.assertEqual(bs.go_module_repo("k8s.io/api"), "kubernetes/api")
+        self.assertEqual(bs.go_module_repo("k8s.io/apimachinery"),
+                         "kubernetes/apimachinery")
+        self.assertEqual(bs.go_module_repo("k8s.io/client-go"), "kubernetes/client-go")
+        self.assertEqual(bs.go_module_repo("k8s.io/apiserver"), "kubernetes/apiserver")
+        self.assertEqual(bs.go_module_repo("k8s.io/kubernetes"), "kubernetes/kubernetes")
+
+    def test_k8s_io_major_version_keeps_repo(self):
+        # k8s.io/klog/v2 lives at github.com/kubernetes/klog; the /v2 is the
+        # major version, not the repo.
+        self.assertEqual(bs.go_module_repo("k8s.io/klog/v2"), "kubernetes/klog")
+
+    def test_k8s_io_subpackage_keeps_repo(self):
+        # The repo is the first element after the host; a deeper import path
+        # does not change it (go.mod lists the module, but be safe anyway).
+        self.assertEqual(bs.go_module_repo("k8s.io/client-go/kubernetes/typed/core/v1"),
+                         "kubernetes/client-go")
+
+    def test_sigs_k8s_io_modules(self):
+        self.assertEqual(bs.go_module_repo("sigs.k8s.io/yaml"), "kubernetes-sigs/yaml")
+        self.assertEqual(bs.go_module_repo("sigs.k8s.io/controller-runtime"),
+                         "kubernetes-sigs/controller-runtime")
+        self.assertEqual(bs.go_module_repo("sigs.k8s.io/json"), "kubernetes-sigs/json")
+
+    def test_sigs_k8s_io_major_version_keeps_repo(self):
+        self.assertEqual(bs.go_module_repo("sigs.k8s.io/structured-merge-diff/v7"),
+                         "kubernetes-sigs/structured-merge-diff")
+
+    def test_helper_directly(self):
+        self.assertEqual(bs.go_vanity_prefix_repo("k8s.io/api"), "kubernetes/api")
+        self.assertEqual(bs.go_vanity_prefix_repo("sigs.k8s.io/yaml"),
+                         "kubernetes-sigs/yaml")
+        # Not a prefix host, bare host, or empty -> None.
+        self.assertIsNone(bs.go_vanity_prefix_repo("github.com/foo/bar"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("k8s.io"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("k8s.io.evil/foo"))
+        self.assertIsNone(bs.go_vanity_prefix_repo(""))
+        self.assertIsNone(bs.go_vanity_prefix_repo(None))
+
+
+class TestGormAndGoCloudVanity(unittest.TestCase):
+    """Exact vanity entries added in 0.9.3, each verified from the project's
+    go.mod `module` line on 2026-10-17."""
+
+    def test_gorm_drivers(self):
+        self.assertEqual(bs.go_module_repo("gorm.io/driver/mysql"), "go-gorm/mysql")
+        self.assertEqual(bs.go_module_repo("gorm.io/driver/postgres"), "go-gorm/postgres")
+        self.assertEqual(bs.go_module_repo("gorm.io/driver/sqlite"), "go-gorm/sqlite")
+        self.assertEqual(bs.go_module_repo("gorm.io/driver/sqlserver"),
+                         "go-gorm/sqlserver")
+
+    def test_gorm_datatypes(self):
+        self.assertEqual(bs.go_module_repo("gorm.io/datatypes"), "go-gorm/datatypes")
+
+    def test_gocloud(self):
+        self.assertEqual(bs.go_module_repo("gocloud.dev"), "google/go-cloud")
+
+    def test_unmapped_gorm_path_not_guessed(self):
+        # A gorm.io path we did not verify is left unmapped rather than guessed.
+        self.assertIsNone(bs.go_module_repo("gorm.io/driver/bogus"))
+
+
 class TestVanityBlindSpotEndToEnd(unittest.TestCase):
     """A gopkg.in dependency now maps to a repo, so a maintainer advisory OSV
     does not report is surfaced as a blind spot (fully offline)."""
@@ -114,6 +190,40 @@ class TestVanityBlindSpotEndToEnd(unittest.TestCase):
         self.assertEqual(f["ghsa_id"], "GHSA-yyyy-0000-0000")
         self.assertEqual(f["affects_your_version"], "yes")
         self.assertTrue(f["package_named"])
+        self.assertFalse(f["scanner_visible"])
+
+    def test_k8s_dependency_blind_spot(self):
+        # A k8s.io module now maps to kubernetes/<repo>, so a maintainer
+        # advisory OSV does not report for that package is a blind spot.
+        advisories = {
+            "kubernetes/apimachinery": [{
+                "ghsa_id": "GHSA-kkkk-0000-0000",
+                "cve_id": "CVE-2026-11111",
+                "severity": "high",
+                "summary": "example k8s.io/apimachinery advisory",
+                "html_url": "https://github.com/kubernetes/apimachinery/security/advisories/GHSA-kkkk-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go", "name": "k8s.io/apimachinery"},
+                    "vulnerable_version_range": "< 0.29.1",
+                    "patched_versions": "0.29.1",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "k8s.io/apimachinery", "v0.29.0")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "kubernetes/apimachinery")
+        self.assertEqual(f["ghsa_id"], "GHSA-kkkk-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
         self.assertFalse(f["scanner_visible"])
 
 

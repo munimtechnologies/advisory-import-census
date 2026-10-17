@@ -10,8 +10,9 @@ got there. This tool checks YOUR dependencies for that gap:
 
   1. map each package to its GitHub repo (registry metadata, a small built-in
      map, --map name=owner/repo, or, for a Go module, its path -- github.com
-     modules, gopkg.in by its documented redirect rule, and a few known vanity
-     hosts such as Gitea and GORM);
+     modules, gopkg.in by its documented redirect rule, the Kubernetes vanity
+     hosts k8s.io and sigs.k8s.io by prefix, and a few more known vanity hosts
+     such as Gitea, GORM and gocloud.dev);
   2. list that repo's published security advisories (public REST API);
   3. keep the ones whose affected range covers your version;
   4. ask OSV.dev, with the same package and version a scanner would send,
@@ -62,7 +63,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.9.2"
+__version__ = "0.9.3"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -552,15 +553,37 @@ def repo_from_urls(urls):
     return None
 
 
+# Vanity hosts whose <host>/<repo> import path maps to one fixed GitHub owner
+# by prefix substitution: the repo is the first path element after the host,
+# and any /vN major version or deeper sub-package path that follows does not
+# change it. Verified from each project's go.mod `module` line (2026-10-17):
+#   k8s.io/api, k8s.io/apimachinery, k8s.io/client-go, k8s.io/klog/v2,
+#     k8s.io/apiserver          -> kubernetes/<repo>
+#   sigs.k8s.io/yaml, sigs.k8s.io/controller-runtime,
+#     sigs.k8s.io/structured-merge-diff/v7 -> kubernetes-sigs/<repo>
+GO_VANITY_OWNER_PREFIX = {
+    "k8s.io": "kubernetes",
+    "sigs.k8s.io": "kubernetes-sigs",
+}
+
 # Well-known Go vanity module hosts whose code lives on GitHub. gopkg.in follows
-# a documented redirect rule (handled by gopkg_in_repo); these entries are
-# verified from each project's go.mod `module` line (checked 2026-10-17):
+# a documented redirect rule (handled by gopkg_in_repo) and the Kubernetes hosts
+# a prefix rule (GO_VANITY_OWNER_PREFIX); these exact entries are verified from
+# each project's go.mod `module` line (checked 2026-10-17):
 #   code.gitea.io/gitea (releases) and gitea.dev (current main) -> go-gitea/gitea
-#   gorm.io/gorm -> go-gorm/gorm
+#   gorm.io/gorm -> go-gorm/gorm; gorm.io/driver/{mysql,postgres,sqlite,
+#     sqlserver} -> go-gorm/{mysql,...}; gorm.io/datatypes -> go-gorm/datatypes
+#   gocloud.dev -> google/go-cloud
 GO_VANITY_REPOS = {
     "code.gitea.io/gitea": "go-gitea/gitea",
     "gitea.dev": "go-gitea/gitea",
     "gorm.io/gorm": "go-gorm/gorm",
+    "gorm.io/driver/mysql": "go-gorm/mysql",
+    "gorm.io/driver/postgres": "go-gorm/postgres",
+    "gorm.io/driver/sqlite": "go-gorm/sqlite",
+    "gorm.io/driver/sqlserver": "go-gorm/sqlserver",
+    "gorm.io/datatypes": "go-gorm/datatypes",
+    "gocloud.dev": "google/go-cloud",
 }
 
 # A gopkg.in package element carries a major-version selector, e.g. "yaml.v3".
@@ -586,13 +609,33 @@ def gopkg_in_repo(module):
     return None
 
 
+def go_vanity_prefix_repo(module):
+    """The GitHub owner/repo for a Go module on a vanity host that maps every
+    <host>/<repo> path to one fixed GitHub owner by prefix substitution (the
+    Kubernetes hosts in GO_VANITY_OWNER_PREFIX: k8s.io -> kubernetes,
+    sigs.k8s.io -> kubernetes-sigs). The repo is the first path element after
+    the host; a /vN major version or a deeper sub-package path follows it and
+    does not change the repo (k8s.io/klog/v2 -> kubernetes/klog,
+    k8s.io/client-go/kubernetes -> kubernetes/client-go). None for any other
+    host. No network request."""
+    parts = (module or "").split("/")
+    if len(parts) < 2:
+        return None
+    owner = GO_VANITY_OWNER_PREFIX.get(parts[0].lower())
+    repo = parts[1]
+    if owner and repo and not re.match(r"^v\d+$", repo):
+        return "%s/%s" % (owner, repo)
+    return None
+
+
 def go_module_repo(module):
     """The GitHub owner/repo for a Go module path, or None. For
     github.com/OWNER/REPO (optionally with a /vN major-version suffix or a
     deeper sub-package path) the repo is OWNER/REPO. gopkg.in paths follow
-    gopkg.in's documented redirect rule, and a small map of well-known vanity
-    hosts (Gitea, GORM) verified from their go.mod is applied. Other hosts
-    (golang.org/x/..., gopkg.in without a version, a private host) are not
+    gopkg.in's documented redirect rule, the Kubernetes vanity hosts k8s.io and
+    sigs.k8s.io a prefix rule, and a small map of well-known vanity hosts
+    (Gitea, GORM, gocloud.dev) verified from their go.mod is applied. Other
+    hosts (golang.org/x/..., gopkg.in without a version, a private host) are not
     mapped, so they are reported as unmapped rather than guessed. No network
     request."""
     module = (module or "").strip()
@@ -603,6 +646,9 @@ def go_module_repo(module):
             return "%s/%s" % (owner, repo)
     if parts and parts[0].lower() == "gopkg.in":
         return gopkg_in_repo(module)
+    prefixed = go_vanity_prefix_repo(module)
+    if prefixed:
+        return prefixed
     if module in GO_VANITY_REPOS:
         return GO_VANITY_REPOS[module]
     return GO_VANITY_REPOS.get(re.sub(r"/v\d+$", "", module))
