@@ -9,7 +9,9 @@ few more exact vanity entries. 0.9.4 adds exact entries for gRPC, Protobuf, the
 go.uber.org libraries and the MongoDB Go driver. 0.9.5 adds the Google
 API/genproto and Cloud client modules, OpenTelemetry and etcd. 0.9.6 adds the
 golang.org/x sub-repositories by (two-element) prefix, and exact entries for
-App Engine, the OpenTelemetry Collector and the net/http contrib module. These
+App Engine, the OpenTelemetry Collector and the net/http contrib module. 0.9.7
+adds a monorepo-prefix rule and moves cloud.google.com/go and go.etcd.io/etcd
+to it, so every sub-module of those two monorepos now maps to the one repo. These
 tests pin the behaviour:
 
   - gopkg.in follows its own documented redirect rule
@@ -325,6 +327,10 @@ class TestGoogleOtelEtcdVanity(unittest.TestCase):
       go.opentelemetry.io/otel{,/trace,/metric,/sdk} -> open-telemetry/opentelemetry-go
       go.etcd.io/etcd{,/api,/client,/server,/pkg} -> etcd-io/etcd
       go.etcd.io/bbolt                            -> etcd-io/bbolt
+
+    cloud.google.com/go and go.etcd.io/etcd became monorepo prefixes in 0.9.7
+    (see TestGoVanityMonorepoPrefix); the assertions here still hold and guard
+    against regressing the root and sub-module mappings.
     """
 
     def test_google_api_and_genproto(self):
@@ -348,9 +354,11 @@ class TestGoogleOtelEtcdVanity(unittest.TestCase):
     def test_cloud_google_com_go(self):
         self.assertEqual(bs.go_module_repo("cloud.google.com/go"),
                          "googleapis/google-cloud-go")
-        # A sub-module we did not individually verify is left unmapped, not
-        # guessed (it lives in the same monorepo, but the tool never guesses).
-        self.assertIsNone(bs.go_module_repo("cloud.google.com/go/storage"))
+        # From 0.9.7 the whole cloud.google.com/go subtree is a verified
+        # monorepo prefix (see TestGoVanityMonorepoPrefix), so sub-modules map
+        # too; this is no longer a "stays unmapped" case.
+        self.assertEqual(bs.go_module_repo("cloud.google.com/go/storage"),
+                         "googleapis/google-cloud-go")
 
     def test_opentelemetry(self):
         self.assertEqual(bs.go_module_repo("go.opentelemetry.io/otel"),
@@ -526,6 +534,98 @@ class TestVanityBlindSpotEndToEnd(unittest.TestCase):
         f = report["findings"][0]
         self.assertEqual(f["repo"], "kubernetes/apimachinery")
         self.assertEqual(f["ghsa_id"], "GHSA-kkkk-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
+        self.assertFalse(f["scanner_visible"])
+
+
+class TestGoVanityMonorepoPrefix(unittest.TestCase):
+    """New in 0.9.7: a monorepo-prefix rule. A module whose path is the prefix
+    itself or begins with "<prefix>/" maps to ONE fixed repo, whatever follows
+    (unlike the owner-prefix rule, where the repo is the element after the
+    prefix). Verified from the go.mod `module` line of the root and several
+    sub-modules on 2026-10-17:
+      cloud.google.com/go{,/storage,/pubsub,/bigquery,/compute/metadata}
+                                                  -> googleapis/google-cloud-go
+      go.etcd.io/etcd{,/api,/client,/server,/pkg,/etcdctl,/etcdutl} -> etcd-io/etcd
+    """
+
+    def test_cloud_google_root_and_submodules(self):
+        self.assertEqual(bs.go_module_repo("cloud.google.com/go"),
+                         "googleapis/google-cloud-go")
+        for sub in ("storage", "pubsub", "bigquery", "firestore", "spanner"):
+            self.assertEqual(bs.go_module_repo("cloud.google.com/go/" + sub),
+                             "googleapis/google-cloud-go")
+
+    def test_cloud_google_deep_path_and_major_version(self):
+        # A deeper import path (compute/metadata, verified) and a /vN major
+        # version both stay in the one monorepo.
+        self.assertEqual(bs.go_module_repo("cloud.google.com/go/compute/metadata"),
+                         "googleapis/google-cloud-go")
+        self.assertEqual(bs.go_module_repo("cloud.google.com/go/pubsub/v2"),
+                         "googleapis/google-cloud-go")
+
+    def test_etcd_submodules_including_new_ones(self):
+        # The five sub-modules mapped before plus etcdctl/etcdutl (verified in
+        # 0.9.7) now all come from the one monorepo prefix; each is a /vN module.
+        for path in ("go.etcd.io/etcd/v3", "go.etcd.io/etcd/api/v3",
+                     "go.etcd.io/etcd/client/v3", "go.etcd.io/etcd/server/v3",
+                     "go.etcd.io/etcd/pkg/v3", "go.etcd.io/etcd/etcdctl/v3",
+                     "go.etcd.io/etcd/etcdutl/v3", "go.etcd.io/etcd/tests/v3"):
+            self.assertEqual(bs.go_module_repo(path), "etcd-io/etcd")
+
+    def test_etcd_sibling_repos_not_caught_by_prefix(self):
+        # bbolt and raft are different repos outside the go.etcd.io/etcd/ prefix;
+        # the monorepo helper must not claim them. bbolt still resolves via its
+        # own exact entry; raft is not mapped at all.
+        self.assertIsNone(bs.go_vanity_monorepo_repo("go.etcd.io/bbolt"))
+        self.assertIsNone(bs.go_vanity_monorepo_repo("go.etcd.io/raft"))
+        self.assertEqual(bs.go_module_repo("go.etcd.io/bbolt"), "etcd-io/bbolt")
+        self.assertIsNone(bs.go_module_repo("go.etcd.io/raft"))
+
+    def test_helper_directly_and_edges(self):
+        self.assertEqual(bs.go_vanity_monorepo_repo("cloud.google.com/go/storage"),
+                         "googleapis/google-cloud-go")
+        self.assertEqual(bs.go_vanity_monorepo_repo("go.etcd.io/etcd/api/v3"),
+                         "etcd-io/etcd")
+        # A host that merely shares a prefix string but not a path boundary must
+        # not match (startswith is anchored on "<prefix>/" or the exact prefix).
+        self.assertIsNone(bs.go_vanity_monorepo_repo("cloud.google.com/godzilla"))
+        self.assertIsNone(bs.go_vanity_monorepo_repo("go.etcd.io/etcdfoo"))
+        self.assertIsNone(bs.go_vanity_monorepo_repo("github.com/foo/bar"))
+        self.assertIsNone(bs.go_vanity_monorepo_repo(""))
+        self.assertIsNone(bs.go_vanity_monorepo_repo(None))
+
+    def test_cloud_storage_blind_spot_end_to_end(self):
+        # A cloud.google.com/go/storage dependency now maps to the monorepo, so a
+        # maintainer advisory OSV does not report is surfaced (fully offline).
+        advisories = {
+            "googleapis/google-cloud-go": [{
+                "ghsa_id": "GHSA-cccc-0000-0000",
+                "cve_id": "CVE-2026-55555",
+                "severity": "high",
+                "summary": "example cloud.google.com/go/storage advisory",
+                "html_url": "https://github.com/googleapis/google-cloud-go/security/advisories/GHSA-cccc-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go", "name": "cloud.google.com/go/storage"},
+                    "vulnerable_version_range": "< 1.40.0",
+                    "patched_versions": "1.40.0",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "cloud.google.com/go/storage", "v1.39.0")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "googleapis/google-cloud-go")
+        self.assertEqual(f["ghsa_id"], "GHSA-cccc-0000-0000")
         self.assertEqual(f["affects_your_version"], "yes")
         self.assertFalse(f["scanner_visible"])
 
