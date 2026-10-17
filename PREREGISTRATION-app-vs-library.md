@@ -143,5 +143,36 @@ pre-registration and will be published either way.
 - A supported H1 is an association (distribution channel ↔ import gap), not a
   controlled experiment.
 
+## Amendment 1 (2026-10-17, before any frame or advisory data existed)
+
+A code review of the frozen `build_frame.py` (commit 21efe05) found that it did
+**not** implement the apps-precedence rule stated under *Labelling* above: the
+library list was never checked against the application catalogue, so a repo
+listed on awesome-selfhosted that is also a top registry package could have
+entered **both** groups, and the census would then have counted it twice under
+opposite labels.
+
+The fix implements the rule as written, read in its strict form: **every GitHub
+repo the self-hosted catalogue lists** (including archived, excluded or starless
+entries, which are still applications by the labelling rule) is skipped when the
+library list is built; the next library in the same registry's dependents order
+takes its place. Each skipped repo is recorded in
+`frame_used.json` → `lib_diagnostics.skipped_as_applications`, and the frame
+builder now stops with an error if any repo is in both groups. Three offline
+tests cover it (`TestAppsPrecedence` in `test_frames.py`).
+
+Nothing else changes: same sources, ranking, `TARGET_N`, exclusion set,
+measures, statistics and decision rule. When this amendment was committed, the
+first frame-build job (`aic-app-lib-frame-v1`) had not started and no frame had
+been produced. That job is superseded by `aic-app-lib-frame-v2`, which runs the
+amended code. If v1 does run, its output will not be used, and that will be
+reported.
+
+Known, unchanged limit worth stating now: the exclusion set is the distinct
+`repo` values in `group_census.csv`, so a repository from an earlier sample that
+had **no** eligible advisories (and so no rows) is not excluded. Such a repo
+contributed nothing to the earlier tests, so reusing it does not double-count any
+advisory. Any reuse will be listed in the write-up.
+
 *Pre-registration and all analysis code written by AI agents working for MV2 of
 Munim, Inc.*

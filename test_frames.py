@@ -77,6 +77,56 @@ class TestLibMetric(unittest.TestCase):
         self.assertFalse(bf._lib_archived({}))
 
 
+class TestAppsPrecedence(unittest.TestCase):
+    """Pre-registration, Labelling: a repo the catalogue lists is an application
+    and is never in the library group."""
+
+    ENTRIES = [
+        ({"name": "A", "source_code_url": "https://github.com/a/app",
+          "stargazers_count": "900", "archived": "false"}, "a.yml"),
+        ({"name": "Old", "source_code_url": "https://github.com/o/old",
+          "stargazers_count": "800", "archived": "true"}, "old.yml"),
+        ({"name": "Used", "source_code_url": "https://github.com/u/used",
+          "stargazers_count": "700", "archived": "false"}, "used.yml"),
+        ({"name": "Dual", "source_code_url": "https://github.com/d/dual",
+          "stargazers_count": "600", "archived": "false"}, "dual.yml"),
+        ({"name": "Lab", "source_code_url": "https://gitlab.com/x/y",
+          "stargazers_count": "500"}, "lab.yml"),
+    ]
+
+    def test_catalogue_holds_every_github_entry(self):
+        apps, n, catalogue = bf.select_apps(self.ENTRIES, {"u/used"})
+        self.assertEqual([a["repo"] for a in apps], ["a/app", "d/dual"])
+        self.assertEqual(n, 2)
+        # archived and excluded entries are still applications by label
+        self.assertEqual(catalogue, {"a/app", "o/old", "u/used", "d/dual"})
+
+    def _fetch(self, url):
+        if not url.endswith("&page=1"):
+            return []
+        if "npmjs.org" in url:
+            return [{"name": "dual", "repository_url": "https://github.com/d/dual"},
+                    {"name": "lib1", "repository_url": "https://github.com/l/lib1",
+                     "dependent_repos_count": 50}]
+        if "pypi.org" in url:
+            return [{"name": "old", "repository_url": "https://github.com/O/Old"},
+                    {"name": "lib2", "repository_url": "https://github.com/l/lib2"}]
+        return []
+
+    def test_catalogue_repos_never_libraries(self):
+        _, _, catalogue = bf.select_apps(self.ENTRIES, set())
+        libs, diag = bf.build_libs(set(), catalogue, fetch=self._fetch)
+        self.assertEqual([l["repo"] for l in libs], ["l/lib1", "l/lib2"])
+        self.assertEqual(sorted(m["repo"] for m in diag["skipped_as_applications"]),
+                         ["O/Old", "d/dual"])
+        self.assertEqual(libs[0]["registry_rank"], 1)  # rank counts libraries only
+
+    def test_without_catalogue_dual_is_a_library(self):
+        libs, diag = bf.build_libs(set(), fetch=self._fetch)
+        self.assertIn("d/dual", [l["repo"] for l in libs])
+        self.assertEqual(diag["skipped_as_applications"], [])
+
+
 def adv(ghsa, cves=(), severity="high", pub="2026-06-01T00:00:00Z", pkgs=()):
     return {
         "ghsa_id": ghsa, "state": "published", "severity": severity,
