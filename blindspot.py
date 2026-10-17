@@ -9,7 +9,9 @@ the census in this repo found 31.6% of GRAs for self-hosted AI/ML tools never
 got there. This tool checks YOUR dependencies for that gap:
 
   1. map each package to its GitHub repo (registry metadata, a small built-in
-     map, --map name=owner/repo, or, for a Go module, its own path);
+     map, --map name=owner/repo, or, for a Go module, its path -- github.com
+     modules, gopkg.in by its documented redirect rule, and a few known vanity
+     hosts such as Gitea and GORM);
   2. list that repo's published security advisories (public REST API);
   3. keep the ones whose affected range covers your version;
   4. ask OSV.dev, with the same package and version a scanner would send,
@@ -60,7 +62,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.9.1"
+__version__ = "0.9.2"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -550,18 +552,60 @@ def repo_from_urls(urls):
     return None
 
 
+# Well-known Go vanity module hosts whose code lives on GitHub. gopkg.in follows
+# a documented redirect rule (handled by gopkg_in_repo); these entries are
+# verified from each project's go.mod `module` line (checked 2026-10-17):
+#   code.gitea.io/gitea (releases) and gitea.dev (current main) -> go-gitea/gitea
+#   gorm.io/gorm -> go-gorm/gorm
+GO_VANITY_REPOS = {
+    "code.gitea.io/gitea": "go-gitea/gitea",
+    "gitea.dev": "go-gitea/gitea",
+    "gorm.io/gorm": "go-gorm/gorm",
+}
+
+# A gopkg.in package element carries a major-version selector, e.g. "yaml.v3".
+_GOPKG_VERSIONED = re.compile(r"^(.+)\.v\d+$")
+
+
+def gopkg_in_repo(module):
+    """The GitHub owner/repo for a gopkg.in module path, or None, by gopkg.in's
+    own documented redirect rule: gopkg.in/pkg.vN lives at github.com/go-pkg/pkg
+    and gopkg.in/user/pkg.vN at github.com/user/pkg. A deeper sub-package path
+    may follow and does not change the repo. No network request."""
+    parts = (module or "").split("/")
+    if len(parts) < 2 or parts[0].lower() != "gopkg.in":
+        return None
+    short = _GOPKG_VERSIONED.match(parts[1])
+    if short:
+        pkg = short.group(1)
+        return "go-%s/%s" % (pkg, pkg) if pkg else None
+    if len(parts) >= 3:
+        pkg_m = _GOPKG_VERSIONED.match(parts[2])
+        if parts[1] and pkg_m:
+            return "%s/%s" % (parts[1], pkg_m.group(1))
+    return None
+
+
 def go_module_repo(module):
     """The GitHub owner/repo for a Go module path, or None. For
     github.com/OWNER/REPO (optionally with a /vN major-version suffix or a
-    deeper sub-package path) the repo is OWNER/REPO; modules on other hosts
-    (golang.org/x/..., gopkg.in/..., a private host) are not mapped, so they are
-    reported as unmapped rather than guessed. No network request."""
-    parts = (module or "").split("/")
+    deeper sub-package path) the repo is OWNER/REPO. gopkg.in paths follow
+    gopkg.in's documented redirect rule, and a small map of well-known vanity
+    hosts (Gitea, GORM) verified from their go.mod is applied. Other hosts
+    (golang.org/x/..., gopkg.in without a version, a private host) are not
+    mapped, so they are reported as unmapped rather than guessed. No network
+    request."""
+    module = (module or "").strip()
+    parts = module.split("/")
     if len(parts) >= 3 and parts[0].lower() == "github.com":
         owner, repo = parts[1], parts[2]
         if owner and repo and owner.lower() not in NOT_REPO_OWNERS:
             return "%s/%s" % (owner, repo)
-    return None
+    if parts and parts[0].lower() == "gopkg.in":
+        return gopkg_in_repo(module)
+    if module in GO_VANITY_REPOS:
+        return GO_VANITY_REPOS[module]
+    return GO_VANITY_REPOS.get(re.sub(r"/v\d+$", "", module))
 
 
 def registry_repo(ecosystem, name):
