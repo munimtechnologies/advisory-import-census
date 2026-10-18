@@ -70,7 +70,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.9.20"
+__version__ = "0.9.21"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -902,6 +902,29 @@ GO_VANITY_MONOREPO_PREFIX = {
 #   gorm.io/driver/clickhouse -> go-gorm/clickhouse (`module
 #     gorm.io/driver/clickhouse`; the GORM ClickHouse driver, a sibling of the
 #     mysql/postgres/sqlite/sqlserver drivers already mapped).
+# New in 0.9.21, each verified from the project's go.mod `module` line
+# (2026-10-18). All are exact entries (none of their hosts names the GitHub owner
+# for every module, so none is treated as an owner prefix); a trailing /vN is
+# stripped before the lookup:
+#   gorm.io/plugin/dbresolver -> go-gorm/dbresolver (`module
+#     gorm.io/plugin/dbresolver`; the GORM read/write-splitting plugin, a common
+#     GORM add-on. gorm.io stays an exact-entry host, so this /plugin/ path is its
+#     own entry).
+#   gorm.io/plugin/opentelemetry -> go-gorm/opentelemetry (`module
+#     gorm.io/plugin/opentelemetry`; the GORM OpenTelemetry tracing/metrics
+#     plugin, a sibling of dbresolver under gorm.io/plugin/).
+#   lukechampine.com/uint128 -> lukechampine/uint128 (`module
+#     lukechampine.com/uint128`; a 128-bit unsigned-integer type pulled in
+#     transitively by storage and crypto libraries). lukechampine.com stays an
+#     exact-entry host (blake3 since 0.9.15, frand and uint128 here), NOT an owner
+#     prefix, so an unverified lukechampine.com path is never guessed.
+#   lukechampine.com/frand -> lukechampine/frand (`module lukechampine.com/frand`;
+#     a fast cryptographic-quality random-number generator; replaces the 0.9.15
+#     test note that left frand unmapped).
+#   go.bug.st/serial -> bugst/go-serial (`module go.bug.st/serial`; the common
+#     cross-platform serial-port library used by Go hardware/embedded tooling.
+#     go.bug.st is NOT a prefix host: the owner is bugst and the repo is go-serial,
+#     so only this verified path is mapped).
 GO_VANITY_REPOS = {
     "code.gitea.io/gitea": "go-gitea/gitea",
     "gitea.dev": "go-gitea/gitea",
@@ -989,6 +1012,11 @@ GO_VANITY_REPOS = {
     "maunium.net/go/mautrix": "mautrix/go",
     "gorm.io/gen": "go-gorm/gen",
     "gorm.io/driver/clickhouse": "go-gorm/clickhouse",
+    "gorm.io/plugin/dbresolver": "go-gorm/dbresolver",
+    "gorm.io/plugin/opentelemetry": "go-gorm/opentelemetry",
+    "lukechampine.com/uint128": "lukechampine/uint128",
+    "lukechampine.com/frand": "lukechampine/frand",
+    "go.bug.st/serial": "bugst/go-serial",
 }
 
 # A gopkg.in package element carries a major-version selector, e.g. "yaml.v3".

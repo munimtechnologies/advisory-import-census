@@ -7,12 +7,12 @@ modules there is no registry call: the GitHub repository is worked out from the
 module path alone, by the rules below.
 
 Every mapping here was verified from the project's own `go.mod` `module` line on
-2026-10-17 (those added in 0.9.11 to 0.9.20 on 2026-10-18). `blindspot`
+2026-10-17 (those added in 0.9.11 to 0.9.21 on 2026-10-18). `blindspot`
 never guesses a repository it has not verified: a Go
 module on any host not listed below is reported as *unmapped* (add it with
 `--map NAME=OWNER/REPO`), rather than silently skipped or mapped to a wrong repo.
 
-This file documents `blindspot` as of advisory-import-census **0.9.20**.
+This file documents `blindspot` as of advisory-import-census **0.9.21**.
 
 ## 1. Direct GitHub modules
 
@@ -147,7 +147,7 @@ trailing `/vN` is stripped before the lookup.
 | `buf.build/go/protoyaml` | `bufbuild/protoyaml-go` |
 | `buf.build/go/bufplugin` | `bufbuild/bufplugin-go` |
 | `go.step.sm/crypto` | `smallstep/crypto` |
-| `lukechampine.com/blake3` | `lukechampine/blake3` |
+| `lukechampine.com/{blake3,frand,uint128}` | `lukechampine/{blake3,frand,uint128}` |
 | `knative.dev/{serving,pkg,eventing,func}` | `knative/{serving,…}` |
 | `kubevirt.io/{kubevirt,client-go,api}` | `kubevirt/{kubevirt,…}` |
 | `kubevirt.io/{containerized-data-importer,csi-driver}` | `kubevirt/{containerized-data-importer,csi-driver}` |
@@ -172,6 +172,9 @@ trailing `/vN` is stripped before the lookup.
 | `maunium.net/go/mautrix` | `mautrix/go` |
 | `gorm.io/gen` | `go-gorm/gen` |
 | `gorm.io/driver/clickhouse` | `go-gorm/clickhouse` |
+| `gorm.io/plugin/dbresolver` | `go-gorm/dbresolver` |
+| `gorm.io/plugin/opentelemetry` | `go-gorm/opentelemetry` |
+| `go.bug.st/serial` | `bugst/go-serial` |
 
 `google.golang.org` is **not** a prefix host (grpc, protobuf, api and genproto
 live in four different repositories), so each of its modules is an exact entry.
@@ -303,6 +306,22 @@ again not a prefix host. Two more `gorm.io` repositories join the drivers above:
 sibling of the mysql/postgres/sqlite/sqlserver drivers); `gorm.io` stays an
 exact-entry host, so an unverified `gorm.io` driver is still left unmapped rather
 than guessed.
+
+The 0.9.21 entries add five more exact paths, each verified from its own `go.mod`
+`module` line (2026-10-18). Two more `gorm.io` repositories join the drivers and
+generator above, both under the `gorm.io/plugin/` namespace:
+`gorm.io/plugin/dbresolver` → `go-gorm/dbresolver` (the read/write-splitting
+plugin) and `gorm.io/plugin/opentelemetry` → `go-gorm/opentelemetry` (the
+OpenTelemetry tracing/metrics plugin); `gorm.io` stays an exact-entry host, so an
+unverified `gorm.io` plugin or driver is still left unmapped. Two more
+`lukechampine.com` libraries join `blake3` (0.9.15): `lukechampine.com/uint128` →
+`lukechampine/uint128` (a 128-bit unsigned-integer type, a common storage/crypto
+transitive dependency) and `lukechampine.com/frand` → `lukechampine/frand` (a fast
+cryptographic-quality RNG); `lukechampine.com` stays an exact-entry host, not an
+owner prefix. Finally `go.bug.st/serial` → `bugst/go-serial` is the common
+cross-platform serial-port library used by Go hardware/embedded tooling;
+`go.bug.st` is **not** a prefix host (the owner is `bugst` and the repository is
+`go-serial`), so only the verified path is mapped.
 
 ## Anything else
 

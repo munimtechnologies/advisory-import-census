@@ -1288,7 +1288,11 @@ class TestUberBufStepBlakeVanity(unittest.TestCase):
     def test_blake3(self):
         self.assertEqual(bs.go_module_repo("lukechampine.com/blake3"),
                          "lukechampine/blake3")
-        self.assertIsNone(bs.go_module_repo("lukechampine.com/frand"))
+        # frand and uint128 are mapped from 0.9.21 (see
+        # TestGormPluginLukechampineBugstVanity); lukechampine.com stays an
+        # exact-entry host, so a path we have not verified is still unmapped.
+        self.assertIsNone(bs.go_module_repo("lukechampine.com/unverified"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("lukechampine.com/blake3"))
 
     def test_ratelimit_blind_spot_end_to_end(self):
         # A go.uber.org/ratelimit dependency now maps to uber-go/ratelimit, so a
@@ -1825,6 +1829,81 @@ class TestGocvZombiezenMautrixGormVanity(unittest.TestCase):
         f = report["findings"][0]
         self.assertEqual(f["repo"], "hybridgroup/gocv")
         self.assertEqual(f["ghsa_id"], "GHSA-gocv-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
+        self.assertFalse(f["scanner_visible"])
+
+
+class TestGormPluginLukechampineBugstVanity(unittest.TestCase):
+    """0.9.21 additions, each verified from the project's go.mod `module` line
+    (2026-10-18):
+
+      gorm.io/plugin/dbresolver    -> go-gorm/dbresolver
+      gorm.io/plugin/opentelemetry -> go-gorm/opentelemetry
+      lukechampine.com/uint128     -> lukechampine/uint128
+      lukechampine.com/frand       -> lukechampine/frand
+      go.bug.st/serial             -> bugst/go-serial
+    """
+
+    def test_gorm_plugins(self):
+        self.assertEqual(bs.go_module_repo("gorm.io/plugin/dbresolver"),
+                         "go-gorm/dbresolver")
+        self.assertEqual(bs.go_module_repo("gorm.io/plugin/opentelemetry"),
+                         "go-gorm/opentelemetry")
+        # gorm.io stays an exact-entry host: an unverified plugin path and an
+        # unverified driver path are both left unmapped, never guessed.
+        self.assertIsNone(bs.go_module_repo("gorm.io/plugin/unverified"))
+        self.assertIsNone(bs.go_module_repo("gorm.io/driver/bogus"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("gorm.io/plugin/dbresolver"))
+
+    def test_lukechampine_frand_and_uint128(self):
+        self.assertEqual(bs.go_module_repo("lukechampine.com/uint128"),
+                         "lukechampine/uint128")
+        self.assertEqual(bs.go_module_repo("lukechampine.com/frand"),
+                         "lukechampine/frand")
+        # blake3 (0.9.15) still resolves; lukechampine.com is NOT a prefix host.
+        self.assertEqual(bs.go_module_repo("lukechampine.com/blake3"),
+                         "lukechampine/blake3")
+        self.assertIsNone(bs.go_module_repo("lukechampine.com/unverified"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("lukechampine.com/uint128"))
+
+    def test_bugst_serial(self):
+        self.assertEqual(bs.go_module_repo("go.bug.st/serial"), "bugst/go-serial")
+        # go.bug.st is NOT a prefix host (owner bugst, repo go-serial); an
+        # unverified path is left unmapped.
+        self.assertIsNone(bs.go_module_repo("go.bug.st/unverified"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("go.bug.st/serial"))
+
+    def test_dbresolver_blind_spot_end_to_end(self):
+        # A gorm.io/plugin/dbresolver dependency now maps to go-gorm/dbresolver,
+        # so a maintainer advisory OSV does not report is surfaced (fully offline).
+        advisories = {
+            "go-gorm/dbresolver": [{
+                "ghsa_id": "GHSA-dbrs-0000-0000",
+                "cve_id": "CVE-2026-21212",
+                "severity": "high",
+                "summary": "example gorm.io/plugin/dbresolver advisory",
+                "html_url": "https://github.com/go-gorm/dbresolver/security/advisories/GHSA-dbrs-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go", "name": "gorm.io/plugin/dbresolver"},
+                    "vulnerable_version_range": "< 1.5.0",
+                    "patched_versions": "1.5.0",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "gorm.io/plugin/dbresolver", "v1.4.0")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "go-gorm/dbresolver")
+        self.assertEqual(f["ghsa_id"], "GHSA-dbrs-0000-0000")
         self.assertEqual(f["affects_your_version"], "yes")
         self.assertFalse(f["scanner_visible"])
 
