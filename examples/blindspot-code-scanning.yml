@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: munimtechnologies/advisory-import-census@v0.7.0
+      - uses: munimtechnologies/advisory-import-census@v0.9.9
         with:
           lock: package-lock.json          # or requirements / npm / pyproject / packages
           sarif: blindspot.sarif

@@ -26,7 +26,7 @@ jobs:
       # is checked at its exact version (uv.lock, poetry.lock, pylock.toml,
       # Pipfile.lock, package-lock.json, npm-shrinkwrap.json, yarn.lock,
       # pnpm-lock.yaml).
-      - uses: munimtechnologies/advisory-import-census@v0.7.0
+      - uses: munimtechnologies/advisory-import-census@v0.9.9
         with:
           lock: uv.lock
           fail-on-blind: "true"
@@ -37,22 +37,22 @@ jobs:
           #   CVE-2026-12345
 
       # No lock file? A requirements.txt (hashed pip-compile output is fine):
-      # - uses: munimtechnologies/advisory-import-census@v0.7.0
+      # - uses: munimtechnologies/advisory-import-census@v0.9.9
       #   with:
       #     requirements: requirements.txt
 
       # Python project that declares its deps in pyproject.toml
       # (PEP 621 [project] or Poetry; the runner's python3 is 3.11+):
-      # - uses: munimtechnologies/advisory-import-census@v0.7.0
+      # - uses: munimtechnologies/advisory-import-census@v0.9.9
       #   with:
       #     pyproject: pyproject.toml
 
       # Node project:
-      # - uses: munimtechnologies/advisory-import-census@v0.7.0
+      # - uses: munimtechnologies/advisory-import-census@v0.9.9
       #   with:
       #     lock: package-lock.json   # or yarn.lock / pnpm-lock.yaml
 
       # A self-hosted app you run from source (no package on a registry):
-      # - uses: munimtechnologies/advisory-import-census@v0.7.0
+      # - uses: munimtechnologies/advisory-import-census@v0.9.9
       #   with:
       #     packages: "repo:langgenius/dify@1.4.0"
