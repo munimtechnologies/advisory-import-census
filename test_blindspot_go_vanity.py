@@ -992,5 +992,96 @@ class TestIstioCueOrasConnectVanity(unittest.TestCase):
         self.assertFalse(f["scanner_visible"])
 
 
+class TestMergoAgeStaticcheckVanity(unittest.TestCase):
+    """New in 0.9.12, each verified from the project's go.mod `module` line
+    (2026-10-18). All are widely-used transitive dependencies on vanity hosts
+    that are neither prefix hosts nor monorepos, so each is an exact entry; a
+    trailing /vN is stripped before the lookup:
+      dario.cat/mergo          -> darccio/mergo
+      filippo.io/age           -> FiloSottile/age
+      filippo.io/edwards25519  -> FiloSottile/edwards25519
+      honnef.co/go/tools       -> dominikh/go-tools
+      gotest.tools (/v3)       -> gotestyourself/gotest.tools
+      go.starlark.net          -> google/starlark-go
+      mvdan.cc/sh (/v3)        -> mvdan/sh
+    """
+
+    def test_mergo(self):
+        self.assertEqual(bs.go_module_repo("dario.cat/mergo"), "darccio/mergo")
+
+    def test_filippo_modules(self):
+        self.assertEqual(bs.go_module_repo("filippo.io/age"), "FiloSottile/age")
+        self.assertEqual(bs.go_module_repo("filippo.io/edwards25519"),
+                         "FiloSottile/edwards25519")
+
+    def test_filippo_is_not_a_prefix(self):
+        # filippo.io is NOT an owner prefix: only the two verified paths are
+        # mapped, an unverified filippo.io path is left unmapped, not guessed.
+        self.assertIsNone(bs.go_module_repo("filippo.io/somethingelse"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("filippo.io/age"))
+
+    def test_staticcheck_tools(self):
+        self.assertEqual(bs.go_module_repo("honnef.co/go/tools"),
+                         "dominikh/go-tools")
+        self.assertIsNone(bs.go_module_repo("honnef.co/go/somethingelse"))
+
+    def test_gotest_tools_bare_and_v3(self):
+        # The current module path is gotest.tools/v3 (the /v3 is stripped before
+        # the exact lookup); the v1/v2 line was the bare gotest.tools. Both map.
+        self.assertEqual(bs.go_module_repo("gotest.tools"),
+                         "gotestyourself/gotest.tools")
+        self.assertEqual(bs.go_module_repo("gotest.tools/v3"),
+                         "gotestyourself/gotest.tools")
+
+    def test_starlark(self):
+        self.assertEqual(bs.go_module_repo("go.starlark.net"), "google/starlark-go")
+        # A deeper import path still resolves (it is a single-module repo); the
+        # exact key is the bare host, and go.starlark.net/syntax is an import
+        # inside it, not a separate module, so only the bare host is asserted.
+        self.assertIsNone(bs.go_module_repo("go.starlark.example/net"))
+
+    def test_mvdan_sh_bare_and_v3(self):
+        # The current module path is mvdan.cc/sh/v3 (the /v3 is stripped before
+        # the lookup); the repo is mvdan/sh (the import path lacks the owner).
+        self.assertEqual(bs.go_module_repo("mvdan.cc/sh"), "mvdan/sh")
+        self.assertEqual(bs.go_module_repo("mvdan.cc/sh/v3"), "mvdan/sh")
+        # mvdan.cc is not a prefix host; another mvdan.cc path is not guessed.
+        self.assertIsNone(bs.go_module_repo("mvdan.cc/gofumpt"))
+
+    def test_mergo_blind_spot_end_to_end(self):
+        # A dario.cat/mergo dependency now maps to darccio/mergo, so a maintainer
+        # advisory OSV does not report is surfaced (fully offline).
+        advisories = {
+            "darccio/mergo": [{
+                "ghsa_id": "GHSA-dddd-0000-0000",
+                "cve_id": "CVE-2026-99999",
+                "severity": "high",
+                "summary": "example dario.cat/mergo advisory",
+                "html_url": "https://github.com/darccio/mergo/security/advisories/GHSA-dddd-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go", "name": "dario.cat/mergo"},
+                    "vulnerable_version_range": "< 1.0.1",
+                    "patched_versions": "1.0.1",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "dario.cat/mergo", "v1.0.0")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "darccio/mergo")
+        self.assertEqual(f["ghsa_id"], "GHSA-dddd-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
+        self.assertFalse(f["scanner_visible"])
+
+
 if __name__ == "__main__":
     unittest.main()

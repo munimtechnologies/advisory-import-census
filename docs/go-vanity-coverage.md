@@ -7,11 +7,12 @@ modules there is no registry call: the GitHub repository is worked out from the
 module path alone, by the rules below.
 
 Every mapping here was verified from the project's own `go.mod` `module` line on
-2026-10-17 (those added in 0.9.11 on 2026-10-18). `blindspot` never guesses a repository it has not verified: a Go
+2026-10-17 (those added in 0.9.11 and 0.9.12 on 2026-10-18). `blindspot` never
+guesses a repository it has not verified: a Go
 module on any host not listed below is reported as *unmapped* (add it with
 `--map NAME=OWNER/REPO`), rather than silently skipped or mapped to a wrong repo.
 
-This file documents `blindspot` as of advisory-import-census **0.9.11**.
+This file documents `blindspot` as of advisory-import-census **0.9.12**.
 
 ## 1. Direct GitHub modules
 
@@ -125,6 +126,13 @@ trailing `/vN` is stripped before the lookup.
 | `connectrpc.com/connect` | `connectrpc/connect-go` |
 | `connectrpc.com/otelconnect` | `connectrpc/otelconnect-go` |
 | `connectrpc.com/grpcreflect` | `connectrpc/grpcreflect-go` |
+| `dario.cat/mergo` | `darccio/mergo` |
+| `filippo.io/age` | `FiloSottile/age` |
+| `filippo.io/edwards25519` | `FiloSottile/edwards25519` |
+| `honnef.co/go/tools` | `dominikh/go-tools` |
+| `gotest.tools` (`/v3`) | `gotestyourself/gotest.tools` |
+| `go.starlark.net` | `google/starlark-go` |
+| `mvdan.cc/sh` (`/v3`) | `mvdan/sh` |
 
 `google.golang.org` is **not** a prefix host (grpc, protobuf, api and genproto
 live in four different repositories), so each of its modules is an exact entry.
@@ -132,6 +140,14 @@ Neither is `connectrpc.com`: its repositories carry a `-go` suffix the import
 path lacks, so only the three verified paths are mapped. ORAS's v2 line declares
 `module oras.land/oras-go/v2`; its main branch has since moved to
 `github.com/oras-project/oras-go/v3`, which rule 1 maps to the same repository.
+
+The 0.9.12 entries (`dario.cat/mergo`, `filippo.io/age`,
+`filippo.io/edwards25519`, `honnef.co/go/tools`, `gotest.tools`,
+`go.starlark.net`, `mvdan.cc/sh`) are all common transitive dependencies.
+`filippo.io` is **not** a prefix host — only the two verified paths are mapped,
+so an unlisted `filippo.io` module stays unmapped rather than guessed.
+`gotest.tools` and `mvdan.cc/sh` ship as `/v3` modules; the `/vN` is stripped
+before the lookup, so the base path is the map key.
 
 ## Anything else
 

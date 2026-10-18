@@ -70,7 +70,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.9.11"
+__version__ = "0.9.12"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -713,6 +713,29 @@ GO_VANITY_MONOREPO_PREFIX = {
 #     grpcreflect reads `.../grpcreflect/v2` on main. The repo names carry a -go
 #     suffix the import path lacks, so connectrpc.com is NOT a prefix host and
 #     only these three verified paths are mapped.
+# New in 0.9.12, each verified from its go.mod `module` line (2026-10-18). These
+# are all widely-used transitive dependencies whose vanity host is neither a
+# prefix host nor a monorepo (their siblings, if any, live under other owners),
+# so each is an exact entry:
+#   dario.cat/mergo -> darccio/mergo (`module dario.cat/mergo` on master; the
+#     very common struct-merging library, pulled in transitively by Docker,
+#     Helm, containerd and many others; its old import.cat path imdario/mergo
+#     moved owner, so only the current dario.cat path is mapped here).
+#   filippo.io/age -> FiloSottile/age; filippo.io/edwards25519 ->
+#     FiloSottile/edwards25519 (each `module filippo.io/<name>`). edwards25519 is
+#     a common low-level crypto dependency. filippo.io is NOT treated as an owner
+#     prefix (not every filippo.io module is FiloSottile/<same-name>), so these
+#     two verified paths are exact entries.
+#   honnef.co/go/tools -> dominikh/go-tools (`module honnef.co/go/tools`; the
+#     staticcheck toolchain, a common dev/CI dependency).
+#   gotest.tools -> gotestyourself/gotest.tools. The current module path is
+#     `gotest.tools/v3` (the /v3 is stripped before the lookup, so the key is the
+#     base path); the v1/v2 line was the bare `gotest.tools`. A very common test
+#     helper dependency.
+#   go.starlark.net -> google/starlark-go (`module go.starlark.net`; the Go
+#     implementation of Starlark, used by Tilt, Buildkite and others).
+#   mvdan.cc/sh -> mvdan/sh. The current module path is `mvdan.cc/sh/v3` (the /v3
+#     is stripped before the lookup); the shell parser/formatter behind shfmt.
 GO_VANITY_REPOS = {
     "code.gitea.io/gitea": "go-gitea/gitea",
     "gitea.dev": "go-gitea/gitea",
@@ -743,6 +766,13 @@ GO_VANITY_REPOS = {
     "connectrpc.com/connect": "connectrpc/connect-go",
     "connectrpc.com/otelconnect": "connectrpc/otelconnect-go",
     "connectrpc.com/grpcreflect": "connectrpc/grpcreflect-go",
+    "dario.cat/mergo": "darccio/mergo",
+    "filippo.io/age": "FiloSottile/age",
+    "filippo.io/edwards25519": "FiloSottile/edwards25519",
+    "honnef.co/go/tools": "dominikh/go-tools",
+    "gotest.tools": "gotestyourself/gotest.tools",
+    "go.starlark.net": "google/starlark-go",
+    "mvdan.cc/sh": "mvdan/sh",
 }
 
 # A gopkg.in package element carries a major-version selector, e.g. "yaml.v3".
