@@ -70,7 +70,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.9.15"
+__version__ = "0.9.16"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -645,6 +645,15 @@ GO_VANITY_OWNER_PREFIX = {
 #     the go.mod `module` line of tailscale/tailscale (`module tailscale.com`),
 #     2026-10-17. A monorepo prefix, not an owner prefix: the element after the
 #     host is a sub-package, not a separate repo.
+#   go.elastic.co/apm -> elastic/apm-agent-go (new in 0.9.16). The Elastic APM
+#     Go agent is one repository holding the root module and every instrumentation
+#     sub-module. main's root go.mod reads `module go.elastic.co/apm/v2` and the
+#     instrumentation modules read `module go.elastic.co/apm/module/<name>/v2`
+#     (verified go.elastic.co/apm/module/apmhttp/v2), all in elastic/apm-agent-go,
+#     2026-10-18. A monorepo prefix on go.elastic.co/apm (NOT the bare host
+#     go.elastic.co: other go.elastic.co modules such as ecszap and fastjson live
+#     in different repos, so only the /apm subtree is mapped). A trailing /vN makes
+#     no difference.
 GO_VANITY_MONOREPO_PREFIX = {
     "cloud.google.com/go": "googleapis/google-cloud-go",
     "go.etcd.io/etcd": "etcd-io/etcd",
@@ -655,6 +664,7 @@ GO_VANITY_MONOREPO_PREFIX = {
     "go.opentelemetry.io/auto": "open-telemetry/opentelemetry-go-instrumentation",
     "go.opentelemetry.io/ebpf-profiler": "open-telemetry/opentelemetry-ebpf-profiler",
     "tailscale.com": "tailscale/tailscale",
+    "go.elastic.co/apm": "elastic/apm-agent-go",
 }
 
 # Well-known Go vanity module hosts whose code lives on GitHub. gopkg.in follows
@@ -774,6 +784,22 @@ GO_VANITY_MONOREPO_PREFIX = {
 #   cel.dev/expr -> google/cel-spec (`module cel.dev/expr` at the root of
 #     cel-spec; the CEL protobuf types, required by grpc-go and cel-go). cel.dev is
 #     NOT a prefix host: only this verified path is mapped.
+# New in 0.9.16, each verified from the project's go.mod `module` line (2026-10-18).
+# These are the two Kubernetes-ecosystem vanity hosts knative.dev and kubevirt.io.
+# Both are added as EXACT entries, NOT owner prefixes, because the import-path host
+# does not identify the GitHub owner: Knative's core repos live under the knative
+# org (knative/serving, knative/pkg, knative/eventing, knative/func each read
+# `module knative.dev/<repo>`), but its extensions live under a DIFFERENT org --
+# knative.dev/eventing-kafka-broker reads `module knative.dev/eventing-kafka-broker`
+# yet is hosted at knative-extensions/eventing-kafka-broker, not knative/... . A
+# knative.dev owner prefix would therefore map every extension to the wrong owner.
+# To stay within the "never guess" rule, only the four verified core modules are
+# mapped. kubevirt.io is treated the same way out of caution:
+#   kubevirt.io/kubevirt  -> kubevirt/kubevirt
+#   kubevirt.io/client-go -> kubevirt/client-go
+#   kubevirt.io/api       -> kubevirt/api
+# (each `module kubevirt.io/<repo>`, verified in the kubevirt org). Other
+# knative.dev / kubevirt.io modules stay unmapped rather than being guessed.
 GO_VANITY_REPOS = {
     "code.gitea.io/gitea": "go-gitea/gitea",
     "gitea.dev": "go-gitea/gitea",
@@ -831,6 +857,13 @@ GO_VANITY_REPOS = {
     "buf.build/go/bufplugin": "bufbuild/bufplugin-go",
     "go.step.sm/crypto": "smallstep/crypto",
     "lukechampine.com/blake3": "lukechampine/blake3",
+    "knative.dev/serving": "knative/serving",
+    "knative.dev/pkg": "knative/pkg",
+    "knative.dev/eventing": "knative/eventing",
+    "knative.dev/func": "knative/func",
+    "kubevirt.io/kubevirt": "kubevirt/kubevirt",
+    "kubevirt.io/client-go": "kubevirt/client-go",
+    "kubevirt.io/api": "kubevirt/api",
 }
 
 # A gopkg.in package element carries a major-version selector, e.g. "yaml.v3".

@@ -7,12 +7,12 @@ modules there is no registry call: the GitHub repository is worked out from the
 module path alone, by the rules below.
 
 Every mapping here was verified from the project's own `go.mod` `module` line on
-2026-10-17 (those added in 0.9.11 to 0.9.15 on 2026-10-18). `blindspot`
+2026-10-17 (those added in 0.9.11 to 0.9.16 on 2026-10-18). `blindspot`
 never guesses a repository it has not verified: a Go
 module on any host not listed below is reported as *unmapped* (add it with
 `--map NAME=OWNER/REPO`), rather than silently skipped or mapped to a wrong repo.
 
-This file documents `blindspot` as of advisory-import-census **0.9.15**.
+This file documents `blindspot` as of advisory-import-census **0.9.16**.
 
 ## 1. Direct GitHub modules
 
@@ -72,6 +72,7 @@ longest matching prefix wins.
 | `go.opentelemetry.io/auto` | `open-telemetry/opentelemetry-go-instrumentation` | 0.9.9 |
 | `go.opentelemetry.io/ebpf-profiler` | `open-telemetry/opentelemetry-ebpf-profiler` | 0.9.9 |
 | `tailscale.com` | `tailscale/tailscale` | 0.9.10 |
+| `go.elastic.co/apm` | `elastic/apm-agent-go` | 0.9.16 |
 
 **OpenTelemetry.** OpenTelemetry's own vanity-URL configuration
 ([`opentelemetry-go-vanityurls`](https://github.com/open-telemetry/opentelemetry-go-vanityurls),
@@ -147,6 +148,8 @@ trailing `/vN` is stripped before the lookup.
 | `buf.build/go/bufplugin` | `bufbuild/bufplugin-go` |
 | `go.step.sm/crypto` | `smallstep/crypto` |
 | `lukechampine.com/blake3` | `lukechampine/blake3` |
+| `knative.dev/{serving,pkg,eventing,func}` | `knative/{serving,…}` |
+| `kubevirt.io/{kubevirt,client-go,api}` | `kubevirt/{kubevirt,…}` |
 
 `google.golang.org` is **not** a prefix host (grpc, protobuf, api and genproto
 live in four different repositories), so each of its modules is an exact entry.
@@ -191,6 +194,29 @@ a widely-used BLAKE3 implementation). `buf.build/go` stays an exact-entry host f
 the same reason as in 0.9.13: its repository names carry a `-go` suffix the import
 path lacks (`buf.build/go/protoyaml` → `bufbuild/protoyaml-go`). `go.step.sm` and
 `lukechampine.com` are not prefix hosts, so only the verified paths are mapped.
+
+The 0.9.16 entries add two Kubernetes-ecosystem vanity hosts, `knative.dev` and
+`kubevirt.io`, as **exact entries rather than owner prefixes**. The import-path
+host does not identify the GitHub owner here: Knative's core repositories are under
+the `knative` org (`knative/serving`, `knative/pkg`, `knative/eventing`,
+`knative/func` each declare `module knative.dev/<repo>`), but its extensions are
+under a *different* org — `knative.dev/eventing-kafka-broker` declares
+`module knative.dev/eventing-kafka-broker` yet is hosted at
+`knative-extensions/eventing-kafka-broker`, not `knative/…`. A `knative.dev` owner
+prefix would map every extension to the wrong owner, so only the four verified core
+modules are mapped and any other `knative.dev` path stays unmapped. `kubevirt.io`
+(`kubevirt/kubevirt`, `kubevirt/client-go`, `kubevirt/api`) is mapped the same
+cautious way. These hosts are a worked example of the rule in rule 3's caption: a
+vanity host is only treated as an owner prefix when the host reliably names the
+owner for *every* module, which Knative's org split shows is not the case here.
+
+The 0.9.16 monorepo entry `go.elastic.co/apm` → `elastic/apm-agent-go` covers the
+Elastic APM Go agent: one repository holding the root module
+(`module go.elastic.co/apm/v2`) and every instrumentation sub-module
+(`module go.elastic.co/apm/module/<name>/v2`, verified `.../apmhttp/v2`). The
+prefix is `go.elastic.co/apm`, **not** the bare host `go.elastic.co`: other
+`go.elastic.co` modules such as `ecszap` and `fastjson` live in different
+repositories, so only the `/apm` subtree is mapped.
 
 ## Anything else
 

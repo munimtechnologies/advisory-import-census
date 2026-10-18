@@ -1323,5 +1323,140 @@ class TestUberBufStepBlakeVanity(unittest.TestCase):
         self.assertFalse(f["scanner_visible"])
 
 
+class TestKnativeKubevirtElasticVanity(unittest.TestCase):
+    """New in 0.9.16, each verified from the project's go.mod `module` line
+    (2026-10-18):
+      knative.dev/{serving,pkg,eventing,func} -> knative/{...}  (EXACT entries)
+      kubevirt.io/{kubevirt,client-go,api}    -> kubevirt/{...} (EXACT entries)
+      go.elastic.co/apm                       -> elastic/apm-agent-go (monorepo)
+
+    knative.dev and kubevirt.io are deliberately NOT owner prefixes: the import
+    host does not identify the GitHub owner. knative.dev/eventing-kafka-broker
+    reads `module knative.dev/eventing-kafka-broker` but lives at
+    knative-extensions/eventing-kafka-broker, not knative/..., so a knative.dev
+    owner prefix would map every extension to the wrong owner. Only verified
+    core modules are mapped as exact entries; everything else stays unmapped.
+    """
+
+    def test_knative_core_exact_entries(self):
+        for repo in ("serving", "pkg", "eventing", "func"):
+            self.assertEqual(bs.go_module_repo("knative.dev/" + repo),
+                             "knative/" + repo)
+
+    def test_knative_is_not_an_owner_prefix(self):
+        # An extension module lives under knative-extensions, not knative, so the
+        # host must NOT be a prefix: an unverified knative.dev path is left
+        # unmapped rather than guessed as knative/<name>.
+        self.assertIsNone(bs.go_vanity_prefix_repo("knative.dev/serving"))
+        self.assertIsNone(bs.go_module_repo("knative.dev/eventing-kafka-broker"))
+        self.assertIsNone(bs.go_module_repo("knative.dev/somethingelse"))
+
+    def test_knative_subpackage_keeps_repo(self):
+        # A /vN major version or deeper import path is stripped to the base path
+        # before the exact lookup, so it still resolves.
+        self.assertEqual(bs.go_module_repo("knative.dev/pkg/v2"), "knative/pkg")
+
+    def test_kubevirt_exact_entries(self):
+        self.assertEqual(bs.go_module_repo("kubevirt.io/kubevirt"),
+                         "kubevirt/kubevirt")
+        self.assertEqual(bs.go_module_repo("kubevirt.io/client-go"),
+                         "kubevirt/client-go")
+        self.assertEqual(bs.go_module_repo("kubevirt.io/api"), "kubevirt/api")
+
+    def test_kubevirt_is_not_an_owner_prefix(self):
+        self.assertIsNone(bs.go_vanity_prefix_repo("kubevirt.io/kubevirt"))
+        self.assertIsNone(bs.go_module_repo("kubevirt.io/somethingelse"))
+
+    def test_elastic_apm_monorepo(self):
+        # Root (go.elastic.co/apm/v2) and every instrumentation sub-module
+        # (go.elastic.co/apm/module/<name>/v2) live in elastic/apm-agent-go.
+        self.assertEqual(bs.go_module_repo("go.elastic.co/apm"),
+                         "elastic/apm-agent-go")
+        self.assertEqual(bs.go_module_repo("go.elastic.co/apm/v2"),
+                         "elastic/apm-agent-go")
+        self.assertEqual(
+            bs.go_module_repo("go.elastic.co/apm/module/apmhttp/v2"),
+            "elastic/apm-agent-go")
+
+    def test_elastic_apm_prefix_is_path_boundary_anchored(self):
+        # Only the /apm subtree is a monorepo; the bare host is not, so other
+        # go.elastic.co modules (ecszap, fastjson) stay unmapped, and a host that
+        # merely shares the prefix string does not match.
+        self.assertEqual(bs.go_vanity_monorepo_repo("go.elastic.co/apm/module/apmsql/v2"),
+                         "elastic/apm-agent-go")
+        self.assertIsNone(bs.go_vanity_monorepo_repo("go.elastic.co/ecszap"))
+        self.assertIsNone(bs.go_vanity_monorepo_repo("go.elastic.co/apmtest"))
+        self.assertIsNone(bs.go_module_repo("go.elastic.co/ecszap"))
+
+    def test_knative_blind_spot_end_to_end(self):
+        # A knative.dev/serving dependency now maps to knative/serving, so a
+        # maintainer advisory OSV does not report is surfaced (fully offline).
+        advisories = {
+            "knative/serving": [{
+                "ghsa_id": "GHSA-knkn-0000-0000",
+                "cve_id": "CVE-2026-14141",
+                "severity": "high",
+                "summary": "example knative.dev/serving advisory",
+                "html_url": "https://github.com/knative/serving/security/advisories/GHSA-knkn-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go", "name": "knative.dev/serving"},
+                    "vulnerable_version_range": "< 0.44.0",
+                    "patched_versions": "0.44.0",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "knative.dev/serving", "v0.43.0")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "knative/serving")
+        self.assertEqual(f["ghsa_id"], "GHSA-knkn-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
+        self.assertFalse(f["scanner_visible"])
+
+    def test_elastic_apm_blind_spot_end_to_end(self):
+        # A go.elastic.co/apm/module/apmhttp dependency now maps to the monorepo,
+        # so a maintainer advisory OSV does not report is surfaced (fully offline).
+        advisories = {
+            "elastic/apm-agent-go": [{
+                "ghsa_id": "GHSA-elel-0000-0000",
+                "cve_id": "CVE-2026-15151",
+                "severity": "moderate",
+                "summary": "example go.elastic.co/apm advisory",
+                "html_url": "https://github.com/elastic/apm-agent-go/security/advisories/GHSA-elel-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go",
+                                "name": "go.elastic.co/apm/module/apmhttp/v2"},
+                    "vulnerable_version_range": "< 2.6.0",
+                    "patched_versions": "2.6.0",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "go.elastic.co/apm/module/apmhttp/v2", "v2.5.0")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "elastic/apm-agent-go")
+        self.assertEqual(f["ghsa_id"], "GHSA-elel-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
+        self.assertFalse(f["scanner_visible"])
+
+
 if __name__ == "__main__":
     unittest.main()
