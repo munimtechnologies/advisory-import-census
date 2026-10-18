@@ -7,6 +7,15 @@ title="Severity: X" badge) and the detail page's "CVE ID" sidebar block.
 The CVSS-metric decoys (>High<, >Low<) are the ones that made detail-page
 severity parsing unsafe, which is why severity is read only from the listing's
 title attribute. Stdlib only. Apache-2.0, made with AI agents working for MV2.
+
+Fixture fix (2026-10-18, before any census data was collected): the first
+sandbox run (aic-app-lib-census-html-v1) stopped at this test gate. LISTING
+carries a "Next -> page 2" link, so collect_repo correctly followed it, the
+fake fetcher had no page 2 and the repository was marked unreadable. Two
+per-repo tests now use LISTING_ONE_PAGE (the same items with no Next link);
+the collector, the measure and the statistics are unchanged. A test pinning
+that behaviour (a linked page that fails makes the repo unreadable) and one
+using the real pagination footer from the probe's saved n8n page were added.
 """
 import datetime as dt
 import json
@@ -17,6 +26,8 @@ import unittest
 import app_library_census_html as c
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+
+NEXT_LINK = '<a href="/n8n-io/n8n/security/advisories?state=published&amp;page=2">Next</a>\n'
 
 # --- Real listing markup (two items from n8n-io/n8n p1, lightly trimmed) -------
 LISTING = """
@@ -55,8 +66,17 @@ LISTING = """
   </div>
 </li>
 <a href="/someone/else/security/advisories/GHSA-2222-3333-4444">foreign repo advisory</a>
-<a href="/n8n-io/n8n/security/advisories?state=published&amp;page=2">Next</a>
-"""
+""" + NEXT_LINK
+
+# The same two items as the only page of a repository (no Next link).
+LISTING_ONE_PAGE = LISTING.replace(NEXT_LINK, "")
+
+# --- Real pagination footer, verbatim from the probe's saved n8n page 1 --------
+REAL_FOOTER_P1 = (
+    '<a aria-label="Page 22" href="/n8n-io/n8n/security/advisories?page=22&amp;state=published">22</a> '
+    '<a aria-label="Page 23" href="/n8n-io/n8n/security/advisories?page=23&amp;state=published">23</a> '
+    '<a class="next_page" rel="next" href="/n8n-io/n8n/security/advisories?page=2&amp;state=published">Next</a></div>'
+)
 
 # --- Real detail markup: the "CVE ID" sidebar block, with CVSS decoys ----------
 DETAIL_WITH_CVE = """
@@ -118,6 +138,21 @@ class TestListing(unittest.TestCase):
         self.assertTrue(c.listing_has_next(LISTING, 1))
         self.assertFalse(c.listing_has_next(LISTING, 2))
         self.assertTrue(c.listing_has_next("x?page=4&state=published y", 3))
+
+    def test_one_page_fixture_has_no_next(self):
+        self.assertNotEqual(LISTING_ONE_PAGE, LISTING)
+        self.assertFalse(c.listing_has_next(LISTING_ONE_PAGE, 1))
+        self.assertEqual(c.listing_items(LISTING_ONE_PAGE, "n8n-io/n8n"),
+                         c.listing_items(LISTING, "n8n-io/n8n"))
+
+    def test_has_next_real_github_footer(self):
+        self.assertTrue(c.listing_has_next(REAL_FOOTER_P1, 1))
+        # "page=22"/"page=23" must not be read as a link to page 2 or 3 ...
+        no_next = REAL_FOOTER_P1.split('<a class="next_page"')[0]
+        self.assertFalse(c.listing_has_next(no_next, 1))
+        self.assertFalse(c.listing_has_next(no_next, 2))
+        # ... and the last page (23) links no page 24.
+        self.assertFalse(c.listing_has_next(REAL_FOOTER_P1, 23))
 
 
 class TestDetailCve(unittest.TestCase):
@@ -230,7 +265,7 @@ class TestCollectRepo(unittest.TestCase):
         p1 = c.LISTING_URL % (repo, 1)
         d1 = c.DETAIL_URL % (repo, "GHSA-43v8-hjhm-chjp")
         d2 = c.DETAIL_URL % (repo, "GHSA-m7gv-mpg5-7c9v")
-        c.fetch = FakeFetch({p1: (200, LISTING), d1: (200, DETAIL_WITH_CVE),
+        c.fetch = FakeFetch({p1: (200, LISTING_ONE_PAGE), d1: (200, DETAIL_WITH_CVE),
                              d2: (200, DETAIL_NO_CVE)})
         # GHSA-43v8 is visible via its CVE alias; GHSA-m7gv (no CVE) is blind.
         osv = self._osv({"CVE-2026-25645":
@@ -252,11 +287,24 @@ class TestCollectRepo(unittest.TestCase):
         p1 = c.LISTING_URL % (repo, 1)
         # now = publication + 10 days < 14-day minimum -> no eligible rows, no detail fetch.
         now = dt.datetime(2026, 10, 24, tzinfo=dt.timezone.utc)
-        c.fetch = FakeFetch({p1: (200, LISTING)})
+        fake = FakeFetch({p1: (200, LISTING_ONE_PAGE)})
+        c.fetch = fake
         rows, diag = c.collect_repo(repo, "application", now, self._osv({}))
         self.assertEqual(rows, [])
         self.assertEqual(diag["eligible"], 0)
         self.assertFalse(diag["unreadable"])
+        self.assertEqual(fake.calls, [p1])
+
+    def test_unreadable_when_linked_next_page_fails(self):
+        # Page 1 links a page 2 that cannot be read: the whole repo is
+        # unreadable (no rows), never a silent partial count.
+        repo = "n8n-io/n8n"
+        p1 = c.LISTING_URL % (repo, 1)
+        c.fetch = FakeFetch({p1: (200, LISTING)})
+        rows, diag = c.collect_repo(repo, "application", self.now, self._osv({}))
+        self.assertEqual(rows, [])
+        self.assertTrue(diag["unreadable"])
+        self.assertIn("listing page 2 status=404", diag["notes"])
 
     def test_empty_listing_is_zero_not_unreadable(self):
         repo = "ollama/ollama"
@@ -299,6 +347,7 @@ class TestCollectRepo(unittest.TestCase):
         rows, diag = c.collect_repo(repo, "library", self.now, self._osv({}))
         self.assertEqual(diag["listing_pages"], 2)
         self.assertEqual(diag["advisories_listed"], 2)
+        self.assertFalse(diag["unreadable"])
 
 
 class TestFrameIntegrity(unittest.TestCase):

@@ -75,5 +75,32 @@ undercounted.
 
 Nothing else changes.
 
+## Addendum, 2026-10-18 — first run stopped at its own test gate (no data)
+
+The first sandbox run of this collector (`aic-app-lib-census-html-v1`, started
+2026-10-18 05:08 UTC) ran `test_census_html.py` before collecting anything, and
+2 of its 26 tests failed, so the census itself never started: **no page was
+fetched and no advisory data was seen.** The cause was in the tests, not the
+collector. The shared listing fixture includes a "Next → page 2" link; the
+collector correctly followed it, the offline fake fetcher had no page 2, and
+the repository was (correctly) marked unreadable, which those two tests did not
+expect.
+
+An honest correction to the Safeguards above: the tests had not actually been
+executed before this amendment was published. The publishing step that was
+meant to run them looks for tests only at the top of the repository, so the
+tests in `study/app-vs-library/` were skipped there. The sandbox run was their
+first real execution.
+
+What changed (test file only): the two per-repository tests now use a
+single-page copy of the same fixture; new tests pin that a linked page which
+cannot be read makes the whole repository unreadable, and check the "next page"
+logic against the real pagination footer saved by the feasibility probe (so
+links to pages 22 and 23 are not mistaken for pages 2 and 3). The collector, the
+measures, the statistics and the frame are unchanged. The re-run
+(`aic-app-lib-census-html-v2`) downloads the collector from the commit that
+published it (`eb532df`) and logs its SHA-256, so it runs exactly the code
+published here.
+
 *Made with AI agents working for MV2 of Munim, Inc. Every claim here was checked
 against the job logs and the archived pages.*
