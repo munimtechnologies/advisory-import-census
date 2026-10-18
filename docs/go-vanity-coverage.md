@@ -7,12 +7,12 @@ modules there is no registry call: the GitHub repository is worked out from the
 module path alone, by the rules below.
 
 Every mapping here was verified from the project's own `go.mod` `module` line on
-2026-10-17 (those added in 0.9.11 to 0.9.14 on 2026-10-18). `blindspot`
+2026-10-17 (those added in 0.9.11 to 0.9.15 on 2026-10-18). `blindspot`
 never guesses a repository it has not verified: a Go
 module on any host not listed below is reported as *unmapped* (add it with
 `--map NAME=OWNER/REPO`), rather than silently skipped or mapped to a wrong repo.
 
-This file documents `blindspot` as of advisory-import-census **0.9.14**.
+This file documents `blindspot` as of advisory-import-census **0.9.15**.
 
 ## 1. Direct GitHub modules
 
@@ -142,6 +142,11 @@ trailing `/vN` is stripped before the lookup.
 | `go.uber.org/{mock,goleak,automaxprocs,dig,fx}` | `uber-go/{mock,…}` |
 | `go.opencensus.io` | `census-instrumentation/opencensus-go` |
 | `cel.dev/expr` | `google/cel-spec` |
+| `go.uber.org/{ratelimit,nilaway,config}` | `uber-go/{ratelimit,…}` |
+| `buf.build/go/protoyaml` | `bufbuild/protoyaml-go` |
+| `buf.build/go/bufplugin` | `bufbuild/bufplugin-go` |
+| `go.step.sm/crypto` | `smallstep/crypto` |
+| `lukechampine.com/blake3` | `lukechampine/blake3` |
 
 `google.golang.org` is **not** a prefix host (grpc, protobuf, api and genproto
 live in four different repositories), so each of its modules is an exact entry.
@@ -177,6 +182,15 @@ grpc-go; it lives at the root of `google/cel-spec`). `go.uber.org` stays an
 exact-entry host because `go.uber.org/yarpc` has a different owner, and `cel.dev`
 is not a prefix host. The old `github.com/golang/mock` path is a different,
 archived repository and still maps there by rule 1.
+
+The 0.9.15 entries are three more `go.uber.org` libraries (`ratelimit`;
+`nilaway`, Uber's static nil-panic analyzer; `config`), two more `buf.build/go`
+modules (`protoyaml` and `bufplugin`) and two cryptography libraries
+(`go.step.sm/crypto`, the smallstep crypto toolkit, and `lukechampine.com/blake3`,
+a widely-used BLAKE3 implementation). `buf.build/go` stays an exact-entry host for
+the same reason as in 0.9.13: its repository names carry a `-go` suffix the import
+path lacks (`buf.build/go/protoyaml` → `bufbuild/protoyaml-go`). `go.step.sm` and
+`lukechampine.com` are not prefix hosts, so only the verified paths are mapped.
 
 ## Anything else
 

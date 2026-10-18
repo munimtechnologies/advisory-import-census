@@ -70,7 +70,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.9.14"
+__version__ = "0.9.15"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -824,6 +824,13 @@ GO_VANITY_REPOS = {
     "go.uber.org/fx": "uber-go/fx",
     "go.opencensus.io": "census-instrumentation/opencensus-go",
     "cel.dev/expr": "google/cel-spec",
+    "go.uber.org/ratelimit": "uber-go/ratelimit",
+    "go.uber.org/nilaway": "uber-go/nilaway",
+    "go.uber.org/config": "uber-go/config",
+    "buf.build/go/protoyaml": "bufbuild/protoyaml-go",
+    "buf.build/go/bufplugin": "bufbuild/bufplugin-go",
+    "go.step.sm/crypto": "smallstep/crypto",
+    "lukechampine.com/blake3": "lukechampine/blake3",
 }
 
 # A gopkg.in package element carries a major-version selector, e.g. "yaml.v3".

@@ -1240,5 +1240,88 @@ class TestUberOpenCensusCelVanity(unittest.TestCase):
         self.assertFalse(f["scanner_visible"])
 
 
+class TestUberBufStepBlakeVanity(unittest.TestCase):
+    """New in 0.9.15, each verified from the project's go.mod `module` line
+    (2026-10-18). All exact entries (a trailing /vN is stripped before the
+    lookup):
+      go.uber.org/ratelimit    -> uber-go/ratelimit
+      go.uber.org/nilaway      -> uber-go/nilaway
+      go.uber.org/config       -> uber-go/config
+      buf.build/go/protoyaml   -> bufbuild/protoyaml-go
+      buf.build/go/bufplugin   -> bufbuild/bufplugin-go
+      go.step.sm/crypto        -> smallstep/crypto
+      lukechampine.com/blake3  -> lukechampine/blake3
+    """
+
+    def test_more_uber_libraries(self):
+        for name in ("ratelimit", "nilaway", "config"):
+            self.assertEqual(bs.go_module_repo("go.uber.org/" + name),
+                             "uber-go/" + name)
+
+    def test_uber_still_not_a_prefix(self):
+        # go.uber.org remains exact-entry only (yarpc has a different owner), so
+        # an unverified path is still left unmapped and yarpc is unchanged.
+        self.assertIsNone(bs.go_module_repo("go.uber.org/stillunverified"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("go.uber.org/config"))
+        self.assertEqual(bs.go_module_repo("go.uber.org/yarpc"), "yarpc/yarpc-go")
+
+    def test_buf_build_go_modules(self):
+        # The repo names carry a -go suffix the import path lacks, so buf.build/go
+        # is NOT a prefix host: only the verified paths map.
+        self.assertEqual(bs.go_module_repo("buf.build/go/protoyaml"),
+                         "bufbuild/protoyaml-go")
+        self.assertEqual(bs.go_module_repo("buf.build/go/bufplugin"),
+                         "bufbuild/bufplugin-go")
+        # protovalidate (added in 0.9.13) still resolves; an unverified buf.build
+        # path is left unmapped.
+        self.assertEqual(bs.go_module_repo("buf.build/go/protovalidate"),
+                         "bufbuild/protovalidate-go")
+        self.assertIsNone(bs.go_module_repo("buf.build/go/stillunverified"))
+
+    def test_step_crypto(self):
+        self.assertEqual(bs.go_module_repo("go.step.sm/crypto"), "smallstep/crypto")
+        # go.step.sm is not a prefix host; an unverified path is left unmapped.
+        self.assertIsNone(bs.go_module_repo("go.step.sm/cli"))
+
+    def test_blake3(self):
+        self.assertEqual(bs.go_module_repo("lukechampine.com/blake3"),
+                         "lukechampine/blake3")
+        self.assertIsNone(bs.go_module_repo("lukechampine.com/frand"))
+
+    def test_ratelimit_blind_spot_end_to_end(self):
+        # A go.uber.org/ratelimit dependency now maps to uber-go/ratelimit, so a
+        # maintainer advisory OSV does not report is surfaced (fully offline).
+        advisories = {
+            "uber-go/ratelimit": [{
+                "ghsa_id": "GHSA-rrrr-0000-0000",
+                "cve_id": "CVE-2026-13131",
+                "severity": "moderate",
+                "summary": "example go.uber.org/ratelimit advisory",
+                "html_url": "https://github.com/uber-go/ratelimit/security/advisories/GHSA-rrrr-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go", "name": "go.uber.org/ratelimit"},
+                    "vulnerable_version_range": "< 0.3.1",
+                    "patched_versions": "0.3.1",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "go.uber.org/ratelimit", "v0.3.0")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "uber-go/ratelimit")
+        self.assertEqual(f["ghsa_id"], "GHSA-rrrr-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
+        self.assertFalse(f["scanner_visible"])
+
+
 if __name__ == "__main__":
     unittest.main()
