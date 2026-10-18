@@ -11,7 +11,7 @@ Every mapping here was verified from the project's own `go.mod` `module` line on
 module on any host not listed below is reported as *unmapped* (add it with
 `--map NAME=OWNER/REPO`), rather than silently skipped or mapped to a wrong repo.
 
-This file documents `blindspot` as of advisory-import-census **0.9.9**.
+This file documents `blindspot` as of advisory-import-census **0.9.10**.
 
 ## 1. Direct GitHub modules
 
@@ -64,6 +64,7 @@ longest matching prefix wins.
 | `go.opentelemetry.io/proto` | `open-telemetry/opentelemetry-proto-go` | 0.9.9 |
 | `go.opentelemetry.io/auto` | `open-telemetry/opentelemetry-go-instrumentation` | 0.9.9 |
 | `go.opentelemetry.io/ebpf-profiler` | `open-telemetry/opentelemetry-ebpf-profiler` | 0.9.9 |
+| `tailscale.com` | `tailscale/tailscale` | 0.9.10 |
 
 **OpenTelemetry.** OpenTelemetry's own vanity-URL configuration
 ([`opentelemetry-go-vanityurls`](https://github.com/open-telemetry/opentelemetry-go-vanityurls),
@@ -83,6 +84,11 @@ not under `go.opentelemetry.io/collector`. Matching is path-boundary anchored:
 `go.opentelemetry.io/otelc` (a different repository) is not under `.../otel`.
 `go.etcd.io/bbolt` → `etcd-io/bbolt` is outside `go.etcd.io/etcd` and keeps its
 exact entry below.
+
+**Tailscale.** Tailscale ships as a single Go module whose path is the bare host
+`tailscale.com` (verified `module tailscale.com`), so every import path under it
+(`tailscale.com/cmd/tailscale`, `tailscale.com/ipn`, `tailscale.com/tsnet`, …) is
+one package in the one repository `tailscale/tailscale`.
 
 ## 5. Exact vanity entries
 
@@ -106,6 +112,8 @@ trailing `/vN` is stripped before the lookup.
 | `go.uber.org/yarpc` | `yarpc/yarpc-go` |
 | `go.mongodb.org/mongo-driver` | `mongodb/mongo-go-driver` |
 | `go.etcd.io/bbolt` | `etcd-io/bbolt` |
+| `go.etcd.io/raft` | `etcd-io/raft` |
+| `helm.sh/helm` | `helm/helm` |
 
 `google.golang.org` is **not** a prefix host (grpc, protobuf, api and genproto
 live in four different repositories), so each of its modules is an exact entry.

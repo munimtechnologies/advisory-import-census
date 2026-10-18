@@ -13,10 +13,11 @@ got there. This tool checks YOUR dependencies for that gap:
      modules, gopkg.in by its documented redirect rule, the Kubernetes vanity
      hosts k8s.io and sigs.k8s.io and the Go sub-repositories under golang.org/x
      by owner-prefix, the Google Cloud (cloud.google.com/go), etcd
-     (go.etcd.io/etcd) and OpenTelemetry (go.opentelemetry.io/{otel,collector,
-     contrib,proto,auto,ebpf-profiler}) monorepos by monorepo-prefix, and a
-     small map of known vanity modules such as Gitea, GORM, gocloud.dev, gRPC,
-     Protobuf, the go.uber.org libraries, the MongoDB Go driver and the Google
+     (go.etcd.io/etcd), OpenTelemetry (go.opentelemetry.io/{otel,collector,
+     contrib,proto,auto,ebpf-profiler}) and Tailscale (tailscale.com) monorepos
+     by monorepo-prefix, and a small map of known vanity modules such as Gitea,
+     GORM, gocloud.dev, gRPC, Protobuf, Helm, the go.uber.org libraries, the
+     etcd raft and bbolt libraries, the MongoDB Go driver and the Google
      API/genproto/App Engine client modules, each verified from its go.mod);
   2. list that repo's published security advisories (public REST API);
   3. keep the ones whose affected range covers your version;
@@ -68,7 +69,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.9.9"
+__version__ = "0.9.10"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -600,7 +601,7 @@ GO_VANITY_OWNER_PREFIX = {
 #     /v3`), on top of the api/client/server/pkg sub-modules checked for 0.9.5.
 #     go.etcd.io/bbolt and go.etcd.io/raft are DIFFERENT repos (etcd-io/bbolt,
 #     etcd-io/raft) and are NOT under the go.etcd.io/etcd/ prefix, so they are
-#     unaffected (bbolt stays an exact entry below; raft is not mapped).
+#     unaffected by this prefix and stay exact entries below (raft added 0.9.10).
 #   go.opentelemetry.io/contrib -> open-telemetry/opentelemetry-go-contrib (the
 #     OpenTelemetry Go contrib monorepo; new in 0.9.8). Every instrumentation,
 #     exporter and detector module lives in this one repo. Verified from the
@@ -630,6 +631,13 @@ GO_VANITY_OWNER_PREFIX = {
 #     go.opentelemetry.io/collector and maps as a direct GitHub module. The
 #     match is path-boundary anchored, so go.opentelemetry.io/otelc (a different
 #     repo) does not fall under go.opentelemetry.io/otel.
+#   tailscale.com -> tailscale/tailscale (new in 0.9.10). Tailscale ships as a
+#     single Go module whose path is the bare host tailscale.com, so every
+#     import path under it (tailscale.com/cmd/tailscale, tailscale.com/ipn,
+#     tailscale.com/tsnet, ...) is one package in the one repo. Verified from
+#     the go.mod `module` line of tailscale/tailscale (`module tailscale.com`),
+#     2026-10-17. A monorepo prefix, not an owner prefix: the element after the
+#     host is a sub-package, not a separate repo.
 GO_VANITY_MONOREPO_PREFIX = {
     "cloud.google.com/go": "googleapis/google-cloud-go",
     "go.etcd.io/etcd": "etcd-io/etcd",
@@ -639,6 +647,7 @@ GO_VANITY_MONOREPO_PREFIX = {
     "go.opentelemetry.io/proto": "open-telemetry/opentelemetry-proto-go",
     "go.opentelemetry.io/auto": "open-telemetry/opentelemetry-go-instrumentation",
     "go.opentelemetry.io/ebpf-profiler": "open-telemetry/opentelemetry-ebpf-profiler",
+    "tailscale.com": "tailscale/tailscale",
 }
 
 # Well-known Go vanity module hosts whose code lives on GitHub. gopkg.in follows
@@ -676,6 +685,14 @@ GO_VANITY_MONOREPO_PREFIX = {
 # (go.opentelemetry.io/contrib/... had a single exact entry for the net/http
 # otelhttp module in 0.9.6; 0.9.8 replaced it with the go.opentelemetry.io/
 # contrib monorepo prefix above, which covers every contrib sub-module.)
+# New in 0.9.10, each verified from its go.mod `module` line (2026-10-17):
+#   helm.sh/helm -> helm/helm. Helm is a single module with a major-version
+#     path element: main reads `module helm.sh/helm/v4`, the dev-v3 branch
+#     reads `module helm.sh/helm/v3`; both live in helm/helm. The trailing /vN
+#     is stripped before this exact lookup, so the base path is the key.
+#   go.etcd.io/raft -> etcd-io/raft. Its go.mod reads `module go.etcd.io/raft/v3`
+#     (the /v3 is stripped before the lookup). raft lives OUTSIDE the
+#     go.etcd.io/etcd/ monorepo prefix, so it needs this exact entry, like bbolt.
 GO_VANITY_REPOS = {
     "code.gitea.io/gitea": "go-gitea/gitea",
     "gitea.dev": "go-gitea/gitea",
@@ -699,6 +716,8 @@ GO_VANITY_REPOS = {
     "go.uber.org/yarpc": "yarpc/yarpc-go",
     "go.mongodb.org/mongo-driver": "mongodb/mongo-go-driver",
     "go.etcd.io/bbolt": "etcd-io/bbolt",
+    "helm.sh/helm": "helm/helm",
+    "go.etcd.io/raft": "etcd-io/raft",
 }
 
 # A gopkg.in package element carries a major-version selector, e.g. "yaml.v3".
@@ -749,7 +768,8 @@ def go_vanity_monorepo_repo(module):
     """The GitHub owner/repo for a Go module whose whole vanity subtree lives in
     one monorepo (the entries in GO_VANITY_MONOREPO_PREFIX: cloud.google.com/go
     -> googleapis/google-cloud-go, go.etcd.io/etcd -> etcd-io/etcd, the
-    go.opentelemetry.io subtrees -> their open-telemetry repos). The module
+    go.opentelemetry.io subtrees -> their open-telemetry repos, tailscale.com ->
+    tailscale/tailscale). The module
     path equals a prefix or begins with "<prefix>/", and the entire subtree maps
     to the same repo, whatever follows (cloud.google.com/go/storage,
     go.etcd.io/etcd/api/v3, ...). The longest matching prefix wins. Unlike
@@ -770,11 +790,12 @@ def go_module_repo(module):
     deeper sub-package path) the repo is OWNER/REPO. gopkg.in paths follow
     gopkg.in's documented redirect rule, the Kubernetes vanity hosts k8s.io and
     sigs.k8s.io and the golang.org/x sub-repositories an owner-prefix rule, the
-    Google Cloud (cloud.google.com/go), etcd (go.etcd.io/etcd) and OpenTelemetry
-    (go.opentelemetry.io/{otel,collector,contrib,proto,auto,ebpf-profiler})
-    monorepos a monorepo-prefix rule (the whole subtree is one repo), and a
-    small map of well-known vanity hosts (Gitea, GORM, gocloud.dev, gRPC,
-    Protobuf, the go.uber.org libraries, the MongoDB Go driver and the Google
+    Google Cloud (cloud.google.com/go), etcd (go.etcd.io/etcd), OpenTelemetry
+    (go.opentelemetry.io/{otel,collector,contrib,proto,auto,ebpf-profiler}) and
+    Tailscale (tailscale.com) monorepos a monorepo-prefix rule (the whole subtree
+    is one repo), and a small map of well-known vanity hosts (Gitea, GORM,
+    gocloud.dev, gRPC, Protobuf, Helm, the go.uber.org libraries, the etcd raft
+    and bbolt libraries, the MongoDB Go driver and the Google
     API/genproto/App Engine client modules) verified from their go.mod is
     applied, with a trailing /vN major version stripped before the exact lookup.
     Other hosts (other golang.org paths, gopkg.in without a version, a private

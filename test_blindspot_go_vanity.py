@@ -17,7 +17,9 @@ contrib repo -- every instrumentation, exporter and detector module), replacing
 the single exact net/http otelhttp entry from 0.9.6. 0.9.9 makes the other
 go.opentelemetry.io subtrees (otel, collector, proto, auto, ebpf-profiler)
 monorepo prefixes too, replacing the exact otel{,/trace,/metric,/sdk} and
-collector entries. These tests pin the behaviour:
+collector entries. 0.9.10 adds Tailscale (tailscale.com) as a monorepo prefix
+and exact entries for Helm (helm.sh/helm) and the etcd raft library
+(go.etcd.io/raft). These tests pin the behaviour:
 
   - gopkg.in follows its own documented redirect rule
     (gopkg.in/pkg.vN -> github.com/go-pkg/pkg; gopkg.in/user/pkg.vN ->
@@ -594,12 +596,12 @@ class TestGoVanityMonorepoPrefix(unittest.TestCase):
 
     def test_etcd_sibling_repos_not_caught_by_prefix(self):
         # bbolt and raft are different repos outside the go.etcd.io/etcd/ prefix;
-        # the monorepo helper must not claim them. bbolt still resolves via its
-        # own exact entry; raft is not mapped at all.
+        # the monorepo helper must not claim them. Both still resolve via their
+        # own exact entries (bbolt since 0.9.5, raft since 0.9.10).
         self.assertIsNone(bs.go_vanity_monorepo_repo("go.etcd.io/bbolt"))
         self.assertIsNone(bs.go_vanity_monorepo_repo("go.etcd.io/raft"))
         self.assertEqual(bs.go_module_repo("go.etcd.io/bbolt"), "etcd-io/bbolt")
-        self.assertIsNone(bs.go_module_repo("go.etcd.io/raft"))
+        self.assertEqual(bs.go_module_repo("go.etcd.io/raft"), "etcd-io/raft")
 
     def test_otel_contrib_root_and_submodules(self):
         # Root plus the four sub-modules verified from their go.mod `module`
@@ -804,6 +806,85 @@ class TestOtelSubtreeMonorepos(unittest.TestCase):
         f = report["findings"][0]
         self.assertEqual(f["repo"], "open-telemetry/opentelemetry-go")
         self.assertEqual(f["ghsa_id"], "GHSA-mmmm-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
+        self.assertFalse(f["scanner_visible"])
+
+
+class TestHelmTailscaleRaftVanity(unittest.TestCase):
+    """New in 0.9.10, each verified from the project's go.mod `module` line
+    (2026-10-17):
+      helm.sh/helm      -> helm/helm        (exact; main reads
+                           `module helm.sh/helm/v4`, dev-v3 reads
+                           `module helm.sh/helm/v3`; both in helm/helm)
+      tailscale.com     -> tailscale/tailscale  (monorepo prefix; one module
+                           whose path is the bare host, every sub-package inside)
+      go.etcd.io/raft   -> etcd-io/raft     (exact; `module go.etcd.io/raft/v3`,
+                           outside the go.etcd.io/etcd/ monorepo prefix)
+    """
+
+    def test_helm_major_versions(self):
+        # Helm's module path carries a major-version element; the trailing /vN is
+        # stripped before the exact lookup, so v3 and v4 both resolve to helm/helm.
+        self.assertEqual(bs.go_module_repo("helm.sh/helm/v3"), "helm/helm")
+        self.assertEqual(bs.go_module_repo("helm.sh/helm/v4"), "helm/helm")
+        self.assertEqual(bs.go_module_repo("helm.sh/helm"), "helm/helm")
+
+    def test_helm_unverified_path_not_guessed(self):
+        # Only helm.sh/helm is mapped; another helm.sh path is left unmapped.
+        self.assertIsNone(bs.go_module_repo("helm.sh/somethingelse"))
+
+    def test_tailscale_monorepo(self):
+        self.assertEqual(bs.go_module_repo("tailscale.com"), "tailscale/tailscale")
+        for sub in ("cmd/tailscale", "ipn", "tsnet", "client/tailscale"):
+            self.assertEqual(bs.go_module_repo("tailscale.com/" + sub),
+                             "tailscale/tailscale")
+
+    def test_tailscale_helper_and_path_boundary(self):
+        self.assertEqual(bs.go_vanity_monorepo_repo("tailscale.com/tsnet"),
+                         "tailscale/tailscale")
+        # A host that merely shares the prefix string but not a path boundary
+        # must not match.
+        self.assertIsNone(bs.go_vanity_monorepo_repo("tailscale.com.evil/foo"))
+        self.assertIsNone(bs.go_module_repo("tailscale.community/foo"))
+
+    def test_etcd_raft_major_version(self):
+        self.assertEqual(bs.go_module_repo("go.etcd.io/raft"), "etcd-io/raft")
+        self.assertEqual(bs.go_module_repo("go.etcd.io/raft/v3"), "etcd-io/raft")
+        # raft is an exact entry, NOT caught by the go.etcd.io/etcd monorepo
+        # prefix (so it never resolves to etcd-io/etcd by accident).
+        self.assertIsNone(bs.go_vanity_monorepo_repo("go.etcd.io/raft/v3"))
+
+    def test_helm_blind_spot_end_to_end(self):
+        # A helm.sh/helm/v3 dependency now maps to helm/helm, so a maintainer
+        # advisory OSV does not report is surfaced (fully offline).
+        advisories = {
+            "helm/helm": [{
+                "ghsa_id": "GHSA-hhhh-0000-0000",
+                "cve_id": "CVE-2026-88888",
+                "severity": "high",
+                "summary": "example helm.sh/helm advisory",
+                "html_url": "https://github.com/helm/helm/security/advisories/GHSA-hhhh-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go", "name": "helm.sh/helm/v3"},
+                    "vulnerable_version_range": "< 3.16.0",
+                    "patched_versions": "3.16.0",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "helm.sh/helm/v3", "v3.15.0")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "helm/helm")
+        self.assertEqual(f["ghsa_id"], "GHSA-hhhh-0000-0000")
         self.assertEqual(f["affects_your_version"], "yes")
         self.assertFalse(f["scanner_visible"])
 
