@@ -1083,5 +1083,90 @@ class TestMergoAgeStaticcheckVanity(unittest.TestCase):
         self.assertFalse(f["scanner_visible"])
 
 
+class TestEntTemporalGvisorBufYamlVanity(unittest.TestCase):
+    """New in 0.9.13, each verified from the project's go.mod `module` line
+    (2026-10-18). All are widely-used dependencies on vanity hosts that are
+    neither prefix hosts nor monorepos, so each is an exact entry; a trailing
+    /vN is stripped before the lookup:
+      entgo.io/ent               -> ent/ent
+      go.temporal.io/sdk         -> temporalio/sdk-go
+      go.temporal.io/api         -> temporalio/api-go
+      gvisor.dev/gvisor          -> google/gvisor
+      buf.build/go/protovalidate -> bufbuild/protovalidate-go
+      go.yaml.in/yaml (/v3,/v4)  -> yaml/go-yaml
+    """
+
+    def test_ent(self):
+        self.assertEqual(bs.go_module_repo("entgo.io/ent"), "ent/ent")
+        # entgo.io is not a prefix host; an unverified path is left unmapped.
+        self.assertIsNone(bs.go_module_repo("entgo.io/contrib"))
+
+    def test_temporal_modules(self):
+        self.assertEqual(bs.go_module_repo("go.temporal.io/sdk"), "temporalio/sdk-go")
+        self.assertEqual(bs.go_module_repo("go.temporal.io/api"), "temporalio/api-go")
+
+    def test_temporal_is_not_a_prefix(self):
+        # The repo names carry a -go suffix the import path lacks (sdk -> sdk-go,
+        # api -> api-go), so go.temporal.io is NOT an owner prefix: only the two
+        # verified paths map, and an unverified one is left unmapped, not guessed.
+        self.assertIsNone(bs.go_module_repo("go.temporal.io/somethingelse"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("go.temporal.io/sdk"))
+
+    def test_gvisor(self):
+        self.assertEqual(bs.go_module_repo("gvisor.dev/gvisor"), "google/gvisor")
+        self.assertIsNone(bs.go_module_repo("gvisor.example/gvisor"))
+
+    def test_buf_protovalidate(self):
+        self.assertEqual(bs.go_module_repo("buf.build/go/protovalidate"),
+                         "bufbuild/protovalidate-go")
+        # buf.build/go is not a prefix host; an unverified path is left unmapped.
+        self.assertIsNone(bs.go_module_repo("buf.build/go/somethingelse"))
+
+    def test_go_yaml_in_v3_and_v4(self):
+        # The go-yaml module moved to go.yaml.in/yaml: v3 reads
+        # `module go.yaml.in/yaml/v3`, main reads `.../v4`; both live in
+        # yaml/go-yaml and the /vN is stripped before the exact lookup.
+        self.assertEqual(bs.go_module_repo("go.yaml.in/yaml"), "yaml/go-yaml")
+        self.assertEqual(bs.go_module_repo("go.yaml.in/yaml/v3"), "yaml/go-yaml")
+        self.assertEqual(bs.go_module_repo("go.yaml.in/yaml/v4"), "yaml/go-yaml")
+        # The older gopkg.in/yaml.vN path still resolves (to go-yaml/yaml) via
+        # the gopkg.in rule, unchanged by this addition.
+        self.assertEqual(bs.go_module_repo("gopkg.in/yaml.v3"), "go-yaml/yaml")
+
+    def test_ent_blind_spot_end_to_end(self):
+        # An entgo.io/ent dependency now maps to ent/ent, so a maintainer
+        # advisory OSV does not report is surfaced (fully offline).
+        advisories = {
+            "ent/ent": [{
+                "ghsa_id": "GHSA-eeee-0000-0000",
+                "cve_id": "CVE-2026-12121",
+                "severity": "high",
+                "summary": "example entgo.io/ent advisory",
+                "html_url": "https://github.com/ent/ent/security/advisories/GHSA-eeee-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go", "name": "entgo.io/ent"},
+                    "vulnerable_version_range": "< 0.14.0",
+                    "patched_versions": "0.14.0",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "entgo.io/ent", "v0.13.1")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "ent/ent")
+        self.assertEqual(f["ghsa_id"], "GHSA-eeee-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
+        self.assertFalse(f["scanner_visible"])
+
+
 if __name__ == "__main__":
     unittest.main()

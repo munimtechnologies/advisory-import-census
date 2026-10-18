@@ -70,7 +70,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.9.12"
+__version__ = "0.9.13"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -736,6 +736,31 @@ GO_VANITY_MONOREPO_PREFIX = {
 #     implementation of Starlark, used by Tilt, Buildkite and others).
 #   mvdan.cc/sh -> mvdan/sh. The current module path is `mvdan.cc/sh/v3` (the /v3
 #     is stripped before the lookup); the shell parser/formatter behind shfmt.
+# New in 0.9.13, each verified from its go.mod `module` line (2026-10-18). Like
+# the 0.9.12 batch, each vanity host is neither a prefix host nor a monorepo (its
+# repo name differs from the import path, or it is the host's only module), so
+# each is an exact entry; a trailing /vN is stripped before the lookup:
+#   entgo.io/ent -> ent/ent (`module entgo.io/ent` on master; the Ent ORM /
+#     entity framework, a very common data-layer dependency).
+#   go.temporal.io/sdk -> temporalio/sdk-go; go.temporal.io/api ->
+#     temporalio/api-go (each `module go.temporal.io/<name>`). The Temporal Go
+#     SDK and its generated API types; the SDK requires the API module, so both
+#     appear together in a Temporal user's go.sum. go.temporal.io is NOT treated
+#     as a prefix host: the repo names carry a -go suffix the import path lacks
+#     (sdk -> sdk-go, api -> api-go), so only these two verified paths are mapped.
+#   gvisor.dev/gvisor -> google/gvisor (`module gvisor.dev/gvisor` on master; the
+#     gVisor application kernel, used by runsc/gVisor-based container sandboxes;
+#     one module whose sub-packages all live in the one repo).
+#   buf.build/go/protovalidate -> bufbuild/protovalidate-go (`module
+#     buf.build/go/protovalidate`; protobuf message validation, a common gRPC/
+#     Connect dependency). buf.build/go is NOT a prefix host (the repo name
+#     carries a -go suffix the path lacks), so only this verified path is mapped.
+#   go.yaml.in/yaml -> yaml/go-yaml. The canonical go-yaml module moved to this
+#     vanity host: the v3 branch reads `module go.yaml.in/yaml/v3` and main reads
+#     `module go.yaml.in/yaml/v4`, both in yaml/go-yaml; the /vN is stripped
+#     before the lookup, so the base path is the key. go.yaml.in is NOT a prefix
+#     host (the element after it is "yaml" but the repo is "go-yaml"). The older
+#     gopkg.in/yaml.vN path still maps to go-yaml/yaml by the gopkg.in rule.
 GO_VANITY_REPOS = {
     "code.gitea.io/gitea": "go-gitea/gitea",
     "gitea.dev": "go-gitea/gitea",
@@ -773,6 +798,12 @@ GO_VANITY_REPOS = {
     "gotest.tools": "gotestyourself/gotest.tools",
     "go.starlark.net": "google/starlark-go",
     "mvdan.cc/sh": "mvdan/sh",
+    "entgo.io/ent": "ent/ent",
+    "go.temporal.io/sdk": "temporalio/sdk-go",
+    "go.temporal.io/api": "temporalio/api-go",
+    "gvisor.dev/gvisor": "google/gvisor",
+    "buf.build/go/protovalidate": "bufbuild/protovalidate-go",
+    "go.yaml.in/yaml": "yaml/go-yaml",
 }
 
 # A gopkg.in package element carries a major-version selector, e.g. "yaml.v3".

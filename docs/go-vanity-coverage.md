@@ -7,12 +7,12 @@ modules there is no registry call: the GitHub repository is worked out from the
 module path alone, by the rules below.
 
 Every mapping here was verified from the project's own `go.mod` `module` line on
-2026-10-17 (those added in 0.9.11 and 0.9.12 on 2026-10-18). `blindspot` never
-guesses a repository it has not verified: a Go
+2026-10-17 (those added in 0.9.11, 0.9.12 and 0.9.13 on 2026-10-18). `blindspot`
+never guesses a repository it has not verified: a Go
 module on any host not listed below is reported as *unmapped* (add it with
 `--map NAME=OWNER/REPO`), rather than silently skipped or mapped to a wrong repo.
 
-This file documents `blindspot` as of advisory-import-census **0.9.12**.
+This file documents `blindspot` as of advisory-import-census **0.9.13**.
 
 ## 1. Direct GitHub modules
 
@@ -133,6 +133,12 @@ trailing `/vN` is stripped before the lookup.
 | `gotest.tools` (`/v3`) | `gotestyourself/gotest.tools` |
 | `go.starlark.net` | `google/starlark-go` |
 | `mvdan.cc/sh` (`/v3`) | `mvdan/sh` |
+| `entgo.io/ent` | `ent/ent` |
+| `go.temporal.io/sdk` | `temporalio/sdk-go` |
+| `go.temporal.io/api` | `temporalio/api-go` |
+| `gvisor.dev/gvisor` | `google/gvisor` |
+| `buf.build/go/protovalidate` | `bufbuild/protovalidate-go` |
+| `go.yaml.in/yaml` (`/v3`, `/v4`) | `yaml/go-yaml` |
 
 `google.golang.org` is **not** a prefix host (grpc, protobuf, api and genproto
 live in four different repositories), so each of its modules is an exact entry.
@@ -148,6 +154,17 @@ The 0.9.12 entries (`dario.cat/mergo`, `filippo.io/age`,
 so an unlisted `filippo.io` module stays unmapped rather than guessed.
 `gotest.tools` and `mvdan.cc/sh` ship as `/v3` modules; the `/vN` is stripped
 before the lookup, so the base path is the map key.
+
+The 0.9.13 entries (`entgo.io/ent`, `go.temporal.io/{sdk,api}`,
+`gvisor.dev/gvisor`, `buf.build/go/protovalidate`, `go.yaml.in/yaml`) are all
+widely-used dependencies. `go.temporal.io` and `buf.build/go` are **not** prefix
+hosts: their repository names carry a `-go` suffix the import path lacks
+(`go.temporal.io/sdk` → `temporalio/sdk-go`, `go.temporal.io/api` →
+`temporalio/api-go`), so only the verified paths are mapped. `go.yaml.in/yaml` is
+the canonical go-yaml module's new vanity host — its `v3` branch declares
+`module go.yaml.in/yaml/v3` and `main` declares `.../v4`, both in `yaml/go-yaml`;
+the older `gopkg.in/yaml.vN` path still maps to `go-yaml/yaml` by the gopkg.in
+rule (section 2).
 
 ## Anything else
 
