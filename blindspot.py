@@ -70,7 +70,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.9.21"
+__version__ = "0.9.22"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -925,6 +925,27 @@ GO_VANITY_MONOREPO_PREFIX = {
 #     cross-platform serial-port library used by Go hardware/embedded tooling.
 #     go.bug.st is NOT a prefix host: the owner is bugst and the repo is go-serial,
 #     so only this verified path is mapped).
+# New in 0.9.22, each verified from the project's go.mod `module` line
+# (2026-10-18). All are exact entries (none of their hosts names the GitHub owner
+# for every module, so none is treated as an owner prefix); a trailing /vN is
+# stripped before the lookup:
+#   go.k6.io/k6 -> grafana/k6 (`module go.k6.io/k6/v2` on main; the /v2 is
+#     stripped, so the base path also covers the v0/v1 module go.k6.io/k6. The
+#     Grafana k6 load-testing tool, used as a Go library by every xk6 extension).
+#   go.mau.fi/whatsmeow -> tulir/whatsmeow (`module go.mau.fi/whatsmeow`; the Go
+#     WhatsApp web multidevice library behind many bots and bridges. go.mau.fi is
+#     NOT a prefix host: the owner is tulir here, while other go.mau.fi modules
+#     live under the mautrix org, so only this verified path is mapped).
+#   go.woodpecker-ci.org/woodpecker -> woodpecker-ci/woodpecker (`module
+#     go.woodpecker-ci.org/woodpecker/v3` on main; the /v3 is stripped. The
+#     Woodpecker CI server, whose plugins and forks import it as a library).
+#   go.flipt.io/flipt -> flipt-io/flipt (`module go.flipt.io/flipt`; the Flipt
+#     feature-flag server. go.flipt.io is NOT a prefix host: the owner is
+#     flipt-io, so only this verified path is mapped).
+#   bazil.org/fuse -> bazil/fuse (`module bazil.org/fuse`; the pure-Go FUSE
+#     library used by many Go filesystem tools).
+# Checked and NOT added: go.step.sm/linkedca -- its go.mod reads `module
+# github.com/smallstep/linkedca`, so the github.com rule already maps it.
 GO_VANITY_REPOS = {
     "code.gitea.io/gitea": "go-gitea/gitea",
     "gitea.dev": "go-gitea/gitea",
@@ -1017,6 +1038,11 @@ GO_VANITY_REPOS = {
     "lukechampine.com/uint128": "lukechampine/uint128",
     "lukechampine.com/frand": "lukechampine/frand",
     "go.bug.st/serial": "bugst/go-serial",
+    "go.k6.io/k6": "grafana/k6",
+    "go.mau.fi/whatsmeow": "tulir/whatsmeow",
+    "go.woodpecker-ci.org/woodpecker": "woodpecker-ci/woodpecker",
+    "go.flipt.io/flipt": "flipt-io/flipt",
+    "bazil.org/fuse": "bazil/fuse",
 }
 
 # A gopkg.in package element carries a major-version selector, e.g. "yaml.v3".

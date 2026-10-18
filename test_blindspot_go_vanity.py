@@ -1908,5 +1908,86 @@ class TestGormPluginLukechampineBugstVanity(unittest.TestCase):
         self.assertFalse(f["scanner_visible"])
 
 
+class TestK6WhatsmeowWoodpeckerFliptBazilVanity(unittest.TestCase):
+    """0.9.22 additions, each verified from the project's go.mod `module` line
+    (2026-10-18):
+
+      go.k6.io/k6                     -> grafana/k6
+      go.mau.fi/whatsmeow             -> tulir/whatsmeow
+      go.woodpecker-ci.org/woodpecker -> woodpecker-ci/woodpecker
+      go.flipt.io/flipt               -> flipt-io/flipt
+      bazil.org/fuse                  -> bazil/fuse
+    """
+
+    def test_k6_with_and_without_major_version(self):
+        self.assertEqual(bs.go_module_repo("go.k6.io/k6"), "grafana/k6")
+        # main reads `module go.k6.io/k6/v2`; the /v2 is stripped.
+        self.assertEqual(bs.go_module_repo("go.k6.io/k6/v2"), "grafana/k6")
+        self.assertIsNone(bs.go_module_repo("go.k6.io/unverified"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("go.k6.io/k6"))
+
+    def test_whatsmeow(self):
+        self.assertEqual(bs.go_module_repo("go.mau.fi/whatsmeow"),
+                         "tulir/whatsmeow")
+        # go.mau.fi is NOT a prefix host (owners differ); unverified paths stay
+        # unmapped. maunium.net/go/mautrix (0.9.20) is unaffected.
+        self.assertIsNone(bs.go_module_repo("go.mau.fi/unverified"))
+        self.assertEqual(bs.go_module_repo("maunium.net/go/mautrix"), "mautrix/go")
+
+    def test_woodpecker(self):
+        self.assertEqual(bs.go_module_repo("go.woodpecker-ci.org/woodpecker/v3"),
+                         "woodpecker-ci/woodpecker")
+        self.assertEqual(bs.go_module_repo("go.woodpecker-ci.org/woodpecker"),
+                         "woodpecker-ci/woodpecker")
+        self.assertIsNone(bs.go_module_repo("go.woodpecker-ci.org/unverified"))
+
+    def test_flipt_and_bazil_fuse(self):
+        self.assertEqual(bs.go_module_repo("go.flipt.io/flipt"), "flipt-io/flipt")
+        self.assertEqual(bs.go_module_repo("bazil.org/fuse"), "bazil/fuse")
+        self.assertIsNone(bs.go_module_repo("go.flipt.io/unverified"))
+        self.assertIsNone(bs.go_module_repo("bazil.org/unverified"))
+
+    def test_linkedca_is_github_canonical(self):
+        # go.step.sm/linkedca was checked and NOT added: its go.mod declares
+        # github.com/smallstep/linkedca, which the github.com rule maps.
+        self.assertIsNone(bs.go_module_repo("go.step.sm/linkedca"))
+        self.assertEqual(bs.go_module_repo("github.com/smallstep/linkedca"),
+                         "smallstep/linkedca")
+
+    def test_k6_blind_spot_end_to_end(self):
+        # A go.k6.io/k6/v2 dependency now maps to grafana/k6, so a maintainer
+        # advisory OSV does not report is surfaced (fully offline).
+        advisories = {
+            "grafana/k6": [{
+                "ghsa_id": "GHSA-k6k6-0000-0000",
+                "cve_id": "CVE-2026-22222",
+                "severity": "high",
+                "summary": "example go.k6.io/k6 advisory",
+                "html_url": "https://github.com/grafana/k6/security/advisories/GHSA-k6k6-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go", "name": "go.k6.io/k6/v2"},
+                    "vulnerable_version_range": "< 2.1.0",
+                    "patched_versions": "2.1.0",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "go.k6.io/k6/v2", "v2.0.0")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "grafana/k6")
+        self.assertEqual(f["ghsa_id"], "GHSA-k6k6-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
+        self.assertFalse(f["scanner_visible"])
+
+
 if __name__ == "__main__":
     unittest.main()

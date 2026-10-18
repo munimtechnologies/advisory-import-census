@@ -7,12 +7,12 @@ modules there is no registry call: the GitHub repository is worked out from the
 module path alone, by the rules below.
 
 Every mapping here was verified from the project's own `go.mod` `module` line on
-2026-10-17 (those added in 0.9.11 to 0.9.21 on 2026-10-18). `blindspot`
+2026-10-17 (those added in 0.9.11 to 0.9.22 on 2026-10-18). `blindspot`
 never guesses a repository it has not verified: a Go
 module on any host not listed below is reported as *unmapped* (add it with
 `--map NAME=OWNER/REPO`), rather than silently skipped or mapped to a wrong repo.
 
-This file documents `blindspot` as of advisory-import-census **0.9.21**.
+This file documents `blindspot` as of advisory-import-census **0.9.22**.
 
 ## 1. Direct GitHub modules
 
@@ -175,6 +175,11 @@ trailing `/vN` is stripped before the lookup.
 | `gorm.io/plugin/dbresolver` | `go-gorm/dbresolver` |
 | `gorm.io/plugin/opentelemetry` | `go-gorm/opentelemetry` |
 | `go.bug.st/serial` | `bugst/go-serial` |
+| `go.k6.io/k6` (`/v2`) | `grafana/k6` |
+| `go.mau.fi/whatsmeow` | `tulir/whatsmeow` |
+| `go.woodpecker-ci.org/woodpecker` (`/v3`) | `woodpecker-ci/woodpecker` |
+| `go.flipt.io/flipt` | `flipt-io/flipt` |
+| `bazil.org/fuse` | `bazil/fuse` |
 
 `google.golang.org` is **not** a prefix host (grpc, protobuf, api and genproto
 live in four different repositories), so each of its modules is an exact entry.
@@ -322,6 +327,20 @@ owner prefix. Finally `go.bug.st/serial` → `bugst/go-serial` is the common
 cross-platform serial-port library used by Go hardware/embedded tooling;
 `go.bug.st` is **not** a prefix host (the owner is `bugst` and the repository is
 `go-serial`), so only the verified path is mapped.
+
+The 0.9.22 entries add five more exact paths, each verified from its own `go.mod`
+`module` line (2026-10-18). `go.k6.io/k6` → `grafana/k6` is the Grafana k6
+load-testing tool, which every xk6 extension imports as a library; `main` declares
+`module go.k6.io/k6/v2`, so the `/vN` is stripped and the base path covers both
+the older `go.k6.io/k6` module and `/v2`. `go.mau.fi/whatsmeow` → `tulir/whatsmeow`
+is the Go WhatsApp multidevice library behind many bots and bridges; `go.mau.fi` is
+**not** a prefix host, because its other modules live under a different owner.
+`go.woodpecker-ci.org/woodpecker` → `woodpecker-ci/woodpecker` is the Woodpecker CI
+server (`main` declares `.../woodpecker/v3`). `go.flipt.io/flipt` →
+`flipt-io/flipt` is the Flipt feature-flag server, and `bazil.org/fuse` →
+`bazil/fuse` is the pure-Go FUSE library. Checked and **not** added:
+`go.step.sm/linkedca`, whose `go.mod` declares `github.com/smallstep/linkedca`, so
+rule 1 already maps it.
 
 ## Anything else
 
