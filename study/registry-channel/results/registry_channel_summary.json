@@ -1,0 +1,290 @@
+{
+  "measure": {
+    "primary": "scanner_blind: no OSV record, by GHSA or CVE alias, names any package",
+    "secondary": "own_id_not_in_osv: the advisory's own GHSA id does not resolve in OSV"
+  },
+  "unit": "repository",
+  "groups": {
+    "registry": {
+      "repos": 12,
+      "eligible": 413,
+      "blind": {
+        "k": 103,
+        "n": 413,
+        "pct": 24.9,
+        "ci95": [
+          0.2101,
+          0.2933
+        ]
+      },
+      "own_id_not_in_osv": {
+        "k": 103,
+        "n": 413,
+        "pct": 24.9,
+        "ci95": [
+          0.2101,
+          0.2933
+        ]
+      },
+      "repo_median_blind_pct": 4.8
+    },
+    "no_registry": {
+      "repos": 15,
+      "eligible": 496,
+      "blind": {
+        "k": 379,
+        "n": 496,
+        "pct": 76.4,
+        "ci95": [
+          0.7248,
+          0.7994
+        ]
+      },
+      "own_id_not_in_osv": {
+        "k": 379,
+        "n": 496,
+        "pct": 76.4,
+        "ci95": [
+          0.7248,
+          0.7994
+        ]
+      },
+      "repo_median_blind_pct": 100.0
+    }
+  },
+  "comparison": {
+    "blind": {
+      "difference_pct_points": -51.5,
+      "p_two_sided": 0.0077,
+      "permutations": 10000,
+      "seed": 20261017,
+      "unit": "repository",
+      "repositories": 27
+    },
+    "own_id_not_in_osv": {
+      "difference_pct_points": -51.5,
+      "p_two_sided": 0.0077,
+      "permutations": 10000,
+      "seed": 20261017,
+      "unit": "repository",
+      "repositories": 27
+    }
+  },
+  "robustness": {
+    "drop_heaviest_repo_each_group": {
+      "dropped": [
+        "n8n-io/n8n",
+        "siyuan-note/siyuan"
+      ],
+      "blind": {
+        "difference_pct_points": -75.0,
+        "p_two_sided": 0.0001,
+        "permutations": 10000,
+        "seed": 20261017,
+        "unit": "repository",
+        "repositories": 25
+      }
+    }
+  },
+  "per_repo": [
+    {
+      "repo": "9001/copyparty",
+      "group": "registry",
+      "eligible": 16,
+      "blind": 2,
+      "blind_pct": 12.5
+    },
+    {
+      "repo": "DIYgod/RSSHub",
+      "group": "registry",
+      "eligible": 7,
+      "blind": 1,
+      "blind_pct": 14.3
+    },
+    {
+      "repo": "LibreChat-AI/LibreChat",
+      "group": "no_registry",
+      "eligible": 29,
+      "blind": 29,
+      "blind_pct": 100.0
+    },
+    {
+      "repo": "RocketChat/Rocket.Chat",
+      "group": "no_registry",
+      "eligible": 21,
+      "blind": 21,
+      "blind_pct": 100.0
+    },
+    {
+      "repo": "Stirling-Tools/Stirling-PDF",
+      "group": "no_registry",
+      "eligible": 16,
+      "blind": 16,
+      "blind_pct": 100.0
+    },
+    {
+      "repo": "calcom/cal.diy",
+      "group": "no_registry",
+      "eligible": 6,
+      "blind": 6,
+      "blind_pct": 100.0
+    },
+    {
+      "repo": "coder/code-server",
+      "group": "registry",
+      "eligible": 1,
+      "blind": 0,
+      "blind_pct": 0.0
+    },
+    {
+      "repo": "dani-garcia/vaultwarden",
+      "group": "no_registry",
+      "eligible": 30,
+      "blind": 26,
+      "blind_pct": 86.7
+    },
+    {
+      "repo": "getsentry/sentry",
+      "group": "registry",
+      "eligible": 21,
+      "blind": 7,
+      "blind_pct": 33.3
+    },
+    {
+      "repo": "gogs/gogs",
+      "group": "registry",
+      "eligible": 66,
+      "blind": 3,
+      "blind_pct": 4.5
+    },
+    {
+      "repo": "hoppscotch/hoppscotch",
+      "group": "no_registry",
+      "eligible": 16,
+      "blind": 15,
+      "blind_pct": 93.8
+    },
+    {
+      "repo": "huginn/huginn",
+      "group": "no_registry",
+      "eligible": 9,
+      "blind": 9,
+      "blind_pct": 100.0
+    },
+    {
+      "repo": "immich-app/immich",
+      "group": "no_registry",
+      "eligible": 13,
+      "blind": 13,
+      "blind_pct": 100.0
+    },
+    {
+      "repo": "laurent22/joplin",
+      "group": "registry",
+      "eligible": 32,
+      "blind": 30,
+      "blind_pct": 93.8
+    },
+    {
+      "repo": "lobehub/lobehub",
+      "group": "registry",
+      "eligible": 14,
+      "blind": 0,
+      "blind_pct": 0.0
+    },
+    {
+      "repo": "makeplane/plane",
+      "group": "no_registry",
+      "eligible": 84,
+      "blind": 82,
+      "blind_pct": 97.6
+    },
+    {
+      "repo": "n8n-io/n8n",
+      "group": "registry",
+      "eligible": 210,
+      "blind": 58,
+      "blind_pct": 27.6
+    },
+    {
+      "repo": "paperless-ngx/paperless-ngx",
+      "group": "no_registry",
+      "eligible": 16,
+      "blind": 16,
+      "blind_pct": 100.0
+    },
+    {
+      "repo": "payloadcms/payload",
+      "group": "registry",
+      "eligible": 40,
+      "blind": 2,
+      "blind_pct": 5.0
+    },
+    {
+      "repo": "penpot/penpot",
+      "group": "no_registry",
+      "eligible": 24,
+      "blind": 23,
+      "blind_pct": 95.8
+    },
+    {
+      "repo": "pi-hole/pi-hole",
+      "group": "no_registry",
+      "eligible": 6,
+      "blind": 6,
+      "blind_pct": 100.0
+    },
+    {
+      "repo": "pocketbase/pocketbase",
+      "group": "registry",
+      "eligible": 3,
+      "blind": 0,
+      "blind_pct": 0.0
+    },
+    {
+      "repo": "reactive-resume/reactive-resume",
+      "group": "no_registry",
+      "eligible": 1,
+      "blind": 1,
+      "blind_pct": 100.0
+    },
+    {
+      "repo": "siyuan-note/siyuan",
+      "group": "no_registry",
+      "eligible": 216,
+      "blind": 107,
+      "blind_pct": 49.5
+    },
+    {
+      "repo": "syncthing/syncthing",
+      "group": "registry",
+      "eligible": 2,
+      "blind": 0,
+      "blind_pct": 0.0
+    },
+    {
+      "repo": "twentyhq/twenty",
+      "group": "no_registry",
+      "eligible": 9,
+      "blind": 9,
+      "blind_pct": 100.0
+    },
+    {
+      "repo": "usememos/memos",
+      "group": "registry",
+      "eligible": 1,
+      "blind": 0,
+      "blind_pct": 0.0
+    }
+  ],
+  "source": {
+    "csv": "census.csv",
+    "classification_frozen_utc": "2026-10-18",
+    "source_commit": "141a3ade",
+    "application_repos_with_advisories": 27,
+    "classified_repos": 27,
+    "classification_covers_all": true,
+    "n_registry": 12,
+    "n_no_registry": 15
+  }
+}
