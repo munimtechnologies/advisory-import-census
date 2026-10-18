@@ -13,6 +13,11 @@ headline claim is checked against the linked public pages. Code is Apache-2.0; t
 > OSV-based scanners (repository-level permutation p = 0.30). The pattern that matters looks
 > like **self-hosted applications vs libraries** (exploratory: 64% vs 2% blind). The 31.6%
 > below still reproduces; read it as a property of self-hosted applications, not of AI.
+>
+> **Update (2026-10-18): the application-vs-library split is confirmed.** A pre-registered
+> census of 40 fresh applications and 40 libraries found 53.0% of application advisories
+> scanner-blind against 0 of 11 for libraries (repository-level permutation p = 0.0057).
+> Results and limits: [`study/app-vs-library/RESULTS.md`](study/app-vs-library/RESULTS.md).
 > Details: [Is the gap special to AI/ML tools?](#is-the-gap-special-to-aiml-tools-no) and
 > [`study/AI-vs-control-import-gap.md`](study/AI-vs-control-import-gap.md).
 
@@ -388,9 +393,17 @@ full write-up, data and a reported classifier correction are in
   with no package, which no package scanner can match. The AI group's fully blind repos
   (Dify, AnythingLLM, LibreChat, RAGFlow, text-generation-webui, ComfyUI) are all
   self-hosted applications.
-- A **confirmatory** application-vs-library test on a fresh, frozen frame of 40 applications
-  and 40 libraries is pre-registered in [`study/app-vs-library/`](study/app-vs-library/); its
-  result will be published here either way once the census has run.
+- **Confirmed (2026-10-18).** A pre-registered application-vs-library census of a fresh,
+  frozen frame (40 self-hosted applications, 40 most-depended-on libraries, no repository
+  reused from earlier samples) found **53.0%** of 909 application advisories scanner-blind
+  against **0 of 11** library advisories: +53.0 points, repository-level permutation
+  **p = 0.0057** (32 repos), so H1 is supported. It holds after dropping the heaviest repo in
+  each group (p = 0.02); within each publication period alone it points the same way but is
+  not significant (library side: 5 and 1 repos). Exploratory: part of the application figure
+  is review lag on recent advisories, yet 36.8% of application advisories 90+ days old are
+  still blind, and apps whose advisories name a registry package (gogs, Payload, copyparty)
+  are mostly visible. Full write-up, limits and data:
+  [`study/app-vs-library/RESULTS.md`](study/app-vs-library/RESULTS.md).
 
 **Practical takeaway:** if you self-host an application, open-source or not, don't expect
 your dependency scanner to tell you about that application's own advisories. Watch them

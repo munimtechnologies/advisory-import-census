@@ -1,0 +1,1005 @@
+{
+  "measure": {
+    "primary": "scanner_blind (corrected): no OSV record, by GHSA or CVE alias, names any package",
+    "secondary": "own_id_not_in_osv: the advisory's own GHSA id does not resolve in OSV"
+  },
+  "snapshot_utc": "2026-10-18T08:48:21+00:00",
+  "osv_canary": {
+    "id": "GHSA-39mp-8hj3-5c49",
+    "resolved": true
+  },
+  "groups": {
+    "application": {
+      "eligible": 909,
+      "repos_in_frame": 40,
+      "repos_with_eligible_advisories": 27,
+      "blind": {
+        "k": 482,
+        "n": 909,
+        "pct": 53.0,
+        "ci95": [
+          0.4977,
+          0.5625
+        ]
+      },
+      "own_id_not_in_osv": {
+        "k": 482,
+        "n": 909,
+        "pct": 53.0,
+        "ci95": [
+          0.4977,
+          0.5625
+        ]
+      },
+      "repo_median_blind_pct": 93.8
+    },
+    "library": {
+      "eligible": 11,
+      "repos_in_frame": 40,
+      "repos_with_eligible_advisories": 5,
+      "blind": {
+        "k": 0,
+        "n": 11,
+        "pct": 0.0,
+        "ci95": [
+          0.0,
+          0.2588
+        ]
+      },
+      "own_id_not_in_osv": {
+        "k": 0,
+        "n": 11,
+        "pct": 0.0,
+        "ci95": [
+          0.0,
+          0.2588
+        ]
+      },
+      "repo_median_blind_pct": 0.0
+    }
+  },
+  "comparison": {
+    "blind": {
+      "difference_pct_points": 53.0,
+      "p_two_sided": 0.0057,
+      "permutations": 10000,
+      "seed": 20261017,
+      "unit": "repository",
+      "repositories": 32
+    },
+    "own_id_not_in_osv": {
+      "difference_pct_points": 53.0,
+      "p_two_sided": 0.0057,
+      "permutations": 10000,
+      "seed": 20261017,
+      "unit": "repository",
+      "repositories": 32
+    }
+  },
+  "robustness": {
+    "drop_heaviest_repo_each_group": {
+      "dropped": [
+        "psf/requests",
+        "siyuan-note/siyuan"
+      ],
+      "blind": {
+        "difference_pct_points": 54.1,
+        "p_two_sided": 0.0199,
+        "permutations": 10000,
+        "seed": 20261017,
+        "unit": "repository",
+        "repositories": 30
+      }
+    },
+    "period_before_2026_05": {
+      "eligible": 354,
+      "blind": {
+        "difference_pct_points": 34.6,
+        "p_two_sided": 0.3121,
+        "permutations": 10000,
+        "seed": 20261017,
+        "unit": "repository",
+        "repositories": 31
+      }
+    },
+    "period_from_2026_05": {
+      "eligible": 566,
+      "blind": {
+        "difference_pct_points": 64.2,
+        "p_two_sided": 0.1353,
+        "permutations": 10000,
+        "seed": 20261017,
+        "unit": "repository",
+        "repositories": 22
+      }
+    }
+  },
+  "data_access": {
+    "route": "github.com public advisory pages (HTML), unauthenticated",
+    "amendment": "AMENDMENT-2.md",
+    "pace_seconds": 2.5,
+    "unreadable_repos": []
+  },
+  "collection": [
+    {
+      "repo": "n8n-io/n8n",
+      "group": "application",
+      "listing_pages": 23,
+      "advisories_listed": 225,
+      "eligible": 210,
+      "detail_pages": 210,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "ollama/ollama",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "immich-app/immich",
+      "group": "application",
+      "listing_pages": 2,
+      "advisories_listed": 14,
+      "eligible": 13,
+      "detail_pages": 13,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "Stirling-Tools/Stirling-PDF",
+      "group": "application",
+      "listing_pages": 2,
+      "advisories_listed": 16,
+      "eligible": 16,
+      "detail_pages": 16,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "syncthing/syncthing",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 2,
+      "eligible": 2,
+      "detail_pages": 2,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "lobehub/lobehub",
+      "group": "application",
+      "listing_pages": 2,
+      "advisories_listed": 15,
+      "eligible": 14,
+      "detail_pages": 14,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "hoppscotch/hoppscotch",
+      "group": "application",
+      "listing_pages": 2,
+      "advisories_listed": 16,
+      "eligible": 16,
+      "detail_pages": 16,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "coder/code-server",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 1,
+      "eligible": 1,
+      "detail_pages": 1,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "elastic/elasticsearch",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "AppFlowy-IO/appflowy",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "apache/superset",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "hakimel/reveal.js",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "dani-garcia/vaultwarden",
+      "group": "application",
+      "listing_pages": 3,
+      "advisories_listed": 30,
+      "eligible": 30,
+      "detail_pages": 30,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "usememos/memos",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 1,
+      "eligible": 1,
+      "detail_pages": 1,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "pocketbase/pocketbase",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 3,
+      "eligible": 3,
+      "detail_pages": 3,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "pi-hole/pi-hole",
+      "group": "application",
+      "listing_pages": 2,
+      "advisories_listed": 11,
+      "eligible": 6,
+      "detail_pages": 6,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "penpot/penpot",
+      "group": "application",
+      "listing_pages": 3,
+      "advisories_listed": 24,
+      "eligible": 24,
+      "detail_pages": 24,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "makeplane/plane",
+      "group": "application",
+      "listing_pages": 9,
+      "advisories_listed": 84,
+      "eligible": 84,
+      "detail_pages": 84,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "meilisearch/MeiliSearch",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "twentyhq/twenty",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 9,
+      "eligible": 9,
+      "detail_pages": 9,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "appwrite/appwrite",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "laurent22/joplin",
+      "group": "application",
+      "listing_pages": 4,
+      "advisories_listed": 32,
+      "eligible": 32,
+      "detail_pages": 32,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "odoo/odoo",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "huginn/huginn",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 9,
+      "eligible": 9,
+      "detail_pages": 9,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "mudler/LocalAI",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "calcom/cal.diy",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 6,
+      "eligible": 6,
+      "detail_pages": 6,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "gogs/gogs",
+      "group": "application",
+      "listing_pages": 7,
+      "advisories_listed": 66,
+      "eligible": 66,
+      "detail_pages": 66,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "apache/airflow",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "9001/copyparty",
+      "group": "application",
+      "listing_pages": 2,
+      "advisories_listed": 18,
+      "eligible": 16,
+      "detail_pages": 16,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "siyuan-note/siyuan",
+      "group": "application",
+      "listing_pages": 23,
+      "advisories_listed": 223,
+      "eligible": 216,
+      "detail_pages": 216,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "paperless-ngx/paperless-ngx",
+      "group": "application",
+      "listing_pages": 2,
+      "advisories_listed": 17,
+      "eligible": 16,
+      "detail_pages": 16,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "DIYgod/RSSHub",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 7,
+      "eligible": 7,
+      "detail_pages": 7,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "RocketChat/Rocket.Chat",
+      "group": "application",
+      "listing_pages": 3,
+      "advisories_listed": 21,
+      "eligible": 21,
+      "detail_pages": 21,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "LibreChat-AI/LibreChat",
+      "group": "application",
+      "listing_pages": 3,
+      "advisories_listed": 29,
+      "eligible": 29,
+      "detail_pages": 29,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "getsentry/sentry",
+      "group": "application",
+      "listing_pages": 3,
+      "advisories_listed": 21,
+      "eligible": 21,
+      "detail_pages": 21,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "juspay/hyperswitch",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "payloadcms/payload",
+      "group": "application",
+      "listing_pages": 5,
+      "advisories_listed": 50,
+      "eligible": 40,
+      "detail_pages": 40,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "reactive-resume/reactive-resume",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 1,
+      "eligible": 1,
+      "detail_pages": 1,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "Kong/kong",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "heyputer/puter",
+      "group": "application",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "chalk/supports-color",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "psf/requests",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 4,
+      "eligible": 4,
+      "detail_pages": 4,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "pmezard/go-difflib",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "isaacs/fs.realpath",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "benjaminp/six",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "davecgh/go-spew",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "jonschlinkert/fill-range",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "numpy/numpy",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "stretchr/testify",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "micromatch/to-regex-range",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "stub42/pytz",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "go-check/check",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "fsevents/fsevents",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "certifi/python-certifi",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 3,
+      "eligible": 3,
+      "detail_pages": 3,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "stretchr/objx",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "browserify/resolve",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "kjd/idna",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 2,
+      "eligible": 2,
+      "detail_pages": 2,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "golang/protobuf",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "jshttp/statuses",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "dateutil/dateutil",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "google/go-cmp",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "wesleytodd/setprototypeof",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "pallets/click",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "kr/text",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "stream-utils/unpipe",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "pandas-dev/pandas",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "pkg/errors",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "jshttp/fresh",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "chardet/chardet",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "kr/pretty",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "pillarjs/send",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 1,
+      "eligible": 1,
+      "detail_pages": 1,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "pytest-dev/pytest",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "BurntSushi/toml",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "expressjs/serve-static",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 1,
+      "eligible": 1,
+      "detail_pages": 1,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "benoitc/gunicorn",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "mattn/go-isatty",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "epoberezkin/fast-deep-equal",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "pyparsing/pyparsing",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "golang/appengine",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    },
+    {
+      "repo": "epoberezkin/fast-json-stable-stringify",
+      "group": "library",
+      "listing_pages": 1,
+      "advisories_listed": 0,
+      "eligible": 0,
+      "detail_pages": 0,
+      "detail_failures": 0,
+      "unreadable": false,
+      "notes": []
+    }
+  ]
+}
