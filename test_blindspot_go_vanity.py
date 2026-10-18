@@ -19,7 +19,10 @@ go.opentelemetry.io subtrees (otel, collector, proto, auto, ebpf-profiler)
 monorepo prefixes too, replacing the exact otel{,/trace,/metric,/sdk} and
 collector entries. 0.9.10 adds Tailscale (tailscale.com) as a monorepo prefix
 and exact entries for Helm (helm.sh/helm) and the etcd raft library
-(go.etcd.io/raft). These tests pin the behaviour:
+(go.etcd.io/raft). 0.9.11 adds Istio (istio.io) as an owner prefix and exact
+entries for CUE (cuelang.org/go), ORAS (oras.land/oras-go) and Connect
+(connectrpc.com/{connect,otelconnect,grpcreflect}). These tests pin the
+behaviour:
 
   - gopkg.in follows its own documented redirect rule
     (gopkg.in/pkg.vN -> github.com/go-pkg/pkg; gopkg.in/user/pkg.vN ->
@@ -885,6 +888,106 @@ class TestHelmTailscaleRaftVanity(unittest.TestCase):
         f = report["findings"][0]
         self.assertEqual(f["repo"], "helm/helm")
         self.assertEqual(f["ghsa_id"], "GHSA-hhhh-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
+        self.assertFalse(f["scanner_visible"])
+
+
+class TestIstioCueOrasConnectVanity(unittest.TestCase):
+    """New in 0.9.11, each verified from the project's go.mod `module` line
+    (2026-10-18):
+      istio.io/<repo>   -> istio/<repo>     (owner prefix; istio/{istio,api,
+                           client-go,pkg} each read `module istio.io/<repo>`)
+      cuelang.org/go    -> cue-lang/cue     (exact; `module cuelang.org/go`)
+      oras.land/oras-go -> oras-project/oras-go  (exact; v2.6.0 reads
+                           `module oras.land/oras-go/v2`)
+      connectrpc.com/{connect,otelconnect,grpcreflect}
+                        -> connectrpc/{connect-go,otelconnect-go,grpcreflect-go}
+                           (exact; repo names carry a -go suffix)
+    """
+
+    def test_istio_owner_prefix(self):
+        for repo in ("istio", "api", "client-go", "pkg"):
+            self.assertEqual(bs.go_module_repo("istio.io/" + repo),
+                             "istio/" + repo)
+
+    def test_istio_subpackage_keeps_repo(self):
+        self.assertEqual(bs.go_module_repo("istio.io/istio/pkg/config"),
+                         "istio/istio")
+        self.assertEqual(bs.go_module_repo("istio.io/api/networking/v1"),
+                         "istio/api")
+        self.assertEqual(bs.go_vanity_prefix_repo("istio.io/client-go"),
+                         "istio/client-go")
+
+    def test_istio_edges(self):
+        # The bare host and a bare major version name no repo; a host that only
+        # shares the prefix string is a different host.
+        self.assertIsNone(bs.go_vanity_prefix_repo("istio.io"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("istio.io/v2"))
+        self.assertIsNone(bs.go_module_repo("istio.io.evil/istio"))
+        self.assertIsNone(bs.go_vanity_monorepo_repo("istio.io/istio"))
+
+    def test_cue(self):
+        self.assertEqual(bs.go_module_repo("cuelang.org/go"), "cue-lang/cue")
+        # Only the verified module is mapped; another cuelang.org path is not.
+        self.assertIsNone(bs.go_module_repo("cuelang.org/other"))
+
+    def test_oras_v1_v2_and_current_github_path(self):
+        self.assertEqual(bs.go_module_repo("oras.land/oras-go"),
+                         "oras-project/oras-go")
+        self.assertEqual(bs.go_module_repo("oras.land/oras-go/v2"),
+                         "oras-project/oras-go")
+        # main's current module path is a github.com path, already mapped.
+        self.assertEqual(bs.go_module_repo("github.com/oras-project/oras-go/v3"),
+                         "oras-project/oras-go")
+        self.assertIsNone(bs.go_module_repo("oras.land/oras"))
+
+    def test_connect_modules_and_major_versions(self):
+        self.assertEqual(bs.go_module_repo("connectrpc.com/connect"),
+                         "connectrpc/connect-go")
+        self.assertEqual(bs.go_module_repo("connectrpc.com/connect/v2"),
+                         "connectrpc/connect-go")
+        self.assertEqual(bs.go_module_repo("connectrpc.com/otelconnect"),
+                         "connectrpc/otelconnect-go")
+        self.assertEqual(bs.go_module_repo("connectrpc.com/grpcreflect/v2"),
+                         "connectrpc/grpcreflect-go")
+
+    def test_connect_host_is_not_a_prefix(self):
+        # connectrpc.com/<x> does not map to connectrpc/<x>, so an unverified
+        # path is left unmapped rather than guessed.
+        self.assertIsNone(bs.go_module_repo("connectrpc.com/vanguard"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("connectrpc.com/connect"))
+
+    def test_istio_blind_spot_end_to_end(self):
+        # An istio.io/istio dependency now maps to istio/istio, so a maintainer
+        # advisory OSV does not report is surfaced (fully offline).
+        advisories = {
+            "istio/istio": [{
+                "ghsa_id": "GHSA-iiii-0000-0000",
+                "cve_id": "CVE-2026-77777",
+                "severity": "high",
+                "summary": "example istio.io/istio advisory",
+                "html_url": "https://github.com/istio/istio/security/advisories/GHSA-iiii-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go", "name": "istio.io/istio"},
+                    "vulnerable_version_range": "< 1.27.0",
+                    "patched_versions": "1.27.0",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "istio.io/istio", "v1.26.2")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "istio/istio")
+        self.assertEqual(f["ghsa_id"], "GHSA-iiii-0000-0000")
         self.assertEqual(f["affects_your_version"], "yes")
         self.assertFalse(f["scanner_visible"])
 

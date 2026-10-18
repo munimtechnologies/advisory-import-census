@@ -7,11 +7,11 @@ modules there is no registry call: the GitHub repository is worked out from the
 module path alone, by the rules below.
 
 Every mapping here was verified from the project's own `go.mod` `module` line on
-2026-10-17. `blindspot` never guesses a repository it has not verified: a Go
+2026-10-17 (those added in 0.9.11 on 2026-10-18). `blindspot` never guesses a repository it has not verified: a Go
 module on any host not listed below is reported as *unmapped* (add it with
 `--map NAME=OWNER/REPO`), rather than silently skipped or mapped to a wrong repo.
 
-This file documents `blindspot` as of advisory-import-census **0.9.10**.
+This file documents `blindspot` as of advisory-import-census **0.9.11**.
 
 ## 1. Direct GitHub modules
 
@@ -42,9 +42,15 @@ version or a deeper import path does not change it
 | `k8s.io` | `kubernetes` | `k8s.io/client-go` → `kubernetes/client-go` |
 | `sigs.k8s.io` | `kubernetes-sigs` | `sigs.k8s.io/yaml` → `kubernetes-sigs/yaml` |
 | `golang.org/x` | `golang` | `golang.org/x/crypto` → `golang/crypto` |
+| `istio.io` | `istio` | `istio.io/client-go` → `istio/client-go` |
 
 Only the `golang.org/x` namespace is a prefix; other `golang.org` paths
 (`golang.org/dl`) stay unmapped.
+
+**Istio** (since 0.9.11). `istio/istio`, `istio/api`, `istio/client-go` and
+`istio/pkg` each declare `module istio.io/<repo>`, and `istio.io/istio` requires
+`istio.io/api` and `istio.io/client-go` as separate modules, so the element after
+`istio.io` names a repository (an owner prefix, not a monorepo).
 
 ## 4. Monorepo-prefix hosts
 
@@ -114,9 +120,18 @@ trailing `/vN` is stripped before the lookup.
 | `go.etcd.io/bbolt` | `etcd-io/bbolt` |
 | `go.etcd.io/raft` | `etcd-io/raft` |
 | `helm.sh/helm` | `helm/helm` |
+| `cuelang.org/go` | `cue-lang/cue` |
+| `oras.land/oras-go` | `oras-project/oras-go` |
+| `connectrpc.com/connect` | `connectrpc/connect-go` |
+| `connectrpc.com/otelconnect` | `connectrpc/otelconnect-go` |
+| `connectrpc.com/grpcreflect` | `connectrpc/grpcreflect-go` |
 
 `google.golang.org` is **not** a prefix host (grpc, protobuf, api and genproto
 live in four different repositories), so each of its modules is an exact entry.
+Neither is `connectrpc.com`: its repositories carry a `-go` suffix the import
+path lacks, so only the three verified paths are mapped. ORAS's v2 line declares
+`module oras.land/oras-go/v2`; its main branch has since moved to
+`github.com/oras-project/oras-go/v3`, which rule 1 maps to the same repository.
 
 ## Anything else
 
