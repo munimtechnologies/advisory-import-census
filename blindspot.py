@@ -70,7 +70,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.9.18"
+__version__ = "0.9.19"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -856,6 +856,30 @@ GO_VANITY_MONOREPO_PREFIX = {
 #     drop-in regexp replacement for binary data, pulled in transitively by some
 #     Google Cloud clients. rsc.io is left as an exact-entry host rather than an
 #     owner prefix so an unverified rsc.io path is never guessed).
+# New in 0.9.19, each verified from the project's go.mod `module` line
+# (2026-10-18). All are exact entries (none of their hosts names the GitHub owner
+# for every module, so none is treated as an owner prefix); a trailing /vN is
+# stripped before the lookup:
+#   gonum.org/v1/gonum -> gonum/gonum; gonum.org/v1/plot -> gonum/plot (the Gonum
+#     scientific-computing libraries -- numerical/linear-algebra and plotting,
+#     both very common in Go data/ML code; each reads `module gonum.org/v1/<repo>`
+#     at gonum/<repo>). gonum.org/v1 is NOT treated as an owner prefix: only these
+#     two verified paths are mapped, so an unverified gonum.org path stays
+#     unmapped rather than guessed.
+#   mvdan.cc/gofumpt -> mvdan/gofumpt (`module mvdan.cc/gofumpt`; the stricter
+#     gofmt used widely in Go CI/lint pipelines).
+#   mvdan.cc/xurls -> mvdan/xurls (`module mvdan.cc/xurls/v2`; the /vN is stripped
+#     before the lookup, so the base path mvdan.cc/xurls is the key. A common
+#     URL-extraction library).
+#   mvdan.cc/editorconfig -> mvdan/editorconfig (`module mvdan.cc/editorconfig`;
+#     the EditorConfig parser used by mvdan's shfmt and other tools). mvdan.cc is
+#     NOT a prefix host (mvdan.cc/sh lives at mvdan/sh but the host could hold
+#     other owners' modules), so each verified mvdan.cc path is its own exact
+#     entry.
+#   pgregory.net/rapid -> flyingmutant/rapid (`module pgregory.net/rapid`; the
+#     Rapid property-based testing library, a common test dependency. pgregory.net
+#     is NOT a prefix host: the owner is flyingmutant, not pgregory, so only this
+#     verified path is mapped).
 GO_VANITY_REPOS = {
     "code.gitea.io/gitea": "go-gitea/gitea",
     "gitea.dev": "go-gitea/gitea",
@@ -932,6 +956,12 @@ GO_VANITY_REPOS = {
     "go.uber.org/zap/exp": "uber-go/zap",
     "howett.net/plist": "DHowett/go-plist",
     "rsc.io/binaryregexp": "rsc/binaryregexp",
+    "gonum.org/v1/gonum": "gonum/gonum",
+    "gonum.org/v1/plot": "gonum/plot",
+    "mvdan.cc/gofumpt": "mvdan/gofumpt",
+    "mvdan.cc/xurls": "mvdan/xurls",
+    "mvdan.cc/editorconfig": "mvdan/editorconfig",
+    "pgregory.net/rapid": "flyingmutant/rapid",
 }
 
 # A gopkg.in package element carries a major-version selector, e.g. "yaml.v3".

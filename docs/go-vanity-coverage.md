@@ -7,12 +7,12 @@ modules there is no registry call: the GitHub repository is worked out from the
 module path alone, by the rules below.
 
 Every mapping here was verified from the project's own `go.mod` `module` line on
-2026-10-17 (those added in 0.9.11 to 0.9.18 on 2026-10-18). `blindspot`
+2026-10-17 (those added in 0.9.11 to 0.9.19 on 2026-10-18). `blindspot`
 never guesses a repository it has not verified: a Go
 module on any host not listed below is reported as *unmapped* (add it with
 `--map NAME=OWNER/REPO`), rather than silently skipped or mapped to a wrong repo.
 
-This file documents `blindspot` as of advisory-import-census **0.9.18**.
+This file documents `blindspot` as of advisory-import-census **0.9.19**.
 
 ## 1. Direct GitHub modules
 
@@ -161,6 +161,12 @@ trailing `/vN` is stripped before the lookup.
 | `go.uber.org/zap/exp` | `uber-go/zap` |
 | `howett.net/plist` | `DHowett/go-plist` |
 | `rsc.io/binaryregexp` | `rsc/binaryregexp` |
+| `gonum.org/v1/gonum` | `gonum/gonum` |
+| `gonum.org/v1/plot` | `gonum/plot` |
+| `mvdan.cc/gofumpt` | `mvdan/gofumpt` |
+| `mvdan.cc/xurls` (`/v2`) | `mvdan/xurls` |
+| `mvdan.cc/editorconfig` | `mvdan/editorconfig` |
+| `pgregory.net/rapid` | `flyingmutant/rapid` |
 
 `google.golang.org` is **not** a prefix host (grpc, protobuf, api and genproto
 live in four different repositories), so each of its modules is an exact entry.
@@ -263,6 +269,21 @@ the Apple property-list library (owner `DHowett`, repo `go-plist`).
 pulled in transitively by some Google Cloud clients. `software.sslmate.com`,
 `howett.net` and `rsc.io` are all kept as exact-entry hosts rather than owner
 prefixes, so an unverified path on any of them stays unmapped rather than guessed.
+
+The 0.9.19 entries add six more exact paths, each verified from its own `go.mod`
+`module` line (2026-10-18). `gonum.org/v1/gonum` → `gonum/gonum` and
+`gonum.org/v1/plot` → `gonum/plot` are the Gonum scientific-computing libraries
+(numerical/linear-algebra and plotting), both very common in Go data and ML code;
+each declares `module gonum.org/v1/<repo>`. `gonum.org/v1` is **not** an owner
+prefix — only the two verified paths are mapped. Three `mvdan.cc` tooling modules
+join `mvdan.cc/sh` (0.9.12): `mvdan.cc/gofumpt` → `mvdan/gofumpt` (the stricter
+gofmt widely used in Go CI), `mvdan.cc/xurls` → `mvdan/xurls` (a URL-extraction
+library; master declares `module mvdan.cc/xurls/v2`, so the `/vN` is stripped and
+the base path is the key) and `mvdan.cc/editorconfig` → `mvdan/editorconfig`.
+`mvdan.cc` stays an exact-entry host rather than an owner prefix. Finally
+`pgregory.net/rapid` → `flyingmutant/rapid` is the Rapid property-based testing
+library (a common test dependency); `pgregory.net` is **not** a prefix host (the
+owner is `flyingmutant`, not `pgregory`), so only the verified path is mapped.
 
 ## Anything else
 

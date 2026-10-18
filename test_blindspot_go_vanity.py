@@ -1045,8 +1045,10 @@ class TestMergoAgeStaticcheckVanity(unittest.TestCase):
         # the lookup); the repo is mvdan/sh (the import path lacks the owner).
         self.assertEqual(bs.go_module_repo("mvdan.cc/sh"), "mvdan/sh")
         self.assertEqual(bs.go_module_repo("mvdan.cc/sh/v3"), "mvdan/sh")
-        # mvdan.cc is not a prefix host; another mvdan.cc path is not guessed.
-        self.assertIsNone(bs.go_module_repo("mvdan.cc/gofumpt"))
+        # mvdan.cc is not a prefix host; an unverified mvdan.cc path is not guessed.
+        # (gofumpt/xurls/editorconfig became exact entries in 0.9.19 and are tested
+        # in TestGonumMvdanRapidVanity below, so an unverified path is used here.)
+        self.assertIsNone(bs.go_module_repo("mvdan.cc/unverified"))
 
     def test_mergo_blind_spot_end_to_end(self):
         # A dario.cat/mergo dependency now maps to darccio/mergo, so a maintainer
@@ -1671,6 +1673,84 @@ class TestGo4orgFyneSslmateUberHowettRsc(unittest.TestCase):
         f = report["findings"][0]
         self.assertEqual(f["repo"], "fyne-io/fyne")
         self.assertEqual(f["ghsa_id"], "GHSA-fyfy-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
+        self.assertFalse(f["scanner_visible"])
+
+
+class TestGonumMvdanRapidVanity(unittest.TestCase):
+    """New in 0.9.19, each verified from the project's go.mod `module` line
+    (2026-10-18). All are exact entries (none of their hosts names the GitHub
+    owner for every module, so none is an owner prefix); a trailing /vN is
+    stripped before the lookup:
+      gonum.org/v1/gonum     -> gonum/gonum
+      gonum.org/v1/plot      -> gonum/plot
+      mvdan.cc/gofumpt       -> mvdan/gofumpt
+      mvdan.cc/xurls (/v2)   -> mvdan/xurls
+      mvdan.cc/editorconfig  -> mvdan/editorconfig
+      pgregory.net/rapid     -> flyingmutant/rapid
+    """
+
+    def test_gonum_libraries(self):
+        self.assertEqual(bs.go_module_repo("gonum.org/v1/gonum"), "gonum/gonum")
+        self.assertEqual(bs.go_module_repo("gonum.org/v1/plot"), "gonum/plot")
+        # A deeper import path keeps the repo (exact entry on the module path,
+        # with /vN stripping; a sub-package is not a /vN so it is not mapped here).
+        self.assertEqual(bs.go_module_repo("gonum.org/v1/gonum/mat"), None)
+        # gonum.org/v1 is NOT an owner prefix; an unverified path stays unmapped.
+        self.assertIsNone(bs.go_module_repo("gonum.org/v1/unverified"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("gonum.org/v1/gonum"))
+
+    def test_mvdan_modules(self):
+        self.assertEqual(bs.go_module_repo("mvdan.cc/gofumpt"), "mvdan/gofumpt")
+        self.assertEqual(bs.go_module_repo("mvdan.cc/editorconfig"),
+                         "mvdan/editorconfig")
+        # xurls ships as a /v2 module; the /vN is stripped before the lookup, so
+        # both the base path and the versioned path resolve.
+        self.assertEqual(bs.go_module_repo("mvdan.cc/xurls"), "mvdan/xurls")
+        self.assertEqual(bs.go_module_repo("mvdan.cc/xurls/v2"), "mvdan/xurls")
+        # mvdan.cc is an exact-entry host, not a prefix; sh stays mapped (0.9.12).
+        self.assertEqual(bs.go_module_repo("mvdan.cc/sh"), "mvdan/sh")
+        self.assertIsNone(bs.go_module_repo("mvdan.cc/unverified"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("mvdan.cc/gofumpt"))
+
+    def test_rapid(self):
+        self.assertEqual(bs.go_module_repo("pgregory.net/rapid"),
+                         "flyingmutant/rapid")
+        # pgregory.net is NOT a prefix host (owner is flyingmutant, not pgregory).
+        self.assertIsNone(bs.go_module_repo("pgregory.net/unverified"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("pgregory.net/rapid"))
+
+    def test_gonum_blind_spot_end_to_end(self):
+        # A gonum.org/v1/gonum dependency now maps to gonum/gonum, so a maintainer
+        # advisory OSV does not report is surfaced (fully offline).
+        advisories = {
+            "gonum/gonum": [{
+                "ghsa_id": "GHSA-gnum-0000-0000",
+                "cve_id": "CVE-2026-19191",
+                "severity": "moderate",
+                "summary": "example gonum.org/v1/gonum advisory",
+                "html_url": "https://github.com/gonum/gonum/security/advisories/GHSA-gnum-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go", "name": "gonum.org/v1/gonum"},
+                    "vulnerable_version_range": "< 0.15.0",
+                    "patched_versions": "0.15.0",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "gonum.org/v1/gonum", "v0.14.0")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "gonum/gonum")
+        self.assertEqual(f["ghsa_id"], "GHSA-gnum-0000-0000")
         self.assertEqual(f["affects_your_version"], "yes")
         self.assertFalse(f["scanner_visible"])
 
