@@ -1507,10 +1507,13 @@ class TestKubevirtElasticNetaddrGo4Vanity(unittest.TestCase):
 
     def test_go4org(self):
         self.assertEqual(bs.go_module_repo("go4.org"), "go4org/go4")
-        # go4.org is NOT an owner prefix: only the bare host is mapped here, so a
-        # sibling path (a separate repo) is left unmapped rather than guessed.
-        self.assertIsNone(bs.go_module_repo("go4.org/netipx"))
+        # go4.org is NOT an owner prefix: the bare host and its sibling repos are
+        # each mapped by their own exact entry, never by a prefix rule. netipx
+        # gained its exact entry in 0.9.18 (see TestGo4orgFyneSslmateUberHowettRsc).
+        self.assertEqual(bs.go_module_repo("go4.org/netipx"), "go4org/netipx")
         self.assertIsNone(bs.go_vanity_prefix_repo("go4.org/netipx"))
+        # A go4.org sibling we have NOT verified is still left unmapped.
+        self.assertIsNone(bs.go_module_repo("go4.org/unverified"))
 
     def test_cdi_blind_spot_end_to_end(self):
         # A kubevirt.io/containerized-data-importer dependency now maps to its
@@ -1578,6 +1581,97 @@ class TestKubevirtElasticNetaddrGo4Vanity(unittest.TestCase):
         f = report["findings"][0]
         self.assertEqual(f["repo"], "inetaf/netaddr")
         self.assertEqual(f["ghsa_id"], "GHSA-nana-0000-0000")
+        self.assertFalse(f["scanner_visible"])
+
+
+class TestGo4orgFyneSslmateUberHowettRsc(unittest.TestCase):
+    """New in 0.9.18, each verified from the project's go.mod `module` line
+    (2026-10-18). All are exact entries; none of their hosts names the GitHub
+    owner for every module, so none is an owner prefix:
+      go4.org/netipx                     -> go4org/netipx   (sibling of go4org/go4)
+      fyne.io/fyne (/v2)                  -> fyne-io/fyne
+      software.sslmate.com/src/go-pkcs12 -> SSLMate/go-pkcs12
+      go.uber.org/zap/exp                -> uber-go/zap      (submodule in that repo)
+      howett.net/plist                   -> DHowett/go-plist
+      rsc.io/binaryregexp                -> rsc/binaryregexp
+    """
+
+    def test_go4org_netipx_is_its_own_repo(self):
+        # netipx is a SEPARATE repo from go4org/go4, not under it. go4.org is
+        # not an owner prefix, so this must come from the exact map.
+        self.assertEqual(bs.go_module_repo("go4.org/netipx"), "go4org/netipx")
+        self.assertEqual(bs.go_module_repo("go4.org"), "go4org/go4")
+        self.assertIsNone(bs.go_vanity_prefix_repo("go4.org/netipx"))
+
+    def test_fyne_v1_and_v2(self):
+        # Current master is module fyne.io/fyne/v2; the /vN is stripped before the
+        # lookup, so the base path fyne.io/fyne is the key and covers both the v1
+        # module and the current v2 module. The owner is fyne-io, not fyne.
+        self.assertEqual(bs.go_module_repo("fyne.io/fyne/v2"), "fyne-io/fyne")
+        self.assertEqual(bs.go_module_repo("fyne.io/fyne"), "fyne-io/fyne")
+        # fyne.io is NOT a prefix host (owner fyne-io != host element fyne); an
+        # unverified fyne.io path stays unmapped rather than guessed.
+        self.assertIsNone(bs.go_module_repo("fyne.io/unverified"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("fyne.io/fyne"))
+
+    def test_sslmate_pkcs12(self):
+        self.assertEqual(bs.go_module_repo("software.sslmate.com/src/go-pkcs12"),
+                         "SSLMate/go-pkcs12")
+        self.assertIsNone(bs.go_module_repo("software.sslmate.com/src/unverified"))
+
+    def test_uber_zap_exp_submodule(self):
+        # zap/exp is its own Go module living inside the uber-go/zap repo; the
+        # exact lookup is on the full module path, so it needs its own entry and
+        # is not covered by the go.uber.org/zap entry.
+        self.assertEqual(bs.go_module_repo("go.uber.org/zap/exp"), "uber-go/zap")
+        self.assertEqual(bs.go_module_repo("go.uber.org/zap"), "uber-go/zap")
+        # go.uber.org stays an exact-entry host (yarpc has a different owner), so
+        # an unverified go.uber.org path is still not guessed.
+        self.assertIsNone(bs.go_module_repo("go.uber.org/stillunverified"))
+
+    def test_howett_plist(self):
+        self.assertEqual(bs.go_module_repo("howett.net/plist"), "DHowett/go-plist")
+        self.assertIsNone(bs.go_module_repo("howett.net/unverified"))
+
+    def test_rsc_binaryregexp(self):
+        self.assertEqual(bs.go_module_repo("rsc.io/binaryregexp"), "rsc/binaryregexp")
+        # rsc.io is kept an exact-entry host, not an owner prefix, so an
+        # unverified rsc.io path is left unmapped.
+        self.assertIsNone(bs.go_module_repo("rsc.io/unverified"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("rsc.io/binaryregexp"))
+
+    def test_fyne_blind_spot_end_to_end(self):
+        # A fyne.io/fyne/v2 dependency now maps to fyne-io/fyne, so a maintainer
+        # advisory OSV does not report is surfaced (fully offline).
+        advisories = {
+            "fyne-io/fyne": [{
+                "ghsa_id": "GHSA-fyfy-0000-0000",
+                "cve_id": "CVE-2026-18181",
+                "severity": "moderate",
+                "summary": "example fyne.io/fyne advisory",
+                "html_url": "https://github.com/fyne-io/fyne/security/advisories/GHSA-fyfy-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go", "name": "fyne.io/fyne/v2"},
+                    "vulnerable_version_range": "< 2.5.0",
+                    "patched_versions": "2.5.0",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "fyne.io/fyne/v2", "v2.4.0")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "fyne-io/fyne")
+        self.assertEqual(f["ghsa_id"], "GHSA-fyfy-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
         self.assertFalse(f["scanner_visible"])
 
 

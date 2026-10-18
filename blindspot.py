@@ -70,7 +70,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.9.17"
+__version__ = "0.9.18"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -824,7 +824,38 @@ GO_VANITY_MONOREPO_PREFIX = {
 #   go4.org -> go4org/go4 (`module go4.org`; a widely-vendored utility module).
 #     go4.org is NOT treated as an owner prefix: the bare host is one repo
 #     (go4org/go4), while sibling paths such as go4.org/netipx are separate
-#     repos, so only this verified bare path is mapped as an exact entry.
+#     repos (see 0.9.18), so each verified go4.org path is its own exact entry.
+# New in 0.9.18, each verified from the project's go.mod `module` line
+# (2026-10-18). All are exact entries (none of their hosts names the GitHub
+# owner for every module, so none is treated as an owner prefix); a trailing /vN
+# is stripped before the lookup:
+#   go4.org/netipx -> go4org/netipx (`module go4.org/netipx`; the IP-set/prefix
+#     library split out of go4.org into its OWN repo -- a sibling of go4org/go4,
+#     not under it -- so it needs this exact entry. It is a common transitive
+#     dependency of Tailscale and other Go networking projects). This replaces
+#     the 0.9.17 note that left go4.org/netipx unmapped.
+#   fyne.io/fyne -> fyne-io/fyne (`module fyne.io/fyne/v2` on master; the Fyne
+#     cross-platform GUI toolkit. The /vN is stripped before the lookup so the
+#     base path fyne.io/fyne is the key, covering both the v1 module fyne.io/fyne
+#     and the current fyne.io/fyne/v2. fyne.io is NOT treated as an owner prefix:
+#     the GitHub owner is fyne-io, not fyne, so only this verified path is mapped).
+#   software.sslmate.com/src/go-pkcs12 -> SSLMate/go-pkcs12 (`module
+#     software.sslmate.com/src/go-pkcs12`; a common PKCS#12 / TLS dependency.
+#     software.sslmate.com is NOT a prefix host, so only this verified path is
+#     mapped).
+#   go.uber.org/zap/exp -> uber-go/zap (`module go.uber.org/zap/exp`; the
+#     experimental submodule that lives INSIDE the uber-go/zap repo as its own Go
+#     module. go.uber.org stays an exact-entry host, not a prefix, so this deeper
+#     path needs its own entry -- the go.uber.org/zap entry does not cover it
+#     because the exact lookup is on the full module path).
+#   howett.net/plist -> DHowett/go-plist (`module howett.net/plist`; the Apple
+#     property-list library, pulled in transitively by container and macOS-related
+#     Go tooling. howett.net is NOT a prefix host: the owner is DHowett and the
+#     repo is go-plist, so only this verified path is mapped).
+#   rsc.io/binaryregexp -> rsc/binaryregexp (`module rsc.io/binaryregexp`; a
+#     drop-in regexp replacement for binary data, pulled in transitively by some
+#     Google Cloud clients. rsc.io is left as an exact-entry host rather than an
+#     owner prefix so an unverified rsc.io path is never guessed).
 GO_VANITY_REPOS = {
     "code.gitea.io/gitea": "go-gitea/gitea",
     "gitea.dev": "go-gitea/gitea",
@@ -895,6 +926,12 @@ GO_VANITY_REPOS = {
     "go.elastic.co/fastjson": "elastic/go-fastjson",
     "inet.af/netaddr": "inetaf/netaddr",
     "go4.org": "go4org/go4",
+    "go4.org/netipx": "go4org/netipx",
+    "fyne.io/fyne": "fyne-io/fyne",
+    "software.sslmate.com/src/go-pkcs12": "SSLMate/go-pkcs12",
+    "go.uber.org/zap/exp": "uber-go/zap",
+    "howett.net/plist": "DHowett/go-plist",
+    "rsc.io/binaryregexp": "rsc/binaryregexp",
 }
 
 # A gopkg.in package element carries a major-version selector, e.g. "yaml.v3".

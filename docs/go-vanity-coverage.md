@@ -7,12 +7,12 @@ modules there is no registry call: the GitHub repository is worked out from the
 module path alone, by the rules below.
 
 Every mapping here was verified from the project's own `go.mod` `module` line on
-2026-10-17 (those added in 0.9.11 to 0.9.17 on 2026-10-18). `blindspot`
+2026-10-17 (those added in 0.9.11 to 0.9.18 on 2026-10-18). `blindspot`
 never guesses a repository it has not verified: a Go
 module on any host not listed below is reported as *unmapped* (add it with
 `--map NAME=OWNER/REPO`), rather than silently skipped or mapped to a wrong repo.
 
-This file documents `blindspot` as of advisory-import-census **0.9.17**.
+This file documents `blindspot` as of advisory-import-census **0.9.18**.
 
 ## 1. Direct GitHub modules
 
@@ -155,6 +155,12 @@ trailing `/vN` is stripped before the lookup.
 | `go.elastic.co/fastjson` | `elastic/go-fastjson` |
 | `inet.af/netaddr` | `inetaf/netaddr` |
 | `go4.org` | `go4org/go4` |
+| `go4.org/netipx` | `go4org/netipx` |
+| `fyne.io/fyne` (`/v2`) | `fyne-io/fyne` |
+| `software.sslmate.com/src/go-pkcs12` | `SSLMate/go-pkcs12` |
+| `go.uber.org/zap/exp` | `uber-go/zap` |
+| `howett.net/plist` | `DHowett/go-plist` |
+| `rsc.io/binaryregexp` | `rsc/binaryregexp` |
 
 `google.golang.org` is **not** a prefix host (grpc, protobuf, api and genproto
 live in four different repositories), so each of its modules is an exact entry.
@@ -236,7 +242,27 @@ pulled in transitively by many Go networking projects (its vanity host moved
 owner, so only the current `inet.af` path is mapped). `go4.org` → `go4org/go4` is a
 widely-vendored utility module; `go4.org` is **not** an owner prefix, because the
 bare host is one repository while siblings such as `go4.org/netipx` are separate
-repositories, so only the verified bare path is mapped.
+repositories, so each verified `go4.org` path is mapped individually.
+
+The 0.9.18 entries add six more exact paths, each verified from its own `go.mod`
+`module` line (2026-10-18). `go4.org/netipx` → `go4org/netipx` is the IP-set and
+prefix library (a common Tailscale/networking transitive dependency) that was
+split out of `go4.org` into its **own** repository, a sibling of `go4org/go4`
+rather than a sub-package, so it needs this exact entry (0.9.17 had left it
+unmapped). `fyne.io/fyne` → `fyne-io/fyne` is the Fyne cross-platform GUI toolkit;
+master declares `module fyne.io/fyne/v2`, so the `/vN` is stripped and the base
+path `fyne.io/fyne` is the key, covering both the v1 and v2 modules. `fyne.io` is
+**not** an owner prefix — the GitHub owner is `fyne-io`, not `fyne`.
+`software.sslmate.com/src/go-pkcs12` → `SSLMate/go-pkcs12` is a common PKCS#12/TLS
+dependency. `go.uber.org/zap/exp` → `uber-go/zap` is the experimental submodule
+that lives **inside** the `uber-go/zap` repository as its own Go module; because
+the exact lookup is on the full module path, it needs its own entry and is not
+covered by the `go.uber.org/zap` entry. `howett.net/plist` → `DHowett/go-plist` is
+the Apple property-list library (owner `DHowett`, repo `go-plist`).
+`rsc.io/binaryregexp` → `rsc/binaryregexp` is a binary-data regexp replacement
+pulled in transitively by some Google Cloud clients. `software.sslmate.com`,
+`howett.net` and `rsc.io` are all kept as exact-entry hosts rather than owner
+prefixes, so an unverified path on any of them stays unmapped rather than guessed.
 
 ## Anything else
 
