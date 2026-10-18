@@ -1989,5 +1989,89 @@ class TestK6WhatsmeowWoodpeckerFliptBazilVanity(unittest.TestCase):
         self.assertFalse(f["scanner_visible"])
 
 
+class TestUtilCadenceThriftrwLspAipPkcs7StorjVanity(unittest.TestCase):
+    """0.9.23 additions, each verified from the project's go.mod `module` line
+    (2026-10-18):
+
+      go.mau.fi/util       -> mautrix/go-util
+      go.uber.org/cadence  -> uber-go/cadence-client
+      go.uber.org/thriftrw -> thriftrw/thriftrw-go
+      go.lsp.dev/protocol  -> go-language-server/protocol
+      go.einride.tech/aip  -> einride/aip-go
+      go.mozilla.org/pkcs7 -> mozilla-services/pkcs7
+      storj.io/common      -> storj/common
+    """
+
+    def test_mau_fi_util_and_whatsmeow_different_owners(self):
+        # go.mau.fi/util is mautrix/go-util, but go.mau.fi/whatsmeow (0.9.22) is
+        # tulir/whatsmeow -- two different owners, so go.mau.fi is NOT a prefix
+        # host; only verified paths are mapped.
+        self.assertEqual(bs.go_module_repo("go.mau.fi/util"), "mautrix/go-util")
+        self.assertEqual(bs.go_module_repo("go.mau.fi/whatsmeow"), "tulir/whatsmeow")
+        self.assertIsNone(bs.go_module_repo("go.mau.fi/unverified"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("go.mau.fi/util"))
+
+    def test_uber_cadence_and_thriftrw(self):
+        # Two more go.uber.org modules whose repos are NOT uber-go/<same-name>:
+        # cadence -> cadence-client (same owner, different repo name), thriftrw ->
+        # thriftrw/thriftrw-go (a different owner). These are exactly why
+        # go.uber.org is an exact-entry host, not a prefix.
+        self.assertEqual(bs.go_module_repo("go.uber.org/cadence"),
+                         "uber-go/cadence-client")
+        self.assertEqual(bs.go_module_repo("go.uber.org/thriftrw"),
+                         "thriftrw/thriftrw-go")
+        # Existing go.uber.org entries still resolve; an unverified one stays None.
+        self.assertEqual(bs.go_module_repo("go.uber.org/zap"), "uber-go/zap")
+        self.assertEqual(bs.go_module_repo("go.uber.org/yarpc"), "yarpc/yarpc-go")
+        self.assertIsNone(bs.go_module_repo("go.uber.org/stillunverified"))
+
+    def test_lsp_aip_pkcs7_storj(self):
+        self.assertEqual(bs.go_module_repo("go.lsp.dev/protocol"),
+                         "go-language-server/protocol")
+        self.assertEqual(bs.go_module_repo("go.einride.tech/aip"), "einride/aip-go")
+        self.assertEqual(bs.go_module_repo("go.mozilla.org/pkcs7"),
+                         "mozilla-services/pkcs7")
+        self.assertEqual(bs.go_module_repo("storj.io/common"), "storj/common")
+        # None of these hosts is a prefix host; unverified paths stay unmapped.
+        for path in ("go.lsp.dev/unverified", "go.einride.tech/unverified",
+                     "go.mozilla.org/unverified", "storj.io/unverified"):
+            self.assertIsNone(bs.go_module_repo(path))
+            self.assertIsNone(bs.go_vanity_prefix_repo(path))
+
+    def test_util_blind_spot_end_to_end(self):
+        # A go.mau.fi/util dependency now maps to mautrix/go-util, so a maintainer
+        # advisory OSV does not report is surfaced (fully offline).
+        advisories = {
+            "mautrix/go-util": [{
+                "ghsa_id": "GHSA-util-0000-0000",
+                "cve_id": "CVE-2026-23232",
+                "severity": "high",
+                "summary": "example go.mau.fi/util advisory",
+                "html_url": "https://github.com/mautrix/go-util/security/advisories/GHSA-util-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go", "name": "go.mau.fi/util"},
+                    "vulnerable_version_range": "< 0.8.0",
+                    "patched_versions": "0.8.0",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "go.mau.fi/util", "v0.7.0")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "mautrix/go-util")
+        self.assertEqual(f["ghsa_id"], "GHSA-util-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
+        self.assertFalse(f["scanner_visible"])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -70,7 +70,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.9.22"
+__version__ = "0.9.23"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -946,6 +946,38 @@ GO_VANITY_MONOREPO_PREFIX = {
 #     library used by many Go filesystem tools).
 # Checked and NOT added: go.step.sm/linkedca -- its go.mod reads `module
 # github.com/smallstep/linkedca`, so the github.com rule already maps it.
+# New in 0.9.23, each verified from the project's go.mod `module` line
+# (2026-10-18). All are exact entries (none of their hosts names the GitHub owner
+# for every module, so none is treated as an owner prefix); a trailing /vN is
+# stripped before the lookup:
+#   go.mau.fi/util -> mautrix/go-util (`module go.mau.fi/util`; the shared Go
+#     utility library used across the mautrix bridges). This is the sibling the
+#     0.9.22 note named: go.mau.fi/whatsmeow is tulir/whatsmeow but go.mau.fi/util
+#     is mautrix/go-util, two different owners, so go.mau.fi stays an exact-entry
+#     host and only verified paths are mapped.
+#   go.uber.org/cadence -> uber-go/cadence-client (`module go.uber.org/cadence`;
+#     the Cadence workflow-engine Go client. The repo name differs from the import
+#     path -- cadence -> cadence-client -- so this needs an exact entry even though
+#     the owner is uber-go).
+#   go.uber.org/thriftrw -> thriftrw/thriftrw-go (`module go.uber.org/thriftrw`;
+#     the ThriftRW code generator used by yarpc. A different owner (thriftrw, not
+#     uber-go) and a -go repo suffix, which is exactly why go.uber.org is NOT a
+#     prefix host).
+#   go.lsp.dev/protocol -> go-language-server/protocol (`module
+#     go.lsp.dev/protocol`; the Go Language Server Protocol types, a common
+#     dependency of Go LSP tooling. go.lsp.dev is NOT a prefix host: the owner is
+#     go-language-server, not go.lsp.dev, so only this verified path is mapped).
+#   go.einride.tech/aip -> einride/aip-go (`module go.einride.tech/aip`; the
+#     Einride API Improvement Proposals Go libraries, a common gRPC/AIP
+#     dependency. The repo carries a -go suffix the path lacks, so go.einride.tech
+#     is not a prefix host).
+#   go.mozilla.org/pkcs7 -> mozilla-services/pkcs7 (`module go.mozilla.org/pkcs7`;
+#     the PKCS#7 library pulled in transitively by certificate and signing tooling.
+#     go.mozilla.org is NOT a prefix host: the owner is mozilla-services, so only
+#     this verified path is mapped).
+#   storj.io/common -> storj/common (`module storj.io/common`; the shared library
+#     of the Storj decentralised-storage Go projects. storj.io is left as an
+#     exact-entry host so an unverified storj.io path is never guessed).
 GO_VANITY_REPOS = {
     "code.gitea.io/gitea": "go-gitea/gitea",
     "gitea.dev": "go-gitea/gitea",
@@ -1043,6 +1075,13 @@ GO_VANITY_REPOS = {
     "go.woodpecker-ci.org/woodpecker": "woodpecker-ci/woodpecker",
     "go.flipt.io/flipt": "flipt-io/flipt",
     "bazil.org/fuse": "bazil/fuse",
+    "go.mau.fi/util": "mautrix/go-util",
+    "go.uber.org/cadence": "uber-go/cadence-client",
+    "go.uber.org/thriftrw": "thriftrw/thriftrw-go",
+    "go.lsp.dev/protocol": "go-language-server/protocol",
+    "go.einride.tech/aip": "einride/aip-go",
+    "go.mozilla.org/pkcs7": "mozilla-services/pkcs7",
+    "storj.io/common": "storj/common",
 }
 
 # A gopkg.in package element carries a major-version selector, e.g. "yaml.v3".
