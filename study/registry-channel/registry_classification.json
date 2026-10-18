@@ -1,0 +1,43 @@
+{
+  "study": "registry-channel mechanism test for the advisory-import gap (applications only)",
+  "frozen_utc": "2026-10-18",
+  "frozen_before": "the permutation test in registry_channel_analysis.py was run",
+  "source_csv": {
+    "repo_commit": "141a3ade",
+    "path": "study/app-vs-library/results/app_library_census.csv",
+    "raw_url": "https://raw.githubusercontent.com/munimtechnologies/advisory-import-census/141a3ade/study/app-vs-library/results/app_library_census.csv"
+  },
+  "rule": "A repository is 'registry' iff there exists at least one public package, on a language registry whose ecosystem OSV/GHSA indexes (npm, PyPI, crates.io, Go [proxy.golang.org, with a tagged semantic-version release], RubyGems, Packagist, Maven Central), that (a) is official to the project (published by the project; its registry metadata points back to the same GitHub repo), and (b) contains the application's own source/build code (a runnable server, CLI, desktop app, or the framework that IS the product) as a LIVE channel -- the latest published version tracks a real/current application release, not a placeholder, name reservation, abandoned stub, or (for Go) a pseudo-version with no tagged release. Explicitly NOT 'registry': client SDKs or API wrappers that only talk to a separately-hosted instance; helper CLIs that drive a remote instance; Docker/OCI images; prebuilt OS binaries or installer assets attached to GitHub releases. Otherwise 'no_registry'.",
+  "registry_ecosystems": ["npm", "PyPI", "crates.io", "Go (proxy.golang.org, tagged semver)", "RubyGems", "Packagist", "Maven Central"],
+  "verification_date_utc": "2026-10-18",
+  "note": "Each repository's group was assigned from the distribution fact only, verified against the named registry, and is INDEPENDENT of the advisory/blind-rate data. Classification was frozen before registry_channel_analysis.py was run on the census CSV.",
+  "classification": {
+    "n8n-io/n8n": {"group": "registry", "basis": "npm 'n8n' v2.43.7, bin 'n8n' launches the app; repo n8n-io/n8n (registry verified)"},
+    "coder/code-server": {"group": "registry", "basis": "npm 'code-server' v4.141.0, bin entry + runs code-server; repo coder/code-server (verified)"},
+    "9001/copyparty": {"group": "registry", "basis": "PyPI 'copyparty' (pip install runs the file server); repo 9001/copyparty (verified)"},
+    "getsentry/sentry": {"group": "registry", "basis": "PyPI 'sentry' is the Sentry server application (summary: 'a realtime logging and aggregation server'); repo getsentry/sentry (verified)"},
+    "payloadcms/payload": {"group": "registry", "basis": "npm 'payload' v3.91.0 is the Payload CMS framework/app, bin bin.js; repo payloadcms/payload (verified)"},
+    "laurent22/joplin": {"group": "registry", "basis": "npm 'joplin' v3.7.1 is the Joplin CLI terminal application, bin 'joplin'; repo laurent22/joplin (verified)"},
+    "DIYgod/RSSHub": {"group": "registry", "basis": "npm 'rsshub' contains the RSSHub application code with a start script that runs the server; repo DIYgod/RSSHub (verified)"},
+    "gogs/gogs": {"group": "registry", "basis": "Go module github.com/gogs/gogs, command module, tagged v0.11.91; pkg.go.dev (verified)"},
+    "syncthing/syncthing": {"group": "registry", "basis": "Go module github.com/syncthing/syncthing, tagged v1.30.0, command packages under cmd/ (go install-able); pkg.go.dev (verified)"},
+    "usememos/memos": {"group": "registry", "basis": "Go module github.com/usememos/memos, tagged v0.31.0, cmd/ present; pkg.go.dev (verified)"},
+    "pocketbase/pocketbase": {"group": "registry", "basis": "Go module github.com/pocketbase/pocketbase, tagged v0.40.5, distributed as a Go framework package (544 importers); pkg.go.dev (verified)"},
+    "lobehub/lobehub": {"group": "registry", "basis": "npm '@lobehub/chat' v1.143.3 is the LobeChat/LobeHub app (Next.js start script); repo redirects lobe-chat -> lobehub/lobehub (verified)"},
+    "immich-app/immich": {"group": "no_registry", "basis": "Docker-compose only; npm 'immich' is a deprecated CLI client, not the server; no official server package (verified)"},
+    "Stirling-Tools/Stirling-PDF": {"group": "no_registry", "basis": "Spring Boot app distributed as a Docker image and an executable JAR release asset; not published as a consumable registry package (documented distribution)"},
+    "hoppscotch/hoppscotch": {"group": "no_registry", "basis": "self-hosted via Docker; npm 'hoppscotch' is a third-party uTools wrapper (baiy/hoppscotch-utools), not official; no official app package (verified)"},
+    "dani-garcia/vaultwarden": {"group": "no_registry", "basis": "distributed via Docker image + prebuilt binaries; crates.io 'vaultwarden' is an abandoned 0.0.1 placeholder while the app ships at 1.x -- not a live channel (verified)"},
+    "pi-hole/pi-hole": {"group": "no_registry", "basis": "installed via a shell install script or Docker; no language-registry package (documented distribution)"},
+    "penpot/penpot": {"group": "no_registry", "basis": "Docker-compose only; npm '@penpot/penpot' does not exist (404) (verified)"},
+    "makeplane/plane": {"group": "no_registry", "basis": "Docker-compose only; npm '@plane/app' does not exist (404) (verified)"},
+    "twentyhq/twenty": {"group": "no_registry", "basis": "Docker-compose only; npm 'twenty' is the official CLI client tool (twenty-cli), not the CRM application (verified)"},
+    "huginn/huginn": {"group": "no_registry", "basis": "Rails app via Docker/source; RubyGems 'huginn' is an unrelated MQTT client, not the app (verified)"},
+    "calcom/cal.diy": {"group": "no_registry", "basis": "self-hosted via source (yarn) or the Docker image calcom/cal.diy; not published as an npm app package (verified)"},
+    "siyuan-note/siyuan": {"group": "no_registry", "basis": "desktop/Electron app + Docker; the Go kernel module github.com/siyuan-note/siyuan/kernel has only pseudo-versions (no tagged release) and the root module 404s on pkg.go.dev -- not a live registry channel (verified)"},
+    "paperless-ngx/paperless-ngx": {"group": "no_registry", "basis": "Docker-compose only; PyPI 'paperless-ngx' does not exist (404) (verified)"},
+    "RocketChat/Rocket.Chat": {"group": "no_registry", "basis": "Docker/Snap; npm '@rocket.chat/meteor' is not an installable app package (404) (verified)"},
+    "LibreChat-AI/LibreChat": {"group": "no_registry", "basis": "Docker-compose only; npm 'librechat' does not exist (404) (verified)"},
+    "reactive-resume/reactive-resume": {"group": "no_registry", "basis": "Docker-compose only; npm '@reactive-resume/app' does not exist (404) (verified)"}
+  }
+}
