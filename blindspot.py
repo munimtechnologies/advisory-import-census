@@ -70,7 +70,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.9.19"
+__version__ = "0.9.20"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -880,6 +880,28 @@ GO_VANITY_MONOREPO_PREFIX = {
 #     Rapid property-based testing library, a common test dependency. pgregory.net
 #     is NOT a prefix host: the owner is flyingmutant, not pgregory, so only this
 #     verified path is mapped).
+# New in 0.9.20, each verified from the project's go.mod `module` line
+# (2026-10-18). All are exact entries (none of their hosts names the GitHub owner
+# for every module, so none is treated as an owner prefix); a trailing /vN is
+# stripped before the lookup:
+#   gocv.io/x/gocv -> hybridgroup/gocv (`module gocv.io/x/gocv`; the GoCV
+#     computer-vision bindings for OpenCV, a common dependency of Go image/ML
+#     tooling. gocv.io is NOT a prefix host: the owner is hybridgroup, so only
+#     this verified path is mapped).
+#   zombiezen.com/go/sqlite -> zombiezen/go-sqlite (`module
+#     zombiezen.com/go/sqlite`; a widely-used cgo-free SQLite driver. zombiezen.com
+#     is NOT a prefix host -- sibling paths such as zombiezen.com/go/log are
+#     separate repos -- so only this verified path is mapped).
+#   maunium.net/go/mautrix -> mautrix/go (`module maunium.net/go/mautrix`; the
+#     mautrix Go Matrix framework behind the mautrix bridges. maunium.net is NOT a
+#     prefix host: the owner is mautrix and the repo is go, so only this verified
+#     path is mapped).
+#   gorm.io/gen -> go-gorm/gen (`module gorm.io/gen`; the GORM code generator).
+#     gorm.io stays an exact-entry host (each repo listed on its own, as with the
+#     drivers above), so this path is its own entry.
+#   gorm.io/driver/clickhouse -> go-gorm/clickhouse (`module
+#     gorm.io/driver/clickhouse`; the GORM ClickHouse driver, a sibling of the
+#     mysql/postgres/sqlite/sqlserver drivers already mapped).
 GO_VANITY_REPOS = {
     "code.gitea.io/gitea": "go-gitea/gitea",
     "gitea.dev": "go-gitea/gitea",
@@ -962,6 +984,11 @@ GO_VANITY_REPOS = {
     "mvdan.cc/xurls": "mvdan/xurls",
     "mvdan.cc/editorconfig": "mvdan/editorconfig",
     "pgregory.net/rapid": "flyingmutant/rapid",
+    "gocv.io/x/gocv": "hybridgroup/gocv",
+    "zombiezen.com/go/sqlite": "zombiezen/go-sqlite",
+    "maunium.net/go/mautrix": "mautrix/go",
+    "gorm.io/gen": "go-gorm/gen",
+    "gorm.io/driver/clickhouse": "go-gorm/clickhouse",
 }
 
 # A gopkg.in package element carries a major-version selector, e.g. "yaml.v3".

@@ -1755,5 +1755,79 @@ class TestGonumMvdanRapidVanity(unittest.TestCase):
         self.assertFalse(f["scanner_visible"])
 
 
+class TestGocvZombiezenMautrixGormVanity(unittest.TestCase):
+    """0.9.20 additions, each verified from the project's go.mod `module` line
+    (2026-10-18):
+
+      gocv.io/x/gocv             -> hybridgroup/gocv
+      zombiezen.com/go/sqlite    -> zombiezen/go-sqlite
+      maunium.net/go/mautrix     -> mautrix/go
+      gorm.io/gen                -> go-gorm/gen
+      gorm.io/driver/clickhouse  -> go-gorm/clickhouse
+    """
+
+    def test_gocv(self):
+        self.assertEqual(bs.go_module_repo("gocv.io/x/gocv"), "hybridgroup/gocv")
+        # gocv.io is NOT a prefix host (owner is hybridgroup, not gocv).
+        self.assertIsNone(bs.go_module_repo("gocv.io/x/unverified"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("gocv.io/x/gocv"))
+
+    def test_zombiezen_sqlite(self):
+        self.assertEqual(bs.go_module_repo("zombiezen.com/go/sqlite"),
+                         "zombiezen/go-sqlite")
+        # zombiezen.com is NOT a prefix host; a sibling path we have not verified
+        # (e.g. zombiezen.com/go/log) stays unmapped rather than guessed.
+        self.assertIsNone(bs.go_module_repo("zombiezen.com/go/unverified"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("zombiezen.com/go/sqlite"))
+
+    def test_mautrix(self):
+        self.assertEqual(bs.go_module_repo("maunium.net/go/mautrix"), "mautrix/go")
+        # maunium.net is NOT a prefix host (owner is mautrix, repo is go).
+        self.assertIsNone(bs.go_module_repo("maunium.net/go/unverified"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("maunium.net/go/mautrix"))
+
+    def test_gorm_gen_and_clickhouse_driver(self):
+        self.assertEqual(bs.go_module_repo("gorm.io/gen"), "go-gorm/gen")
+        self.assertEqual(bs.go_module_repo("gorm.io/driver/clickhouse"),
+                         "go-gorm/clickhouse")
+        # Existing guard still holds: an unverified gorm.io driver is not guessed.
+        self.assertIsNone(bs.go_module_repo("gorm.io/driver/bogus"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("gorm.io/gen"))
+
+    def test_gocv_blind_spot_end_to_end(self):
+        # A gocv.io/x/gocv dependency now maps to hybridgroup/gocv, so a maintainer
+        # advisory OSV does not report is surfaced (fully offline).
+        advisories = {
+            "hybridgroup/gocv": [{
+                "ghsa_id": "GHSA-gocv-0000-0000",
+                "cve_id": "CVE-2026-20202",
+                "severity": "high",
+                "summary": "example gocv.io/x/gocv advisory",
+                "html_url": "https://github.com/hybridgroup/gocv/security/advisories/GHSA-gocv-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go", "name": "gocv.io/x/gocv"},
+                    "vulnerable_version_range": "< 0.36.0",
+                    "patched_versions": "0.36.0",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "gocv.io/x/gocv", "v0.35.0")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "hybridgroup/gocv")
+        self.assertEqual(f["ghsa_id"], "GHSA-gocv-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
+        self.assertFalse(f["scanner_visible"])
+
+
 if __name__ == "__main__":
     unittest.main()

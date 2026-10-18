@@ -7,12 +7,12 @@ modules there is no registry call: the GitHub repository is worked out from the
 module path alone, by the rules below.
 
 Every mapping here was verified from the project's own `go.mod` `module` line on
-2026-10-17 (those added in 0.9.11 to 0.9.19 on 2026-10-18). `blindspot`
+2026-10-17 (those added in 0.9.11 to 0.9.20 on 2026-10-18). `blindspot`
 never guesses a repository it has not verified: a Go
 module on any host not listed below is reported as *unmapped* (add it with
 `--map NAME=OWNER/REPO`), rather than silently skipped or mapped to a wrong repo.
 
-This file documents `blindspot` as of advisory-import-census **0.9.19**.
+This file documents `blindspot` as of advisory-import-census **0.9.20**.
 
 ## 1. Direct GitHub modules
 
@@ -167,6 +167,11 @@ trailing `/vN` is stripped before the lookup.
 | `mvdan.cc/xurls` (`/v2`) | `mvdan/xurls` |
 | `mvdan.cc/editorconfig` | `mvdan/editorconfig` |
 | `pgregory.net/rapid` | `flyingmutant/rapid` |
+| `gocv.io/x/gocv` | `hybridgroup/gocv` |
+| `zombiezen.com/go/sqlite` | `zombiezen/go-sqlite` |
+| `maunium.net/go/mautrix` | `mautrix/go` |
+| `gorm.io/gen` | `go-gorm/gen` |
+| `gorm.io/driver/clickhouse` | `go-gorm/clickhouse` |
 
 `google.golang.org` is **not** a prefix host (grpc, protobuf, api and genproto
 live in four different repositories), so each of its modules is an exact entry.
@@ -284,6 +289,20 @@ the base path is the key) and `mvdan.cc/editorconfig` → `mvdan/editorconfig`.
 `pgregory.net/rapid` → `flyingmutant/rapid` is the Rapid property-based testing
 library (a common test dependency); `pgregory.net` is **not** a prefix host (the
 owner is `flyingmutant`, not `pgregory`), so only the verified path is mapped.
+
+The 0.9.20 entries add five more exact paths, each verified from its own `go.mod`
+`module` line (2026-10-18). `gocv.io/x/gocv` → `hybridgroup/gocv` is the GoCV
+computer-vision bindings for OpenCV; `gocv.io` is **not** a prefix host (the owner
+is `hybridgroup`). `zombiezen.com/go/sqlite` → `zombiezen/go-sqlite` is a widely
+used cgo-free SQLite driver; `zombiezen.com` is **not** a prefix host (siblings
+such as `zombiezen.com/go/log` are separate repositories). `maunium.net/go/mautrix`
+→ `mautrix/go` is the mautrix Go Matrix framework (owner `mautrix`, repo `go`), so
+again not a prefix host. Two more `gorm.io` repositories join the drivers above:
+`gorm.io/gen` → `go-gorm/gen` (the GORM code generator) and
+`gorm.io/driver/clickhouse` → `go-gorm/clickhouse` (the GORM ClickHouse driver, a
+sibling of the mysql/postgres/sqlite/sqlserver drivers); `gorm.io` stays an
+exact-entry host, so an unverified `gorm.io` driver is still left unmapped rather
+than guessed.
 
 ## Anything else
 
