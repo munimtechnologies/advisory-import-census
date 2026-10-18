@@ -1168,5 +1168,77 @@ class TestEntTemporalGvisorBufYamlVanity(unittest.TestCase):
         self.assertFalse(f["scanner_visible"])
 
 
+class TestUberOpenCensusCelVanity(unittest.TestCase):
+    """New in 0.9.14, each verified from the project's go.mod `module` line
+    (2026-10-18). All exact entries:
+      go.uber.org/mock         -> uber-go/mock
+      go.uber.org/goleak       -> uber-go/goleak
+      go.uber.org/automaxprocs -> uber-go/automaxprocs
+      go.uber.org/dig          -> uber-go/dig
+      go.uber.org/fx           -> uber-go/fx
+      go.opencensus.io         -> census-instrumentation/opencensus-go
+      cel.dev/expr             -> google/cel-spec
+    """
+
+    def test_uber_libraries(self):
+        for name in ("mock", "goleak", "automaxprocs", "dig", "fx"):
+            self.assertEqual(bs.go_module_repo("go.uber.org/" + name),
+                             "uber-go/" + name)
+
+    def test_uber_still_not_a_prefix(self):
+        # go.uber.org stays exact-entry only (yarpc has a different owner), so an
+        # unverified path is still left unmapped and yarpc is unchanged.
+        self.assertIsNone(bs.go_module_repo("go.uber.org/somethingelse"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("go.uber.org/fx"))
+        self.assertEqual(bs.go_module_repo("go.uber.org/yarpc"), "yarpc/yarpc-go")
+
+    def test_old_golang_mock_path_unchanged(self):
+        # The archived original keeps mapping to its own repo by the github.com rule.
+        self.assertEqual(bs.go_module_repo("github.com/golang/mock"), "golang/mock")
+
+    def test_opencensus(self):
+        self.assertEqual(bs.go_module_repo("go.opencensus.io"),
+                         "census-instrumentation/opencensus-go")
+
+    def test_cel_expr(self):
+        self.assertEqual(bs.go_module_repo("cel.dev/expr"), "google/cel-spec")
+        # cel.dev is not a prefix host; an unverified path is left unmapped.
+        self.assertIsNone(bs.go_module_repo("cel.dev/somethingelse"))
+
+    def test_goleak_blind_spot_end_to_end(self):
+        # A go.uber.org/goleak dependency now maps to uber-go/goleak, so a
+        # maintainer advisory OSV does not report is surfaced (fully offline).
+        advisories = {
+            "uber-go/goleak": [{
+                "ghsa_id": "GHSA-ffff-0000-0000",
+                "cve_id": "CVE-2026-12122",
+                "severity": "moderate",
+                "summary": "example go.uber.org/goleak advisory",
+                "html_url": "https://github.com/uber-go/goleak/security/advisories/GHSA-ffff-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go", "name": "go.uber.org/goleak"},
+                    "vulnerable_version_range": "< 1.4.0",
+                    "patched_versions": "1.4.0",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "go.uber.org/goleak", "v1.3.0")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "uber-go/goleak")
+        self.assertEqual(f["ghsa_id"], "GHSA-ffff-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
+        self.assertFalse(f["scanner_visible"])
+
+
 if __name__ == "__main__":
     unittest.main()

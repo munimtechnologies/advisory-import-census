@@ -7,12 +7,12 @@ modules there is no registry call: the GitHub repository is worked out from the
 module path alone, by the rules below.
 
 Every mapping here was verified from the project's own `go.mod` `module` line on
-2026-10-17 (those added in 0.9.11, 0.9.12 and 0.9.13 on 2026-10-18). `blindspot`
+2026-10-17 (those added in 0.9.11 to 0.9.14 on 2026-10-18). `blindspot`
 never guesses a repository it has not verified: a Go
 module on any host not listed below is reported as *unmapped* (add it with
 `--map NAME=OWNER/REPO`), rather than silently skipped or mapped to a wrong repo.
 
-This file documents `blindspot` as of advisory-import-census **0.9.13**.
+This file documents `blindspot` as of advisory-import-census **0.9.14**.
 
 ## 1. Direct GitHub modules
 
@@ -139,6 +139,9 @@ trailing `/vN` is stripped before the lookup.
 | `gvisor.dev/gvisor` | `google/gvisor` |
 | `buf.build/go/protovalidate` | `bufbuild/protovalidate-go` |
 | `go.yaml.in/yaml` (`/v3`, `/v4`) | `yaml/go-yaml` |
+| `go.uber.org/{mock,goleak,automaxprocs,dig,fx}` | `uber-go/{mock,…}` |
+| `go.opencensus.io` | `census-instrumentation/opencensus-go` |
+| `cel.dev/expr` | `google/cel-spec` |
 
 `google.golang.org` is **not** a prefix host (grpc, protobuf, api and genproto
 live in four different repositories), so each of its modules is an exact entry.
@@ -165,6 +168,15 @@ the canonical go-yaml module's new vanity host — its `v3` branch declares
 `module go.yaml.in/yaml/v3` and `main` declares `.../v4`, both in `yaml/go-yaml`;
 the older `gopkg.in/yaml.vN` path still maps to `go-yaml/yaml` by the gopkg.in
 rule (section 2).
+
+The 0.9.14 entries are very common direct or transitive dependencies: five more
+`go.uber.org` libraries (`mock`, the maintained gomock fork; `goleak`;
+`automaxprocs`; `dig`; `fx`), `go.opencensus.io` (still pulled in by many Google
+Cloud and gRPC clients) and `cel.dev/expr` (the CEL protobuf types, required by
+grpc-go; it lives at the root of `google/cel-spec`). `go.uber.org` stays an
+exact-entry host because `go.uber.org/yarpc` has a different owner, and `cel.dev`
+is not a prefix host. The old `github.com/golang/mock` path is a different,
+archived repository and still maps there by rule 1.
 
 ## Anything else
 

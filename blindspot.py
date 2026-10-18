@@ -17,9 +17,9 @@ got there. This tool checks YOUR dependencies for that gap:
      (go.opentelemetry.io/{otel,collector,contrib,proto,auto,ebpf-profiler}) and
      Tailscale (tailscale.com) monorepos by monorepo-prefix, and a small map of
      known vanity modules such as Gitea, GORM, gocloud.dev, gRPC, Protobuf,
-     Helm, CUE, ORAS, Connect, the go.uber.org libraries, the etcd raft and
-     bbolt libraries, the MongoDB Go driver and the Google API/genproto/App
-     Engine client modules, each verified from its go.mod);
+     Helm, CUE, ORAS, Connect, the go.uber.org libraries, OpenCensus, CEL, the
+     etcd raft and bbolt libraries, the MongoDB Go driver and the Google
+     API/genproto/App Engine client modules, each verified from its go.mod);
   2. list that repo's published security advisories (public REST API);
   3. keep the ones whose affected range covers your version;
   4. ask OSV.dev, with the same package and version a scanner would send,
@@ -70,7 +70,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.9.13"
+__version__ = "0.9.14"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -761,6 +761,19 @@ GO_VANITY_MONOREPO_PREFIX = {
 #     before the lookup, so the base path is the key. go.yaml.in is NOT a prefix
 #     host (the element after it is "yaml" but the repo is "go-yaml"). The older
 #     gopkg.in/yaml.vN path still maps to go-yaml/yaml by the gopkg.in rule.
+# New in 0.9.14, each verified from its go.mod `module` line (2026-10-18). All are
+# very common direct or transitive dependencies, and each is an exact entry:
+#   go.uber.org/{mock,goleak,automaxprocs,dig,fx} -> uber-go/{same name} (each
+#     `module go.uber.org/<name>`). mock is the maintained gomock fork (the old
+#     github.com/golang/mock path is a different, archived repo and keeps mapping
+#     there by the github.com rule). go.uber.org stays an exact-entry host, not a
+#     prefix, because go.uber.org/yarpc lives under a different owner (see above).
+#   go.opencensus.io -> census-instrumentation/opencensus-go (`module
+#     go.opencensus.io`; one module, still pulled in transitively by many Google
+#     Cloud and gRPC clients).
+#   cel.dev/expr -> google/cel-spec (`module cel.dev/expr` at the root of
+#     cel-spec; the CEL protobuf types, required by grpc-go and cel-go). cel.dev is
+#     NOT a prefix host: only this verified path is mapped.
 GO_VANITY_REPOS = {
     "code.gitea.io/gitea": "go-gitea/gitea",
     "gitea.dev": "go-gitea/gitea",
@@ -804,6 +817,13 @@ GO_VANITY_REPOS = {
     "gvisor.dev/gvisor": "google/gvisor",
     "buf.build/go/protovalidate": "bufbuild/protovalidate-go",
     "go.yaml.in/yaml": "yaml/go-yaml",
+    "go.uber.org/mock": "uber-go/mock",
+    "go.uber.org/goleak": "uber-go/goleak",
+    "go.uber.org/automaxprocs": "uber-go/automaxprocs",
+    "go.uber.org/dig": "uber-go/dig",
+    "go.uber.org/fx": "uber-go/fx",
+    "go.opencensus.io": "census-instrumentation/opencensus-go",
+    "cel.dev/expr": "google/cel-spec",
 }
 
 # A gopkg.in package element carries a major-version selector, e.g. "yaml.v3".
