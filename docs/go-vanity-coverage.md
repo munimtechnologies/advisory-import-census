@@ -7,12 +7,12 @@ modules there is no registry call: the GitHub repository is worked out from the
 module path alone, by the rules below.
 
 Every mapping here was verified from the project's own `go.mod` `module` line on
-2026-10-17 (those added in 0.9.11 to 0.9.16 on 2026-10-18). `blindspot`
+2026-10-17 (those added in 0.9.11 to 0.9.17 on 2026-10-18). `blindspot`
 never guesses a repository it has not verified: a Go
 module on any host not listed below is reported as *unmapped* (add it with
 `--map NAME=OWNER/REPO`), rather than silently skipped or mapped to a wrong repo.
 
-This file documents `blindspot` as of advisory-import-census **0.9.16**.
+This file documents `blindspot` as of advisory-import-census **0.9.17**.
 
 ## 1. Direct GitHub modules
 
@@ -150,6 +150,11 @@ trailing `/vN` is stripped before the lookup.
 | `lukechampine.com/blake3` | `lukechampine/blake3` |
 | `knative.dev/{serving,pkg,eventing,func}` | `knative/{serving,…}` |
 | `kubevirt.io/{kubevirt,client-go,api}` | `kubevirt/{kubevirt,…}` |
+| `kubevirt.io/{containerized-data-importer,csi-driver}` | `kubevirt/{containerized-data-importer,csi-driver}` |
+| `go.elastic.co/ecszap` | `elastic/ecs-logging-go-zap` |
+| `go.elastic.co/fastjson` | `elastic/go-fastjson` |
+| `inet.af/netaddr` | `inetaf/netaddr` |
+| `go4.org` | `go4org/go4` |
 
 `google.golang.org` is **not** a prefix host (grpc, protobuf, api and genproto
 live in four different repositories), so each of its modules is an exact entry.
@@ -215,8 +220,23 @@ Elastic APM Go agent: one repository holding the root module
 (`module go.elastic.co/apm/v2`) and every instrumentation sub-module
 (`module go.elastic.co/apm/module/<name>/v2`, verified `.../apmhttp/v2`). The
 prefix is `go.elastic.co/apm`, **not** the bare host `go.elastic.co`: other
-`go.elastic.co` modules such as `ecszap` and `fastjson` live in different
-repositories, so only the `/apm` subtree is mapped.
+`go.elastic.co` modules such as `ecszap` and `fastjson` live in differently-named
+repositories, so they are mapped individually (0.9.17 below) rather than by a host
+prefix.
+
+The 0.9.17 entries add six more exact paths, each verified from its own `go.mod`
+`module` line (2026-10-18). Two more KubeVirt-org repositories join the three core
+modules from 0.9.16: `kubevirt.io/containerized-data-importer` (the Containerized
+Data Importer) and `kubevirt.io/csi-driver` (the KubeVirt CSI driver). The two
+`go.elastic.co` siblings that 0.9.16 left unmapped are now mapped by their verified
+exact paths: `go.elastic.co/ecszap` → `elastic/ecs-logging-go-zap` and
+`go.elastic.co/fastjson` → `elastic/go-fastjson`; `go.elastic.co` is still not a
+prefix host. `inet.af/netaddr` → `inetaf/netaddr` is the IP-address library still
+pulled in transitively by many Go networking projects (its vanity host moved
+owner, so only the current `inet.af` path is mapped). `go4.org` → `go4org/go4` is a
+widely-vendored utility module; `go4.org` is **not** an owner prefix, because the
+bare host is one repository while siblings such as `go4.org/netipx` are separate
+repositories, so only the verified bare path is mapped.
 
 ## Anything else
 

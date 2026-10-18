@@ -70,7 +70,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.9.16"
+__version__ = "0.9.17"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -800,6 +800,31 @@ GO_VANITY_MONOREPO_PREFIX = {
 #   kubevirt.io/api       -> kubevirt/api
 # (each `module kubevirt.io/<repo>`, verified in the kubevirt org). Other
 # knative.dev / kubevirt.io modules stay unmapped rather than being guessed.
+# New in 0.9.17, each verified from the project's go.mod `module` line
+# (2026-10-18). All are exact entries (none of their hosts names the GitHub
+# owner for every module, so none is treated as an owner prefix):
+#   kubevirt.io/containerized-data-importer -> kubevirt/containerized-data-importer
+#   kubevirt.io/csi-driver -> kubevirt/csi-driver
+#     Two more kubevirt-org repos (the Containerized Data Importer and the
+#     KubeVirt CSI driver), each `module kubevirt.io/<repo>` hosted in the
+#     kubevirt org, added alongside the three core kubevirt modules from 0.9.16.
+#   go.elastic.co/ecszap -> elastic/ecs-logging-go-zap
+#   go.elastic.co/fastjson -> elastic/go-fastjson
+#     Two more go.elastic.co modules. 0.9.16 mapped only the /apm subtree (a
+#     monorepo) and deliberately left the bare host unmapped because its other
+#     modules live in differently-named repos; these two were those siblings, so
+#     each is mapped by its verified exact path (ecszap reads `module
+#     go.elastic.co/ecszap` at elastic/ecs-logging-go-zap, fastjson reads
+#     `module go.elastic.co/fastjson` at elastic/go-fastjson). go.elastic.co is
+#     still NOT a prefix host.
+#   inet.af/netaddr -> inetaf/netaddr (`module inet.af/netaddr`; the IP-address
+#     library still pulled in transitively by many Go networking projects even
+#     after the standard library gained net/netip. The vanity host moved owner,
+#     so only the current inet.af path is mapped here).
+#   go4.org -> go4org/go4 (`module go4.org`; a widely-vendored utility module).
+#     go4.org is NOT treated as an owner prefix: the bare host is one repo
+#     (go4org/go4), while sibling paths such as go4.org/netipx are separate
+#     repos, so only this verified bare path is mapped as an exact entry.
 GO_VANITY_REPOS = {
     "code.gitea.io/gitea": "go-gitea/gitea",
     "gitea.dev": "go-gitea/gitea",
@@ -864,6 +889,12 @@ GO_VANITY_REPOS = {
     "kubevirt.io/kubevirt": "kubevirt/kubevirt",
     "kubevirt.io/client-go": "kubevirt/client-go",
     "kubevirt.io/api": "kubevirt/api",
+    "kubevirt.io/containerized-data-importer": "kubevirt/containerized-data-importer",
+    "kubevirt.io/csi-driver": "kubevirt/csi-driver",
+    "go.elastic.co/ecszap": "elastic/ecs-logging-go-zap",
+    "go.elastic.co/fastjson": "elastic/go-fastjson",
+    "inet.af/netaddr": "inetaf/netaddr",
+    "go4.org": "go4org/go4",
 }
 
 # A gopkg.in package element carries a major-version selector, e.g. "yaml.v3".

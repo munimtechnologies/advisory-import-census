@@ -1379,14 +1379,16 @@ class TestKnativeKubevirtElasticVanity(unittest.TestCase):
             "elastic/apm-agent-go")
 
     def test_elastic_apm_prefix_is_path_boundary_anchored(self):
-        # Only the /apm subtree is a monorepo; the bare host is not, so other
-        # go.elastic.co modules (ecszap, fastjson) stay unmapped, and a host that
-        # merely shares the prefix string does not match.
+        # Only the /apm subtree is a monorepo; the bare host is not. ecszap and
+        # fastjson are mapped as EXACT entries (added in 0.9.17), not by the
+        # monorepo prefix, so the monorepo helper still returns None for them, and
+        # a host that merely shares the prefix string does not match.
         self.assertEqual(bs.go_vanity_monorepo_repo("go.elastic.co/apm/module/apmsql/v2"),
                          "elastic/apm-agent-go")
         self.assertIsNone(bs.go_vanity_monorepo_repo("go.elastic.co/ecszap"))
         self.assertIsNone(bs.go_vanity_monorepo_repo("go.elastic.co/apmtest"))
-        self.assertIsNone(bs.go_module_repo("go.elastic.co/ecszap"))
+        # An unverified, unmapped go.elastic.co path is still left alone.
+        self.assertIsNone(bs.go_module_repo("go.elastic.co/apmtest"))
 
     def test_knative_blind_spot_end_to_end(self):
         # A knative.dev/serving dependency now maps to knative/serving, so a
@@ -1455,6 +1457,127 @@ class TestKnativeKubevirtElasticVanity(unittest.TestCase):
         self.assertEqual(f["repo"], "elastic/apm-agent-go")
         self.assertEqual(f["ghsa_id"], "GHSA-elel-0000-0000")
         self.assertEqual(f["affects_your_version"], "yes")
+        self.assertFalse(f["scanner_visible"])
+
+
+class TestKubevirtElasticNetaddrGo4Vanity(unittest.TestCase):
+    """New in 0.9.17, each verified from the project's go.mod `module` line
+    (2026-10-18). All exact entries (none of their hosts names the GitHub owner
+    for every module, so none is an owner prefix):
+      kubevirt.io/containerized-data-importer -> kubevirt/containerized-data-importer
+      kubevirt.io/csi-driver                  -> kubevirt/csi-driver
+      go.elastic.co/ecszap                    -> elastic/ecs-logging-go-zap
+      go.elastic.co/fastjson                  -> elastic/go-fastjson
+      inet.af/netaddr                         -> inetaf/netaddr
+      go4.org                                 -> go4org/go4
+    """
+
+    def test_more_kubevirt_repos(self):
+        self.assertEqual(bs.go_module_repo("kubevirt.io/containerized-data-importer"),
+                         "kubevirt/containerized-data-importer")
+        self.assertEqual(bs.go_module_repo("kubevirt.io/csi-driver"),
+                         "kubevirt/csi-driver")
+        # The three core kubevirt modules from 0.9.16 still resolve.
+        self.assertEqual(bs.go_module_repo("kubevirt.io/kubevirt"), "kubevirt/kubevirt")
+
+    def test_kubevirt_still_not_a_prefix(self):
+        # kubevirt.io stays exact-entry only; an unverified path is not guessed.
+        self.assertIsNone(bs.go_vanity_prefix_repo("kubevirt.io/csi-driver"))
+        self.assertIsNone(bs.go_module_repo("kubevirt.io/stillunverified"))
+
+    def test_elastic_siblings_mapped_as_exact_entries(self):
+        # 0.9.16 mapped only the go.elastic.co/apm monorepo subtree and left the
+        # bare host unmapped; these two siblings now resolve by exact path.
+        self.assertEqual(bs.go_module_repo("go.elastic.co/ecszap"),
+                         "elastic/ecs-logging-go-zap")
+        self.assertEqual(bs.go_module_repo("go.elastic.co/fastjson"),
+                         "elastic/go-fastjson")
+        # The /apm monorepo prefix from 0.9.16 is unchanged.
+        self.assertEqual(bs.go_module_repo("go.elastic.co/apm/v2"),
+                         "elastic/apm-agent-go")
+        # go.elastic.co is still NOT a prefix host, and an unverified path stays
+        # unmapped; the exact entries are not caught by the monorepo helper.
+        self.assertIsNone(bs.go_module_repo("go.elastic.co/stillunverified"))
+        self.assertIsNone(bs.go_vanity_monorepo_repo("go.elastic.co/ecszap"))
+
+    def test_netaddr(self):
+        self.assertEqual(bs.go_module_repo("inet.af/netaddr"), "inetaf/netaddr")
+        # inet.af is not a prefix host; an unverified path is left unmapped.
+        self.assertIsNone(bs.go_module_repo("inet.af/somethingelse"))
+
+    def test_go4org(self):
+        self.assertEqual(bs.go_module_repo("go4.org"), "go4org/go4")
+        # go4.org is NOT an owner prefix: only the bare host is mapped here, so a
+        # sibling path (a separate repo) is left unmapped rather than guessed.
+        self.assertIsNone(bs.go_module_repo("go4.org/netipx"))
+        self.assertIsNone(bs.go_vanity_prefix_repo("go4.org/netipx"))
+
+    def test_cdi_blind_spot_end_to_end(self):
+        # A kubevirt.io/containerized-data-importer dependency now maps to its
+        # repo, so a maintainer advisory OSV does not report is surfaced (offline).
+        advisories = {
+            "kubevirt/containerized-data-importer": [{
+                "ghsa_id": "GHSA-cdcd-0000-0000",
+                "cve_id": "CVE-2026-16161",
+                "severity": "high",
+                "summary": "example kubevirt.io/containerized-data-importer advisory",
+                "html_url": "https://github.com/kubevirt/containerized-data-importer/security/advisories/GHSA-cdcd-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go",
+                                "name": "kubevirt.io/containerized-data-importer"},
+                    "vulnerable_version_range": "< 1.60.0",
+                    "patched_versions": "1.60.0",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "kubevirt.io/containerized-data-importer", "v1.59.0")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "kubevirt/containerized-data-importer")
+        self.assertEqual(f["ghsa_id"], "GHSA-cdcd-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
+        self.assertFalse(f["scanner_visible"])
+
+    def test_netaddr_blind_spot_end_to_end(self):
+        # An inet.af/netaddr dependency now maps to inetaf/netaddr, so a
+        # maintainer advisory OSV does not report is surfaced (fully offline).
+        advisories = {
+            "inetaf/netaddr": [{
+                "ghsa_id": "GHSA-nana-0000-0000",
+                "cve_id": "CVE-2026-17171",
+                "severity": "moderate",
+                "summary": "example inet.af/netaddr advisory",
+                "html_url": "https://github.com/inetaf/netaddr/security/advisories/GHSA-nana-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go", "name": "inet.af/netaddr"},
+                    "vulnerable_version_range": "<= 0.0.0",
+                    "patched_versions": "",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "inet.af/netaddr", None)],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "inetaf/netaddr")
+        self.assertEqual(f["ghsa_id"], "GHSA-nana-0000-0000")
         self.assertFalse(f["scanner_visible"])
 
 
