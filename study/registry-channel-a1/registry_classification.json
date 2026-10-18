@@ -1,0 +1,53 @@
+{
+  "study": "registry-channel A1 OUT-OF-SAMPLE replication of the advisory-import gap mechanism (applications only)",
+  "frozen_utc": "2026-10-18",
+  "frozen_before": "any advisory/blind data was collected for this frame (the collector has NOT been run on these 32 repositories yet)",
+  "frame": {
+    "rule": "Widely-used self-hosted APPLICATIONS (a runnable server/app a user self-hosts, NOT a library/SDK/framework-only package, NOT a meta-list), that are (a) NOT archived, (b) have their canonical source home on GitHub (NOT a read-only mirror of a project hosted elsewhere, e.g. not GitHub mirrors of Moodle/Zabbix/GitLab, and not a repo that has moved off GitHub such as BookStack -> Codeberg), and (c) are NONE of the 67 repositories used in the earlier same-sample frames (the 27 application repos in the app-vs-library + registry-channel A2 classification and the 40 libraries in frame_libs.json). Candidate pool: the advisory-rich self-hosted applications enumerated in the project playbook (named in a prior run for being advisory-rich self-hosted apps, NOT chosen on registry status or blind rate), taking every such repo that passes the filters. Yields N=32.",
+    "source_of_stars": "GitHub REST API (api.github.com/repos/<owner>/<repo>), stargazers_count, read 2026-10-18",
+    "excluded_examples": {
+      "minio/minio": "archived (GitHub API archived=true) -- excluded",
+      "BookStackApp/BookStack": "repo description 'NOW MANAGED ON CODEBERG' -- canonical home moved off GitHub, excluded",
+      "zabbix/zabbix": "GitHub repo is a mirror of git.zabbix.com; maintainers do not publish GHSAs there -- excluded",
+      "moodle/moodle": "GitHub repo is a mirror of git.moodle.org; CVEs published on moodle.org, not as GHSAs -- excluded"
+    }
+  },
+  "rule": "A repository is 'registry' iff there exists at least one public package, on a language registry whose ecosystem OSV/GHSA indexes (npm, PyPI, crates.io, Go [proxy.golang.org, with a tagged semantic-version release], RubyGems, Packagist, Maven Central), that (a) is official to the project (published by the project; its registry metadata points back to the same GitHub repo), and (b) contains the application's own source/build code (a runnable server, CLI, desktop app, or the framework that IS the product) as a LIVE channel -- the latest published version tracks a real/current application release, not a placeholder, name reservation, abandoned stub, or (for Go) a pseudo-version with no tagged release. Explicitly NOT 'registry': client SDKs or API wrappers that only talk to a separately-hosted instance; helper CLIs that drive a remote instance; Docker/OCI images; prebuilt OS binaries or installer assets attached to GitHub releases. Otherwise 'no_registry'.",
+  "registry_ecosystems": ["npm", "PyPI", "crates.io", "Go (proxy.golang.org, tagged semver)", "RubyGems", "Packagist", "Maven Central"],
+  "verification_date_utc": "2026-10-18",
+  "note": "IDENTICAL covariate rule to registry-channel A2 (frozen 2026-10-18), applied to a NEW, out-of-sample frame of 32 repositories. Each repository's group was assigned from the distribution fact only, verified against the named registry on 2026-10-18, and is INDEPENDENT of the advisory/blind-rate data, which does not yet exist for this frame. Classification frozen BEFORE the collector was run.",
+  "classification": {
+    "open-webui/open-webui": {"group": "registry", "stars": 156067, "basis": "PyPI 'open-webui' v0.12.3; 'pip install open-webui' then 'open-webui serve' runs the self-hosted app (verified pypi.org 2026-10-18)"},
+    "strapi/strapi": {"group": "registry", "stars": 73334, "basis": "npm '@strapi/strapi' v5.58.0, bin 'strapi' -> bin/strapi.js ('strapi start'); the framework that IS the product (verified registry.npmjs.org 2026-10-18)"},
+    "nocodb/nocodb": {"group": "registry", "stars": 65292, "basis": "npm 'nocodb' v0.301.3 'NocoDB Backend'; contains the app code with start:prod script (precedent: RSSHub in A2) (verified 2026-10-18)"},
+    "go-gitea/gitea": {"group": "registry", "stars": 58548, "basis": "Go module github.com/go-gitea/gitea, tagged v1.27.3 (not a pseudo-version), go-installable command module (verified proxy.golang.org 2026-10-18)"},
+    "TryGhost/Ghost": {"group": "registry", "stars": 55562, "basis": "npm 'ghost' v6.71.0, the official TryGhost publishing-platform application (32 MB, 3051 files, published via TryGhost GitHub Actions OIDC) (verified 2026-10-18)"},
+    "apache/superset": {"group": "registry", "stars": 75201, "basis": "PyPI 'apache-superset' v6.1.0, the full Superset BI application owned by the Apache Software Foundation, pip-installable (verified 2026-10-18)"},
+    "directus/directus": {"group": "registry", "stars": 38583, "basis": "npm 'directus' v12.5.0, bin 'directus' -> cli.js ('npx directus start'); official launcher of the Directus app (verified 2026-10-18)"},
+    "firefly-iii/firefly-iii": {"group": "registry", "stars": 24930, "basis": "Packagist 'grumpydictator/firefly-iii' v6.7.9, type project; the documented install is 'composer create-project' which ships the runnable app (verified repo.packagist.org 2026-10-18)"},
+    "grokability/snipe-it": {"group": "registry", "stars": 15045, "basis": "Packagist 'snipe/snipe-it' v8.8.0, the Snipe-IT asset-management app (Laravel) sourced from grokability/snipe-it (verified 2026-10-18)"},
+    "element-hq/synapse": {"group": "registry", "stars": 4709, "basis": "PyPI 'matrix-synapse' v1.163.0, the Matrix homeserver application maintained by Element, pip-installable standalone (verified 2026-10-18)"},
+    "netbox-community/netbox": {"group": "registry", "stars": 21718, "basis": "PyPI 'netbox' v4.7.3, official (owner jeremystretch, NetBox creator), the NetBox Django application; registry metadata points to github.com/netbox-community/netbox (verified 2026-10-18)"},
+    "louislam/uptime-kuma": {"group": "no_registry", "stars": 92603, "basis": "npm 'uptime-kuma' latest is only a dev pre-release (2.0.0-dev.0); the stable app is distributed via Docker / git clone, so npm is not a live channel for the current release (verified 2026-10-18)"},
+    "grafana/grafana": {"group": "no_registry", "stars": 77347, "basis": "distributed as prebuilt binaries / Docker / apt; the server is not a go-installable runnable app (the frontend is built separately), so no indexed-registry app channel"},
+    "coollabsio/coolify": {"group": "no_registry", "stars": 63132, "basis": "installed via a shell install script or Docker; no Packagist/app package"},
+    "jellyfin/jellyfin": {"group": "no_registry", "stars": 58196, "basis": "C# media server distributed via Docker / prebuilt binaries / apt; NuGet is not among the frame's OSV-indexed registries"},
+    "appwrite/appwrite": {"group": "no_registry", "stars": 57719, "basis": "self-hosted via Docker-compose only; no language-registry app package"},
+    "mastodon/mastodon": {"group": "no_registry", "stars": 50413, "basis": "Ruby app via Docker / source; no official RubyGems application gem"},
+    "ClickHouse/ClickHouse": {"group": "no_registry", "stars": 50475, "basis": "C++ database distributed via prebuilt binaries / Docker / apt; C++ has no frame-indexed registry"},
+    "metabase/metabase": {"group": "no_registry", "stars": 49726, "basis": "runnable uberjar distributed as GitHub release assets + Docker; not published to Maven Central as an app channel (library artifacts are on Clojars, not in the frame's registry set)"},
+    "discourse/discourse": {"group": "no_registry", "stars": 47993, "basis": "self-hosted via Docker only; no language-registry app package"},
+    "janhq/jan": {"group": "no_registry", "stars": 44997, "basis": "desktop/server distributed as platform installers; no crates.io application crate"},
+    "ToolJet/ToolJet": {"group": "no_registry", "stars": 41104, "basis": "self-hosted via Docker only; no npm package that installs and launches the app"},
+    "appsmithorg/appsmith": {"group": "no_registry", "stars": 41082, "basis": "self-hosted via Docker only; no language-registry app package"},
+    "outline/outline": {"group": "no_registry", "stars": 40951, "basis": "npm 'outline' is an UNRELATED package (an early Meta React rich-text editor library, predecessor to Lexical), not this wiki; the Outline wiki ships via Docker / source (verified 2026-10-18)"},
+    "mattermost/mattermost": {"group": "no_registry", "stars": 39371, "basis": "distributed as prebuilt binaries / Docker; the server is not a go-installable runnable app"},
+    "keycloak/keycloak": {"group": "no_registry", "stars": 37421, "basis": "server distribution via GitHub release .zip/.tar.gz + Docker (quay.io); Maven Central 'org.keycloak:keycloak-quarkus-dist' latest is 26.2.5 while the current release is 26.8.1, so Maven Central is not a live channel tracking releases (verified 2026-10-18)"},
+    "nextcloud/server": {"group": "no_registry", "stars": 37168, "basis": "distributed as a tarball / Docker; Packagist 'nextcloud/server' returns 404, so there is no composer app channel (verified 2026-10-18)"},
+    "goharbor/harbor": {"group": "no_registry", "stars": 29563, "basis": "multi-container registry application distributed via Docker / an offline installer; not a go-installable single app"},
+    "requarks/wiki": {"group": "no_registry", "stars": 29048, "basis": "Wiki.js distributed via Docker / prebuilt binaries; no language-registry app package"},
+    "jenkinsci/jenkins": {"group": "no_registry", "stars": 26673, "basis": "the runnable WAR is distributed via get.jenkins.io and repo.jenkins-ci.org; 'jenkins-war' is NOT on Maven Central (search returns numFound 0) (verified 2026-10-18)"},
+    "zulip/zulip": {"group": "no_registry", "stars": 26066, "basis": "PyPI 'zulip' is only the API client library / bots ('Bindings for the Zulip message API'), not the server; the server ships via a tarball installer / Docker (verified 2026-10-18)"},
+    "goauthentik/authentik": {"group": "no_registry", "stars": 25996, "basis": "self-hosted via Docker-compose only; no language-registry app package for the server"}
+  }
+}
