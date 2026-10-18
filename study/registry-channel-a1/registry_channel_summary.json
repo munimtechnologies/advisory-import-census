@@ -1,0 +1,283 @@
+{
+  "measure": {
+    "primary": "scanner_blind: no OSV record, by GHSA or CVE alias, names any package",
+    "secondary": "own_id_not_in_osv: the advisory's own GHSA id does not resolve in OSV"
+  },
+  "unit": "repository",
+  "groups": {
+    "registry": {
+      "repos": 10,
+      "eligible": 620,
+      "blind": {
+        "k": 165,
+        "n": 620,
+        "pct": 26.6,
+        "ci95": [
+          0.2329,
+          0.3023
+        ]
+      },
+      "own_id_not_in_osv": {
+        "k": 165,
+        "n": 620,
+        "pct": 26.6,
+        "ci95": [
+          0.2329,
+          0.3023
+        ]
+      },
+      "repo_median_blind_pct": 27.2
+    },
+    "no_registry": {
+      "repos": 16,
+      "eligible": 837,
+      "blind": {
+        "k": 710,
+        "n": 837,
+        "pct": 84.8,
+        "ci95": [
+          0.8224,
+          0.871
+        ]
+      },
+      "own_id_not_in_osv": {
+        "k": 710,
+        "n": 837,
+        "pct": 84.8,
+        "ci95": [
+          0.8224,
+          0.871
+        ]
+      },
+      "repo_median_blind_pct": 100.0
+    }
+  },
+  "comparison": {
+    "blind": {
+      "difference_pct_points": -58.2,
+      "p_two_sided": 0.0017,
+      "permutations": 10000,
+      "seed": 20261017,
+      "unit": "repository",
+      "repositories": 26
+    },
+    "own_id_not_in_osv": {
+      "difference_pct_points": -58.2,
+      "p_two_sided": 0.0017,
+      "permutations": 10000,
+      "seed": 20261017,
+      "unit": "repository",
+      "repositories": 26
+    }
+  },
+  "robustness": {
+    "drop_heaviest_repo_each_group": {
+      "dropped": [
+        "discourse/discourse",
+        "open-webui/open-webui"
+      ],
+      "blind": {
+        "difference_pct_points": -44.8,
+        "p_two_sided": 0.0086,
+        "permutations": 10000,
+        "seed": 20261017,
+        "unit": "repository",
+        "repositories": 24
+      }
+    }
+  },
+  "per_repo": [
+    {
+      "repo": "ClickHouse/ClickHouse",
+      "group": "no_registry",
+      "eligible": 7,
+      "blind": 7,
+      "blind_pct": 100.0
+    },
+    {
+      "repo": "ToolJet/ToolJet",
+      "group": "no_registry",
+      "eligible": 12,
+      "blind": 12,
+      "blind_pct": 100.0
+    },
+    {
+      "repo": "TryGhost/Ghost",
+      "group": "registry",
+      "eligible": 80,
+      "blind": 24,
+      "blind_pct": 30.0
+    },
+    {
+      "repo": "appsmithorg/appsmith",
+      "group": "no_registry",
+      "eligible": 41,
+      "blind": 38,
+      "blind_pct": 92.7
+    },
+    {
+      "repo": "coollabsio/coolify",
+      "group": "no_registry",
+      "eligible": 70,
+      "blind": 70,
+      "blind_pct": 100.0
+    },
+    {
+      "repo": "directus/directus",
+      "group": "registry",
+      "eligible": 78,
+      "blind": 19,
+      "blind_pct": 24.4
+    },
+    {
+      "repo": "discourse/discourse",
+      "group": "no_registry",
+      "eligible": 297,
+      "blind": 297,
+      "blind_pct": 100.0
+    },
+    {
+      "repo": "element-hq/synapse",
+      "group": "registry",
+      "eligible": 22,
+      "blind": 11,
+      "blind_pct": 50.0
+    },
+    {
+      "repo": "firefly-iii/firefly-iii",
+      "group": "registry",
+      "eligible": 5,
+      "blind": 1,
+      "blind_pct": 20.0
+    },
+    {
+      "repo": "go-gitea/gitea",
+      "group": "registry",
+      "eligible": 114,
+      "blind": 41,
+      "blind_pct": 36.0
+    },
+    {
+      "repo": "goauthentik/authentik",
+      "group": "no_registry",
+      "eligible": 47,
+      "blind": 40,
+      "blind_pct": 85.1
+    },
+    {
+      "repo": "goharbor/harbor",
+      "group": "no_registry",
+      "eligible": 28,
+      "blind": 12,
+      "blind_pct": 42.9
+    },
+    {
+      "repo": "grafana/grafana",
+      "group": "no_registry",
+      "eligible": 28,
+      "blind": 7,
+      "blind_pct": 25.0
+    },
+    {
+      "repo": "grokability/snipe-it",
+      "group": "registry",
+      "eligible": 85,
+      "blind": 46,
+      "blind_pct": 54.1
+    },
+    {
+      "repo": "jellyfin/jellyfin",
+      "group": "no_registry",
+      "eligible": 23,
+      "blind": 22,
+      "blind_pct": 95.7
+    },
+    {
+      "repo": "keycloak/keycloak",
+      "group": "no_registry",
+      "eligible": 83,
+      "blind": 15,
+      "blind_pct": 18.1
+    },
+    {
+      "repo": "louislam/uptime-kuma",
+      "group": "no_registry",
+      "eligible": 18,
+      "blind": 7,
+      "blind_pct": 38.9
+    },
+    {
+      "repo": "mastodon/mastodon",
+      "group": "no_registry",
+      "eligible": 57,
+      "blind": 57,
+      "blind_pct": 100.0
+    },
+    {
+      "repo": "metabase/metabase",
+      "group": "no_registry",
+      "eligible": 44,
+      "blind": 44,
+      "blind_pct": 100.0
+    },
+    {
+      "repo": "netbox-community/netbox",
+      "group": "registry",
+      "eligible": 2,
+      "blind": 2,
+      "blind_pct": 100.0
+    },
+    {
+      "repo": "nocodb/nocodb",
+      "group": "registry",
+      "eligible": 48,
+      "blind": 0,
+      "blind_pct": 0.0
+    },
+    {
+      "repo": "open-webui/open-webui",
+      "group": "registry",
+      "eligible": 165,
+      "blind": 21,
+      "blind_pct": 12.7
+    },
+    {
+      "repo": "outline/outline",
+      "group": "no_registry",
+      "eligible": 26,
+      "blind": 26,
+      "blind_pct": 100.0
+    },
+    {
+      "repo": "requarks/wiki",
+      "group": "no_registry",
+      "eligible": 15,
+      "blind": 15,
+      "blind_pct": 100.0
+    },
+    {
+      "repo": "strapi/strapi",
+      "group": "registry",
+      "eligible": 21,
+      "blind": 0,
+      "blind_pct": 0.0
+    },
+    {
+      "repo": "zulip/zulip",
+      "group": "no_registry",
+      "eligible": 41,
+      "blind": 41,
+      "blind_pct": 100.0
+    }
+  ],
+  "source": {
+    "csv": "app_library_census.csv",
+    "classification_frozen_utc": "2026-10-18",
+    "source_commit": null,
+    "application_repos_with_advisories": 26,
+    "classified_repos": 32,
+    "classification_covers_all": false,
+    "n_registry": 11,
+    "n_no_registry": 21
+  }
+}
