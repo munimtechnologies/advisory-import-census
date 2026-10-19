@@ -19,7 +19,7 @@ For each advisory ID (`GHSA-xxxx-xxxx-xxxx`) on your repository's Security tab:
 curl -s https://api.osv.dev/v1/vulns/GHSA-xxxx-xxxx-xxxx
 ```
 
-If OSV returns *not found*, or the record has no `affected[].package`, a
+If OSV returns HTTP 404 (*not found*), or the record has no `affected[].package`, a
 package-matching scanner can't report it. (If the advisory has a CVE, try the CVE ID
 too; the studies count either.) Or check every advisory for a release at once:
 
@@ -68,8 +68,37 @@ release slightly *less* often, and the gap is the same size at every release cad
 
 ## 4. If your app is Docker-only and not Go
 
-The studies found **no free route** for this group. What the evidence suggests, from
-strongest to weakest:
+**Why this group is blind is documented, not just observed.** GitHub's own
+documentation says that "GitHub-reviewed advisories are mapped to packages in
+ecosystems we support", and lists twelve supported ecosystems: Composer, Erlang (Hex),
+GitHub Actions, Go, Maven, npm, NuGet, pip, Pub, RubyGems, Rust and Swift
+([About the GitHub Advisory Database](https://docs.github.com/en/code-security/security-advisories/working-with-global-security-advisories-from-the-github-advisory-database/about-the-github-advisory-database),
+[github/advisory-database README](https://github.com/github/advisory-database#supported-ecosystems),
+both checked 2026-10-19). No container-image, binary or install-script "ecosystem" is
+on that list, so a Docker-only app's advisory has nothing GitHub's reviewers can map
+it to, and OSV-based scanners match on exactly those mappings. The 0-of-451 result in
+the table above is what that policy looks like in the data.
+
+This is a known, open question upstream. Before opening a new issue, read these:
+
+- [github/advisory-database#7268](https://github.com/github/advisory-database/issues/7268)
+  (open since 2026-03) asks for maintainer-verified advisories outside any ecosystem
+  to enter the global database. A GitHub staff member replied that such advisories
+  "are valuable" but need "a curation step" because any GitHub user can create a
+  repository advisory, and that GitHub is "looking into alternative solutions".
+- [github/advisory-database#10118](https://github.com/github/advisory-database/issues/10118)
+  (open since 2026-10) proposes recognising GitHub repository URLs in advisories as a
+  generic binding, the way Go module paths already work.
+- [github/advisory-database#9400](https://github.com/github/advisory-database/issues/9400)
+  (open since 2026-09) is a worked example: a Docker-image-only app with a high-severity
+  RCE and no matchable record anywhere.
+
+GitHub's README says new-ecosystem suggestions should be raised "as an issue for
+discussion" there. Adding your app as a concrete case to an existing issue is more
+useful to the maintainers than a duplicate.
+
+The studies found **no free route** for this group today. What the evidence suggests,
+from strongest to weakest:
 
 1. Apps that publish a real registry release under a matching name are far more often
    visible (A1/A2). That is a comparison between apps, not a test of what happens
@@ -85,6 +114,10 @@ strongest to weakest:
 - Every number comes from public GitHub advisory pages and the OSV API at the time of
   each study (October 2026), with frames of about 30–60 self-hosted apps each. OSV and
   GitHub's review practice can change.
+- Re-checked 2026-10-19: `coollabsio/coolify` is still absent from Packagist
+  (`repo.packagist.org/p2/coollabsio/coolify.json` returns 404) and `frappe` on PyPI is
+  still the 0.0.1 placeholder from 2023 whose own description says to install via bench
+  or Docker instead.
 - Two follow-ups are still running: whether old blind advisories become visible with
   time ([L1](../study/registry-channel-l1/PREREGISTRATION-registry-channel-l1.md)) and
   whether the registry gap survives holding the ecosystem fixed in a pooled sample
