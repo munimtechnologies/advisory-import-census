@@ -23,19 +23,24 @@ Apache-2.0 (code) / CC BY 4.0 (text & data).
 | E1 | ecosystem-coverage confound | Does the registry→visibility effect survive holding OSV ecosystem fixed, or is it partly OSV indexing some ecosystems better than others? | **Inconclusive (underpowered)**: only 2 usable strata (floor 3), no p-value computed. Descriptively the gap holds at full size within both: no package named 50.0% vs 4.6%; npm 81.5% vs 5.9%. OSV coverage by stratum: PyPI 81%, npm 76%, Go 70%, Maven 69%, Packagist 12% (mostly one app naming a package that doesn't exist) | [`registry-channel-e1/RESULTS.md`](registry-channel-e1/RESULTS.md) |
 | A7 | release-cadence confound | Is the registry effect reducible to a repository-level covariate, release cadence (GitHub releases per year)? | **Survives**: cadence-adjusted direct effect +59.6 pts, p = 0.0017; cadence mediates only 1.1% (below A3's 36% and A4's 12.8%). The confound's premise fails — registry repos release *less* often (40.3/yr vs 44.5/yr), Spearman ρ = −0.068. The registry advantage is large in all 3 cadence tertiles (+50.6 / +58.4 / +75.1 pts) | [`registry-channel-a7/RESULTS.md`](registry-channel-a7/RESULTS.md) |
 | E2 | ecosystem confound (pooled) | Does E1's ecosystem test reach ≥ 3 usable strata when the A1∪A2∪A4 frames are pooled (59 apps)? | pre-registered 2026-10-19 with the frame frozen before any pooled data was read; job queued; result pending | [`registry-channel-e2/PREREGISTRATION-registry-channel-e2.md`](registry-channel-e2/PREREGISTRATION-registry-channel-e2.md) |
-| A8 | Go module-path class | Within Go apps, is A6's repo-path rescue confined to modules whose `go.mod` path *is* the repo root, and does it fail for vanity / non-root paths (e.g. `filippo.io/...`)? | pre-registered 2026-10-19 as a re-analysis of A6's published census; analysis code and offline tests committed before the class × visibility table was read; job queued; result pending | [`registry-channel-a8/`](registry-channel-a8/) |
-| L1 | review lag vs permanent gap | Within the same no-registry repos, do older advisories become visible (an import lag that closes with age), or does the blind spot stay (a permanent gap)? | pre-registered 2026-10-19 as a re-analysis of A4's published census (within-repo permutation); result pending | [`registry-channel-l1/PREREGISTRATION-registry-channel-l1.md`](registry-channel-l1/PREREGISTRATION-registry-channel-l1.md) |
+| A8 | Go module-path class | Within Go apps, is A6's repo-path rescue confined to modules whose `go.mod` path *is* the repo root, and does it fail for vanity / non-root paths (e.g. `filippo.io/...`)? | **Confounded / inseparable**: non-root module paths barely exist among real self-hosted Go apps — 12 of 13 Go-module repos declare `github.com/owner/repo` at the root; the one vanity case (woodpecker, `go.woodpecker-ci.org/...`) has 2 package-less advisories, both visible. Root-match 73.0% (73/100) vs non-root 100% (2/2), −27.0 pts, p = 0.298. The no-`go.mod` class's 1.4% comes entirely from one mis-probed Go app (1Panel); every non-Go app there is 0% | [`registry-channel-a8/RESULTS.md`](registry-channel-a8/RESULTS.md) |
+| L1 | review lag vs permanent gap | Within the same no-registry repos, do older advisories become visible (an import lag that closes with age), or does the blind spot stay (a permanent gap)? | pre-registered 2026-10-19 as a re-analysis of A4's published census (within-repo permutation); analysis code and offline tests committed; job queued; result pending | [`registry-channel-l1/PREREGISTRATION-registry-channel-l1.md`](registry-channel-l1/PREREGISTRATION-registry-channel-l1.md) |
 
 ## What the chain says so far
 
 An advisory reaches OSV-backed scanners when it can be bound to a package. For a
 self-hosted app that means a real release on an OSV-indexed registry (A1/A2), or, for a
 Go project, the module at the repository path, which exists without any extra
-publishing (A6). Merely *naming* a package on the advisory page is not enough (A3/A4,
+publishing (A6). In practice that Go path is almost always the GitHub repository root,
+so the Go rescue covers nearly every Go self-hosted app rather than a fragile subset
+(A8). Merely *naming* a package on the advisory page is not enough (A3/A4,
 and the coolify and frappe cases in E1/A6), nor is the project simply being
 well-run: release cadence does not explain the effect (A7). Apps in PHP, Ruby, Python
 or JavaScript that ship only as Docker images or install scripts stay almost entirely
 blind.
+
+For maintainers, these results are turned into practical steps in
+[`docs/maintainer-checklist.md`](../docs/maintainer-checklist.md).
 
 ## How to read a study folder
 
