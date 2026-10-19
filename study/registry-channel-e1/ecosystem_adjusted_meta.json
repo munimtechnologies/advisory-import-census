@@ -1,0 +1,27 @@
+{
+  "study": "registry-channel E1 -- ecosystem-coverage confound",
+  "input_census_csv": "real_package_census.csv",
+  "input_census_sha256": "cc680a3a75ce0a65106b4e41c7ee5efed437c5278290ad64e4f162cf666d0804",
+  "input_classification": "registry_classification.json",
+  "input_classification_sha256": "6f2f559ba9a16fb7fd0f08dd84a7309722ea15c243179b7a57210a2876c59f03",
+  "classification_apps": 32,
+  "rows_off_frame_skipped": 0,
+  "seed": 20261017,
+  "n_permutations": 10000,
+  "well_indexed_set": [
+    "npm",
+    "PyPI",
+    "Go",
+    "RubyGems",
+    "crates.io",
+    "Packagist"
+  ],
+  "thresholds": {
+    "p1_min_points": 25.0,
+    "p1_alpha": 0.05,
+    "min_repos_per_group": 2,
+    "min_usable_strata": 3,
+    "min_total_repos": 6
+  },
+  "note": "E1 is a re-analysis of A4's census: no new collection, no network, no compute job. Analysis code frozen before A4's data existed. Made with AI agents working for MV2 of Munim, Inc.; no result reviewed by a human."
+}
