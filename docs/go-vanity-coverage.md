@@ -7,12 +7,12 @@ modules there is no registry call: the GitHub repository is worked out from the
 module path alone, by the rules below.
 
 Every mapping here was verified from the project's own `go.mod` `module` line on
-2026-10-17 (those added in 0.9.11 to 0.9.23 on 2026-10-18). `blindspot`
+2026-10-17 (those added in 0.9.11 to 0.9.24 on 2026-10-18). `blindspot`
 never guesses a repository it has not verified: a Go
 module on any host not listed below is reported as *unmapped* (add it with
 `--map NAME=OWNER/REPO`), rather than silently skipped or mapped to a wrong repo.
 
-This file documents `blindspot` as of advisory-import-census **0.9.23**.
+This file documents `blindspot` as of advisory-import-census **0.9.24**.
 
 ## 1. Direct GitHub modules
 
@@ -187,6 +187,11 @@ trailing `/vN` is stripped before the lookup.
 | `go.einride.tech/aip` | `einride/aip-go` |
 | `go.mozilla.org/pkcs7` | `mozilla-services/pkcs7` |
 | `storj.io/common` | `storj/common` |
+| `go.lsp.dev/jsonrpc2` | `go-language-server/jsonrpc2` |
+| `go.lsp.dev/uri` | `go-language-server/uri` |
+| `storj.io/uplink` | `storj/uplink` |
+| `storj.io/storj` | `storj/storj` |
+| `storj.io/drpc` | `storj/drpc` |
 
 `google.golang.org` is **not** a prefix host (grpc, protobuf, api and genproto
 live in four different repositories), so each of its modules is an exact entry.
@@ -366,6 +371,21 @@ the PKCS#7 library pulled in transitively by certificate and signing tooling; an
 decentralised-storage projects. None of `go.lsp.dev`, `go.einride.tech`,
 `go.mozilla.org` or `storj.io` is a prefix host, so only the verified paths are
 mapped and any other path on them stays unmapped rather than guessed.
+
+The 0.9.24 entries add five more exact paths, each verified from its own `go.mod`
+`module` line (2026-10-18), all siblings of hosts first mapped in 0.9.23. Two more
+`go.lsp.dev` modules join `protocol`: `go.lsp.dev/jsonrpc2` →
+`go-language-server/jsonrpc2` (the JSON-RPC 2.0 transport) and `go.lsp.dev/uri` →
+`go-language-server/uri` (the URI type), both part of the Go LSP tooling stack.
+Three more `storj.io` modules join `common`: `storj.io/uplink` → `storj/uplink`
+(the Storj client library), `storj.io/storj` → `storj/storj` (the Storj monorepo)
+and `storj.io/drpc` → `storj/drpc` (the drpc RPC framework the Storj projects use).
+Neither `go.lsp.dev` nor `storj.io` names its GitHub owner (the owners are
+`go-language-server` and `storj`), so both stay exact-entry hosts and any
+unverified path on them is left unmapped rather than guessed. Checked and **not**
+added: `go.step.sm/cli-utils`, whose `go.mod` declares
+`github.com/smallstep/cli-utils`, so rule 1 already maps it (like
+`go.step.sm/linkedca`).
 
 ## Anything else
 

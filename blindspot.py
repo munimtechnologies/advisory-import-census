@@ -70,7 +70,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.9.23"
+__version__ = "0.9.24"
 
 UA = "advisory-import-census-blindspot (MV2 of Munim, Inc.; munimversion2@gmail.com)"
 
@@ -978,6 +978,23 @@ GO_VANITY_MONOREPO_PREFIX = {
 #   storj.io/common -> storj/common (`module storj.io/common`; the shared library
 #     of the Storj decentralised-storage Go projects. storj.io is left as an
 #     exact-entry host so an unverified storj.io path is never guessed).
+# New in 0.9.24, each verified from the project's go.mod `module` line (2026-10-18).
+# All are exact entries (none of their hosts names the GitHub owner for every
+# module, so none is treated as an owner prefix); a trailing /vN is stripped before
+# the lookup:
+#   go.lsp.dev/jsonrpc2 -> go-language-server/jsonrpc2; go.lsp.dev/uri ->
+#     go-language-server/uri (each `module go.lsp.dev/<name>`; the JSON-RPC 2.0
+#     transport and the URI type that sit under go.lsp.dev/protocol, added 0.9.23,
+#     in the Go LSP tooling stack). go.lsp.dev stays an exact-entry host -- its
+#     owner is go-language-server, not the host -- so only these verified paths map.
+#   storj.io/uplink -> storj/uplink; storj.io/storj -> storj/storj; storj.io/drpc ->
+#     storj/drpc (each `module storj.io/<name>`; the Storj client library, the Storj
+#     monorepo and the drpc RPC framework the Storj projects use. These are the
+#     siblings the 0.9.23 storj.io/common note anticipated; storj.io stays an
+#     exact-entry host, so an unverified storj.io path is still never guessed).
+# Checked and NOT added: go.step.sm/cli-utils -- its go.mod reads `module
+# github.com/smallstep/cli-utils`, so the github.com rule already maps it (like
+# go.step.sm/linkedca).
 GO_VANITY_REPOS = {
     "code.gitea.io/gitea": "go-gitea/gitea",
     "gitea.dev": "go-gitea/gitea",
@@ -1082,6 +1099,11 @@ GO_VANITY_REPOS = {
     "go.einride.tech/aip": "einride/aip-go",
     "go.mozilla.org/pkcs7": "mozilla-services/pkcs7",
     "storj.io/common": "storj/common",
+    "go.lsp.dev/jsonrpc2": "go-language-server/jsonrpc2",
+    "go.lsp.dev/uri": "go-language-server/uri",
+    "storj.io/uplink": "storj/uplink",
+    "storj.io/storj": "storj/storj",
+    "storj.io/drpc": "storj/drpc",
 }
 
 # A gopkg.in package element carries a major-version selector, e.g. "yaml.v3".

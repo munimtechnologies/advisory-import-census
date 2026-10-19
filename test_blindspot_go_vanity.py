@@ -2073,5 +2073,79 @@ class TestUtilCadenceThriftrwLspAipPkcs7StorjVanity(unittest.TestCase):
         self.assertFalse(f["scanner_visible"])
 
 
+class TestLspStorjVanity(unittest.TestCase):
+    """0.9.24 additions, each verified from the project's go.mod `module` line
+    (2026-10-18):
+
+      go.lsp.dev/jsonrpc2 -> go-language-server/jsonrpc2
+      go.lsp.dev/uri      -> go-language-server/uri
+      storj.io/uplink     -> storj/uplink
+      storj.io/storj      -> storj/storj
+      storj.io/drpc       -> storj/drpc
+
+    These are siblings of the two hosts first mapped in 0.9.23 (go.lsp.dev/protocol
+    and storj.io/common). Neither host names its GitHub owner, so both stay
+    exact-entry hosts and only verified paths are mapped.
+    """
+
+    def test_lsp_siblings(self):
+        self.assertEqual(bs.go_module_repo("go.lsp.dev/jsonrpc2"),
+                         "go-language-server/jsonrpc2")
+        self.assertEqual(bs.go_module_repo("go.lsp.dev/uri"),
+                         "go-language-server/uri")
+        # The 0.9.23 entry still resolves.
+        self.assertEqual(bs.go_module_repo("go.lsp.dev/protocol"),
+                         "go-language-server/protocol")
+
+    def test_storj_siblings(self):
+        self.assertEqual(bs.go_module_repo("storj.io/uplink"), "storj/uplink")
+        self.assertEqual(bs.go_module_repo("storj.io/storj"), "storj/storj")
+        self.assertEqual(bs.go_module_repo("storj.io/drpc"), "storj/drpc")
+        # The 0.9.23 entry still resolves.
+        self.assertEqual(bs.go_module_repo("storj.io/common"), "storj/common")
+
+    def test_hosts_are_not_prefixes_and_unverified_stay_none(self):
+        # Neither host is a prefix host; an unverified path is left unmapped, never
+        # guessed as go-language-server/<name> or storj/<name>.
+        for path in ("go.lsp.dev/stillunverified", "storj.io/stillunverified"):
+            self.assertIsNone(bs.go_module_repo(path))
+            self.assertIsNone(bs.go_vanity_prefix_repo(path))
+            self.assertIsNone(bs.go_vanity_monorepo_repo(path))
+
+    def test_uplink_blind_spot_end_to_end(self):
+        # A storj.io/uplink dependency now maps to storj/uplink, so a maintainer
+        # advisory OSV does not report is surfaced (fully offline).
+        advisories = {
+            "storj/uplink": [{
+                "ghsa_id": "GHSA-strj-0000-0000",
+                "cve_id": "CVE-2026-24242",
+                "severity": "high",
+                "summary": "example storj.io/uplink advisory",
+                "html_url": "https://github.com/storj/uplink/security/advisories/GHSA-strj-0000-0000",
+                "vulnerabilities": [{
+                    "package": {"ecosystem": "go", "name": "storj.io/uplink"},
+                    "vulnerable_version_range": "< 1.13.0",
+                    "patched_versions": "1.13.0",
+                }],
+            }],
+        }
+        resolve = lambda eco, name: bs.go_module_repo(name)
+        report = bs.check(
+            [("go", "storj.io/uplink", "v1.12.0")],
+            resolve,
+            lambda repo: advisories.get(repo, []),
+            lambda eco, name, version: set(),   # OSV reports nothing
+            lambda vuln_id: set(),
+        )
+        self.assertEqual(report["mapped_to_repo"], 1)
+        self.assertEqual(report["unmapped"], [])
+        self.assertEqual(report["blind_spots"], 1)
+        f = report["findings"][0]
+        self.assertEqual(f["repo"], "storj/uplink")
+        self.assertEqual(f["ghsa_id"], "GHSA-strj-0000-0000")
+        self.assertEqual(f["affects_your_version"], "yes")
+        self.assertFalse(f["scanner_visible"])
+
+
 if __name__ == "__main__":
     unittest.main()
