@@ -1,0 +1,1106 @@
+{
+  "mapping": {
+    "P1_primary": "software_typed.P1_primary_no_registry",
+    "P2_secondary": "all_advisories.P1_primary_no_registry",
+    "P3_channel": "software_typed.P3_rescue_channel",
+    "P4_residual": "software_typed.P4_residual",
+    "R1": "software_typed.robustness",
+    "R2": "R2_language_software / R2_language_all",
+    "R3_R4": "confounds_software (settled >= 90 days; with / without CVE)",
+    "D1": "D1_rescue_record_software"
+  },
+  "software_typed": {
+    "measure": {
+      "visibility": "scanner_visible: an OSV record (by GHSA or CVE alias) names a package; its complement is scanner_blind (reused verbatim from A3)",
+      "go_module": "True iff the repository is a Go module at its own repo path, proven by go.mod (module == github.com/<repo>) OR the Go module proxy serving a version for github.com/<repo> -- a covariate from data sources independent of the OSV visibility measure"
+    },
+    "counts": {
+      "software_typed": 749,
+      "by_go_module": {
+        "go": 473,
+        "not_go": 276
+      },
+      "by_registry_group": {
+        "registry": 0,
+        "no_registry": 749
+      },
+      "no_registry_software_typed": 749
+    },
+    "P1_primary_no_registry": {
+      "visible_shares": {
+        "go": {
+          "k": 84,
+          "n": 473,
+          "pct": 17.8,
+          "ci95": [
+            0.1458,
+            0.2146
+          ]
+        },
+        "not_go": {
+          "k": 0,
+          "n": 276,
+          "pct": 0.0,
+          "ci95": [
+            0.0,
+            0.0137
+          ]
+        }
+      },
+      "permutation": {
+        "difference_pct_points": 17.8,
+        "p_two_sided": 0.3201,
+        "permutations": 10000,
+        "seed": 20261017,
+        "unit": "repository",
+        "repositories": 24
+      }
+    },
+    "P2_secondary_all": {
+      "visible_shares": {
+        "go": {
+          "k": 84,
+          "n": 473,
+          "pct": 17.8,
+          "ci95": [
+            0.1458,
+            0.2146
+          ]
+        },
+        "not_go": {
+          "k": 0,
+          "n": 276,
+          "pct": 0.0,
+          "ci95": [
+            0.0,
+            0.0137
+          ]
+        }
+      },
+      "permutation": {
+        "difference_pct_points": 17.8,
+        "p_two_sided": 0.3201,
+        "permutations": 10000,
+        "seed": 20261017,
+        "unit": "repository",
+        "repositories": 24
+      }
+    },
+    "P3_rescue_channel": {
+      "go": {
+        "visible_n": 84,
+        "names_repo_go_module": 83,
+        "names_repo_go_module_pct": 98.8,
+        "osv_ecosystems": {
+          "Go": 104
+        }
+      },
+      "not_go": {
+        "visible_n": 0,
+        "names_repo_go_module": 0,
+        "names_repo_go_module_pct": null,
+        "osv_ecosystems": {}
+      }
+    },
+    "P4_residual": {
+      "all": {
+        "go": {
+          "k": 84,
+          "n": 473,
+          "pct": 17.8,
+          "ci95": [
+            0.1458,
+            0.2146
+          ]
+        },
+        "not_go": {
+          "k": 0,
+          "n": 276,
+          "pct": 0.0,
+          "ci95": [
+            0.0,
+            0.0137
+          ]
+        }
+      },
+      "no_registry": {
+        "go": {
+          "k": 84,
+          "n": 473,
+          "pct": 17.8,
+          "ci95": [
+            0.1458,
+            0.2146
+          ]
+        },
+        "not_go": {
+          "k": 0,
+          "n": 276,
+          "pct": 0.0,
+          "ci95": [
+            0.0,
+            0.0137
+          ]
+        }
+      }
+    },
+    "robustness": {
+      "R1_drop_heaviest_each_group_no_registry": {
+        "dropped": [
+          "glpi-project/glpi",
+          "openemr/openemr"
+        ],
+        "visible_shares": {
+          "go": {
+            "k": 84,
+            "n": 347,
+            "pct": 24.2,
+            "ci95": [
+              0.2,
+              0.2898
+            ]
+          },
+          "not_go": {
+            "k": 0,
+            "n": 86,
+            "pct": 0.0,
+            "ci95": [
+              0.0,
+              0.0428
+            ]
+          }
+        },
+        "permutation": {
+          "difference_pct_points": 24.2,
+          "p_two_sided": 0.5421,
+          "permutations": 10000,
+          "seed": 20261017,
+          "unit": "repository",
+          "repositories": 22
+        }
+      }
+    },
+    "per_repo": [
+      {
+        "repo": "1Panel-dev/1Panel",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 10,
+        "visible": 9,
+        "visible_pct": 90.0
+      },
+      {
+        "repo": "AdguardTeam/AdGuardHome",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 1,
+        "visible": 1,
+        "visible_pct": 100.0
+      },
+      {
+        "repo": "Cacti/cacti",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 58,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "FreshRSS/FreshRSS",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 23,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "Mintplex-Labs/anything-llm",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 19,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "TandoorRecipes/recipes",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 23,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "argoproj/argo-cd",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 8,
+        "visible": 4,
+        "visible_pct": 50.0
+      },
+      {
+        "repo": "authelia/authelia",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 2,
+        "visible": 2,
+        "visible_pct": 100.0
+      },
+      {
+        "repo": "chatwoot/chatwoot",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 4,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "drakkan/sftpgo",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 1,
+        "visible": 1,
+        "visible_pct": 100.0
+      },
+      {
+        "repo": "frappe/frappe",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 23,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "glpi-project/glpi",
+        "registry_group": "no_registry",
+        "go_module": false,
+        "eligible": 190,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "gravitl/netmaker",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 1,
+        "visible": 1,
+        "visible_pct": 100.0
+      },
+      {
+        "repo": "jumpserver/jumpserver",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 20,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "langgenius/dify",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 15,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "navidrome/navidrome",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 6,
+        "visible": 5,
+        "visible_pct": 83.3
+      },
+      {
+        "repo": "openemr/openemr",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 126,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "opf/openproject",
+        "registry_group": "no_registry",
+        "go_module": false,
+        "eligible": 86,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "owncast/owncast",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 1,
+        "visible": 1,
+        "visible_pct": 100.0
+      },
+      {
+        "repo": "portainer/portainer",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 1,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "traefik/traefik",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 6,
+        "visible": 6,
+        "visible_pct": 100.0
+      },
+      {
+        "repo": "woodpecker-ci/woodpecker",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 2,
+        "visible": 2,
+        "visible_pct": 100.0
+      },
+      {
+        "repo": "zammad/zammad",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 49,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "zitadel/zitadel",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 74,
+        "visible": 52,
+        "visible_pct": 70.3
+      }
+    ]
+  },
+  "all_advisories": {
+    "measure": {
+      "visibility": "scanner_visible: an OSV record (by GHSA or CVE alias) names a package; its complement is scanner_blind (reused verbatim from A3)",
+      "go_module": "True iff the repository is a Go module at its own repo path, proven by go.mod (module == github.com/<repo>) OR the Go module proxy serving a version for github.com/<repo> -- a covariate from data sources independent of the OSV visibility measure"
+    },
+    "counts": {
+      "software_typed": 1066,
+      "by_go_module": {
+        "go": 785,
+        "not_go": 281
+      },
+      "by_registry_group": {
+        "registry": 0,
+        "no_registry": 1066
+      },
+      "no_registry_software_typed": 1066
+    },
+    "P1_primary_no_registry": {
+      "visible_shares": {
+        "go": {
+          "k": 244,
+          "n": 785,
+          "pct": 31.1,
+          "ci95": [
+            0.2794,
+            0.3441
+          ]
+        },
+        "not_go": {
+          "k": 0,
+          "n": 281,
+          "pct": 0.0,
+          "ci95": [
+            -0.0,
+            0.0135
+          ]
+        }
+      },
+      "permutation": {
+        "difference_pct_points": 31.1,
+        "p_two_sided": 0.3042,
+        "permutations": 10000,
+        "seed": 20261017,
+        "unit": "repository",
+        "repositories": 24
+      }
+    },
+    "P2_secondary_all": {
+      "visible_shares": {
+        "go": {
+          "k": 244,
+          "n": 785,
+          "pct": 31.1,
+          "ci95": [
+            0.2794,
+            0.3441
+          ]
+        },
+        "not_go": {
+          "k": 0,
+          "n": 281,
+          "pct": 0.0,
+          "ci95": [
+            -0.0,
+            0.0135
+          ]
+        }
+      },
+      "permutation": {
+        "difference_pct_points": 31.1,
+        "p_two_sided": 0.3042,
+        "permutations": 10000,
+        "seed": 20261017,
+        "unit": "repository",
+        "repositories": 24
+      }
+    },
+    "P3_rescue_channel": {
+      "go": {
+        "visible_n": 244,
+        "names_repo_go_module": 234,
+        "names_repo_go_module_pct": 95.9,
+        "osv_ecosystems": {
+          "Go": 369,
+          "PyPI": 4
+        }
+      },
+      "not_go": {
+        "visible_n": 0,
+        "names_repo_go_module": 0,
+        "names_repo_go_module_pct": null,
+        "osv_ecosystems": {}
+      }
+    },
+    "P4_residual": {
+      "all": {
+        "go": {
+          "k": 244,
+          "n": 785,
+          "pct": 31.1,
+          "ci95": [
+            0.2794,
+            0.3441
+          ]
+        },
+        "not_go": {
+          "k": 0,
+          "n": 281,
+          "pct": 0.0,
+          "ci95": [
+            -0.0,
+            0.0135
+          ]
+        }
+      },
+      "no_registry": {
+        "go": {
+          "k": 244,
+          "n": 785,
+          "pct": 31.1,
+          "ci95": [
+            0.2794,
+            0.3441
+          ]
+        },
+        "not_go": {
+          "k": 0,
+          "n": 281,
+          "pct": 0.0,
+          "ci95": [
+            -0.0,
+            0.0135
+          ]
+        }
+      }
+    },
+    "robustness": {
+      "R1_drop_heaviest_each_group_no_registry": {
+        "dropped": [
+          "glpi-project/glpi",
+          "openemr/openemr"
+        ],
+        "visible_shares": {
+          "go": {
+            "k": 244,
+            "n": 632,
+            "pct": 38.6,
+            "ci95": [
+              0.3489,
+              0.4246
+            ]
+          },
+          "not_go": {
+            "k": 0,
+            "n": 91,
+            "pct": 0.0,
+            "ci95": [
+              0.0,
+              0.0405
+            ]
+          }
+        },
+        "permutation": {
+          "difference_pct_points": 38.6,
+          "p_two_sided": 0.4983,
+          "permutations": 10000,
+          "seed": 20261017,
+          "unit": "repository",
+          "repositories": 22
+        }
+      }
+    },
+    "per_repo": [
+      {
+        "repo": "1Panel-dev/1Panel",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 16,
+        "visible": 14,
+        "visible_pct": 87.5
+      },
+      {
+        "repo": "AdguardTeam/AdGuardHome",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 3,
+        "visible": 2,
+        "visible_pct": 66.7
+      },
+      {
+        "repo": "Cacti/cacti",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 67,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "FreshRSS/FreshRSS",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 24,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "Mintplex-Labs/anything-llm",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 25,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "TandoorRecipes/recipes",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 29,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "argoproj/argo-cd",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 52,
+        "visible": 48,
+        "visible_pct": 92.3
+      },
+      {
+        "repo": "authelia/authelia",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 7,
+        "visible": 7,
+        "visible_pct": 100.0
+      },
+      {
+        "repo": "chatwoot/chatwoot",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 4,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "drakkan/sftpgo",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 16,
+        "visible": 12,
+        "visible_pct": 75.0
+      },
+      {
+        "repo": "frappe/frappe",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 85,
+        "visible": 4,
+        "visible_pct": 4.7
+      },
+      {
+        "repo": "glpi-project/glpi",
+        "registry_group": "no_registry",
+        "go_module": false,
+        "eligible": 190,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "gravitl/netmaker",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 10,
+        "visible": 10,
+        "visible_pct": 100.0
+      },
+      {
+        "repo": "jumpserver/jumpserver",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 28,
+        "visible": 1,
+        "visible_pct": 3.6
+      },
+      {
+        "repo": "langgenius/dify",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 21,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "navidrome/navidrome",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 28,
+        "visible": 9,
+        "visible_pct": 32.1
+      },
+      {
+        "repo": "openemr/openemr",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 153,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "opf/openproject",
+        "registry_group": "no_registry",
+        "go_module": false,
+        "eligible": 91,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "owncast/owncast",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 1,
+        "visible": 1,
+        "visible_pct": 100.0
+      },
+      {
+        "repo": "portainer/portainer",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 11,
+        "visible": 9,
+        "visible_pct": 81.8
+      },
+      {
+        "repo": "traefik/traefik",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 76,
+        "visible": 70,
+        "visible_pct": 92.1
+      },
+      {
+        "repo": "woodpecker-ci/woodpecker",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 5,
+        "visible": 5,
+        "visible_pct": 100.0
+      },
+      {
+        "repo": "zammad/zammad",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 49,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      {
+        "repo": "zitadel/zitadel",
+        "registry_group": "no_registry",
+        "go_module": true,
+        "eligible": 75,
+        "visible": 52,
+        "visible_pct": 69.3
+      }
+    ]
+  },
+  "R2_language_software": {
+    "visible_shares": {
+      "go": {
+        "k": 83,
+        "n": 111,
+        "pct": 74.8,
+        "ci95": [
+          0.6596,
+          0.8193
+        ]
+      },
+      "not_go": {
+        "k": 1,
+        "n": 638,
+        "pct": 0.2,
+        "ci95": [
+          0.0003,
+          0.0088
+        ]
+      }
+    },
+    "permutation": {
+      "difference_pct_points": 74.6,
+      "p_two_sided": 0.0001,
+      "permutations": 10000,
+      "seed": 20261017,
+      "unit": "repository",
+      "repositories": 24
+    },
+    "unknown_language_rows": 0
+  },
+  "R2_language_all": {
+    "visible_shares": {
+      "go": {
+        "k": 228,
+        "n": 286,
+        "pct": 79.7,
+        "ci95": [
+          0.7468,
+          0.8397
+        ]
+      },
+      "not_go": {
+        "k": 16,
+        "n": 780,
+        "pct": 2.1,
+        "ci95": [
+          0.0127,
+          0.0331
+        ]
+      }
+    },
+    "permutation": {
+      "difference_pct_points": 77.7,
+      "p_two_sided": 0.0001,
+      "permutations": 10000,
+      "seed": 20261017,
+      "unit": "repository",
+      "repositories": 24
+    },
+    "unknown_language_rows": 0
+  },
+  "confounds_software": {
+    "R3_settled_ge_90_days": {
+      "visible_shares": {
+        "go": {
+          "k": 84,
+          "n": 353,
+          "pct": 23.8,
+          "ci95": [
+            0.1965,
+            0.2851
+          ]
+        },
+        "not_go": {
+          "k": 0,
+          "n": 262,
+          "pct": 0.0,
+          "ci95": [
+            0.0,
+            0.0145
+          ]
+        }
+      },
+      "permutation": {
+        "difference_pct_points": 23.8,
+        "p_two_sided": 0.2942,
+        "permutations": 10000,
+        "seed": 20261017,
+        "unit": "repository",
+        "repositories": 24
+      }
+    },
+    "R4_with_cve": {
+      "visible_shares": {
+        "go": {
+          "k": 82,
+          "n": 381,
+          "pct": 21.5,
+          "ci95": [
+            0.1769,
+            0.2592
+          ]
+        },
+        "not_go": {
+          "k": 0,
+          "n": 257,
+          "pct": 0.0,
+          "ci95": [
+            0.0,
+            0.0147
+          ]
+        }
+      },
+      "permutation": {
+        "difference_pct_points": 21.5,
+        "p_two_sided": 0.3094,
+        "permutations": 10000,
+        "seed": 20261017,
+        "unit": "repository",
+        "repositories": 24
+      }
+    },
+    "R4_without_cve": {
+      "visible_shares": {
+        "go": {
+          "k": 2,
+          "n": 92,
+          "pct": 2.2,
+          "ci95": [
+            0.006,
+            0.0758
+          ]
+        },
+        "not_go": {
+          "k": 0,
+          "n": 19,
+          "pct": 0.0,
+          "ci95": [
+            0.0,
+            0.1682
+          ]
+        }
+      },
+      "permutation": {
+        "difference_pct_points": 2.2,
+        "p_two_sided": 0.4185,
+        "permutations": 10000,
+        "seed": 20261017,
+        "unit": "repository",
+        "repositories": 13
+      }
+    }
+  },
+  "D1_rescue_record_software": {
+    "go": {
+      "visible_n": 84,
+      "own_ghsa_record": 84,
+      "cve_alias_only": 0
+    },
+    "not_go": {
+      "visible_n": 0,
+      "own_ghsa_record": 0,
+      "cve_alias_only": 0
+    }
+  },
+  "covariate_disagreements": [
+    {
+      "repo": "AdguardTeam/AdGuardHome",
+      "go_module": true,
+      "language": "TypeScript"
+    },
+    {
+      "repo": "Cacti/cacti",
+      "go_module": true,
+      "language": "PHP"
+    },
+    {
+      "repo": "FreshRSS/FreshRSS",
+      "go_module": true,
+      "language": "PHP"
+    },
+    {
+      "repo": "Mintplex-Labs/anything-llm",
+      "go_module": true,
+      "language": "JavaScript"
+    },
+    {
+      "repo": "NginxProxyManager/nginx-proxy-manager",
+      "go_module": true,
+      "language": "TypeScript"
+    },
+    {
+      "repo": "TandoorRecipes/recipes",
+      "go_module": true,
+      "language": "HTML"
+    },
+    {
+      "repo": "chatwoot/chatwoot",
+      "go_module": true,
+      "language": "Ruby"
+    },
+    {
+      "repo": "frappe/frappe",
+      "go_module": true,
+      "language": "Python"
+    },
+    {
+      "repo": "jumpserver/jumpserver",
+      "go_module": true,
+      "language": "Python"
+    },
+    {
+      "repo": "langgenius/dify",
+      "go_module": true,
+      "language": "Python"
+    },
+    {
+      "repo": "mealie-recipes/mealie",
+      "go_module": true,
+      "language": "Python"
+    },
+    {
+      "repo": "openemr/openemr",
+      "go_module": true,
+      "language": "PHP"
+    },
+    {
+      "repo": "portainer/portainer",
+      "go_module": true,
+      "language": "TypeScript"
+    },
+    {
+      "repo": "zammad/zammad",
+      "go_module": true,
+      "language": "Ruby"
+    }
+  ],
+  "meta": {
+    "study": "registry-channel A6 (out-of-sample Go-module reviewer-rescue)",
+    "census_sha256": "1e5cecb2dc3d9a1ecaa746d376374af221953fd0ad4c3e1b2ff3df3a276e395e",
+    "frame_n": 30,
+    "excluded_archived": [
+      "filebrowser/filebrowser"
+    ],
+    "renamed": [],
+    "repos_with_advisories": [
+      "1Panel-dev/1Panel",
+      "AdguardTeam/AdGuardHome",
+      "Cacti/cacti",
+      "FreshRSS/FreshRSS",
+      "Mintplex-Labs/anything-llm",
+      "TandoorRecipes/recipes",
+      "argoproj/argo-cd",
+      "authelia/authelia",
+      "chatwoot/chatwoot",
+      "drakkan/sftpgo",
+      "filebrowser/filebrowser",
+      "frappe/frappe",
+      "glpi-project/glpi",
+      "gravitl/netmaker",
+      "jumpserver/jumpserver",
+      "langgenius/dify",
+      "navidrome/navidrome",
+      "openemr/openemr",
+      "opf/openproject",
+      "owncast/owncast",
+      "portainer/portainer",
+      "traefik/traefik",
+      "woodpecker-ci/woodpecker",
+      "zammad/zammad",
+      "zitadel/zitadel"
+    ],
+    "frame_repos_without_rows": [
+      "NginxProxyManager/nginx-proxy-manager",
+      "casdoor/casdoor",
+      "juanfont/headscale",
+      "mealie-recipes/mealie",
+      "photoprism/photoprism"
+    ],
+    "n_rows": 1066,
+    "n_software_typed": 749,
+    "n_go_module_repos": 28,
+    "gomod_proxy_disagreements": [
+      {
+        "repo": "portainer/portainer",
+        "gomod_match": false,
+        "proxy_ok": true
+      },
+      {
+        "repo": "1Panel-dev/1Panel",
+        "gomod_match": false,
+        "proxy_ok": true
+      },
+      {
+        "repo": "woodpecker-ci/woodpecker",
+        "gomod_match": false,
+        "proxy_ok": true
+      },
+      {
+        "repo": "langgenius/dify",
+        "gomod_match": false,
+        "proxy_ok": true
+      },
+      {
+        "repo": "Mintplex-Labs/anything-llm",
+        "gomod_match": false,
+        "proxy_ok": true
+      },
+      {
+        "repo": "mealie-recipes/mealie",
+        "gomod_match": false,
+        "proxy_ok": true
+      },
+      {
+        "repo": "jumpserver/jumpserver",
+        "gomod_match": false,
+        "proxy_ok": true
+      },
+      {
+        "repo": "chatwoot/chatwoot",
+        "gomod_match": false,
+        "proxy_ok": true
+      },
+      {
+        "repo": "zammad/zammad",
+        "gomod_match": false,
+        "proxy_ok": true
+      },
+      {
+        "repo": "Cacti/cacti",
+        "gomod_match": false,
+        "proxy_ok": true
+      },
+      {
+        "repo": "FreshRSS/FreshRSS",
+        "gomod_match": false,
+        "proxy_ok": true
+      },
+      {
+        "repo": "openemr/openemr",
+        "gomod_match": false,
+        "proxy_ok": true
+      },
+      {
+        "repo": "NginxProxyManager/nginx-proxy-manager",
+        "gomod_match": false,
+        "proxy_ok": true
+      },
+      {
+        "repo": "frappe/frappe",
+        "gomod_match": false,
+        "proxy_ok": true
+      },
+      {
+        "repo": "TandoorRecipes/recipes",
+        "gomod_match": false,
+        "proxy_ok": true
+      }
+    ]
+  }
+}

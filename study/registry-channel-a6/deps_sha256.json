@@ -1,0 +1,17 @@
+{
+  "attribution_census.py": {
+    "source": "https://raw.githubusercontent.com/munimtechnologies/advisory-import-census/main/study/registry-channel-a3/attribution_census.py",
+    "sha256": "7399a8019896c40b4ee76b32533a900716e6e1053ff13077b728a3be79abd482",
+    "bytes": 16867
+  },
+  "go_rescue_census.py": {
+    "source": "https://raw.githubusercontent.com/munimtechnologies/advisory-import-census/main/study/registry-channel-a5/go_rescue_census.py",
+    "sha256": "c6e5cfd2d39f8145d078f25fc8ac1764f93a2afab8606893d32ecff1bc61f542",
+    "bytes": 12454
+  },
+  "go_rescue_analysis.py": {
+    "source": "https://raw.githubusercontent.com/munimtechnologies/advisory-import-census/main/study/registry-channel-a5/go_rescue_analysis.py",
+    "sha256": "25a283a901fee507d73912b7aab4e6548b696b45b67cbe0b5c187453f674cb4b",
+    "bytes": 10760
+  }
+}
