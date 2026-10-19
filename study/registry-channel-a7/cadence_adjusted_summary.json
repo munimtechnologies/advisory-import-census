@@ -1,0 +1,253 @@
+{
+  "study": "registry-channel A7: is the registry->visibility effect reducible to a repository-level release-cadence covariate?",
+  "prereg": "PREREGISTRATION-registry-channel-a7.md",
+  "measured_utc": "2026-10-19T14:56:03.350408Z",
+  "classification_frozen_utc": "2026-10-18",
+  "n_repos_with_advisories": 25,
+  "n_repos_cadence_known": 25,
+  "repos_cadence_unknown": [],
+  "repos_not_in_classification": [],
+  "P1_primary": {
+    "total_effect_pct_points": 60.3,
+    "total_permutation": {
+      "difference_pct_points": 60.3,
+      "p_two_sided": 0.0015,
+      "permutations": 10000,
+      "seed": 20261017,
+      "unit": "repository",
+      "repositories": 25
+    },
+    "direct_effect_pct_points": 59.6,
+    "direct_defined_only_pct_points": 59.6,
+    "adjusted_permutation": {
+      "direct_pct_points": 59.6,
+      "p_two_sided": 0.0017,
+      "permutations": 10000,
+      "seed": 20261017,
+      "unit": "repository_within_tertile",
+      "repositories": 25
+    },
+    "strata": [
+      {
+        "tertile": "T1",
+        "n": 732,
+        "registry": {
+          "k": 160,
+          "n": 247,
+          "pct": 64.8
+        },
+        "no_registry": {
+          "k": 69,
+          "n": 485,
+          "pct": 14.2
+        },
+        "difference_pct_points": 50.6,
+        "comparison_defined": true
+      },
+      {
+        "tertile": "T2",
+        "n": 250,
+        "registry": {
+          "k": 84,
+          "n": 106,
+          "pct": 79.2
+        },
+        "no_registry": {
+          "k": 30,
+          "n": 144,
+          "pct": 20.8
+        },
+        "difference_pct_points": 58.4,
+        "comparison_defined": true
+      },
+      {
+        "tertile": "T3",
+        "n": 447,
+        "registry": {
+          "k": 211,
+          "n": 267,
+          "pct": 79.0
+        },
+        "no_registry": {
+          "k": 7,
+          "n": 180,
+          "pct": 3.9
+        },
+        "difference_pct_points": 75.1,
+        "comparison_defined": true
+      }
+    ],
+    "threshold": "direct >= +25.0 pts AND adjusted p < 0.05"
+  },
+  "P2_mediation": {
+    "mediated_effect_pct_points": 0.7,
+    "mediated_fraction": 0.011,
+    "compare": {
+      "A3_naming": 0.36,
+      "A4_real_package": 0.128
+    },
+    "threshold": "mediated_fraction >= 0.50 means cadence explains the effect"
+  },
+  "P3_descriptive": {
+    "spearman_cadence_vs_visibility": -0.068,
+    "mean_releases_per_year_by_group": {
+      "registry": 40.2724,
+      "no_registry": 44.5432
+    }
+  },
+  "power_good_tertiles": 3,
+  "power_floor": ">=2 tertiles each with both groups and >=4 advisories/group",
+  "verdict": "SURVIVES",
+  "cadence_status": {
+    "ClickHouse/ClickHouse": {
+      "status": "ok",
+      "releases": 955,
+      "repo_age_years": 10.38,
+      "releases_per_year": 92.0045
+    },
+    "ToolJet/ToolJet": {
+      "status": "ok",
+      "releases": 645,
+      "repo_age_years": 5.556,
+      "releases_per_year": 116.0951
+    },
+    "TryGhost/Ghost": {
+      "status": "ok",
+      "releases": 1012,
+      "repo_age_years": 13.46,
+      "releases_per_year": 75.1874
+    },
+    "appsmithorg/appsmith": {
+      "status": "ok",
+      "releases": 313,
+      "repo_age_years": 6.304,
+      "releases_per_year": 49.6529
+    },
+    "coollabsio/coolify": {
+      "status": "ok",
+      "releases": 713,
+      "repo_age_years": 5.73,
+      "releases_per_year": 124.4406
+    },
+    "directus/directus": {
+      "status": "ok",
+      "releases": 376,
+      "repo_age_years": 13.852,
+      "releases_per_year": 27.1435
+    },
+    "discourse/discourse": {
+      "status": "ok",
+      "releases": 1,
+      "repo_age_years": 13.768,
+      "releases_per_year": 0.0726
+    },
+    "element-hq/synapse": {
+      "status": "ok",
+      "releases": 173,
+      "repo_age_years": 2.85,
+      "releases_per_year": 60.6989
+    },
+    "firefly-iii/firefly-iii": {
+      "status": "ok",
+      "releases": 340,
+      "repo_age_years": 12.31,
+      "releases_per_year": 27.6193
+    },
+    "go-gitea/gitea": {
+      "status": "ok",
+      "releases": 239,
+      "repo_age_years": 9.964,
+      "releases_per_year": 23.9852
+    },
+    "goauthentik/authentik": {
+      "status": "ok",
+      "releases": 361,
+      "repo_age_years": 6.804,
+      "releases_per_year": 53.0555
+    },
+    "goharbor/harbor": {
+      "status": "ok",
+      "releases": 368,
+      "repo_age_years": 10.723,
+      "releases_per_year": 34.3173
+    },
+    "grokability/snipe-it": {
+      "status": "ok",
+      "releases": 295,
+      "repo_age_years": 12.933,
+      "releases_per_year": 22.8103
+    },
+    "jellyfin/jellyfin": {
+      "status": "ok",
+      "releases": 117,
+      "repo_age_years": 7.861,
+      "releases_per_year": 14.883
+    },
+    "keycloak/keycloak": {
+      "status": "ok",
+      "releases": 117,
+      "repo_age_years": 13.298,
+      "releases_per_year": 8.7984
+    },
+    "louislam/uptime-kuma": {
+      "status": "ok",
+      "releases": 137,
+      "repo_age_years": 5.297,
+      "releases_per_year": 25.8657
+    },
+    "mastodon/mastodon": {
+      "status": "ok",
+      "releases": 373,
+      "repo_age_years": 10.656,
+      "releases_per_year": 35.0047
+    },
+    "metabase/metabase": {
+      "status": "ok",
+      "releases": 842,
+      "repo_age_years": 11.709,
+      "releases_per_year": 71.9088
+    },
+    "netbox-community/netbox": {
+      "status": "ok",
+      "releases": 376,
+      "repo_age_years": 10.637,
+      "releases_per_year": 35.3496
+    },
+    "nocodb/nocodb": {
+      "status": "ok",
+      "releases": 202,
+      "repo_age_years": 8.971,
+      "releases_per_year": 22.5158
+    },
+    "open-webui/open-webui": {
+      "status": "ok",
+      "releases": 175,
+      "repo_age_years": 3.035,
+      "releases_per_year": 57.652
+    },
+    "outline/outline": {
+      "status": "ok",
+      "releases": 169,
+      "repo_age_years": 10.409,
+      "releases_per_year": 16.2366
+    },
+    "requarks/wiki": {
+      "status": "ok",
+      "releases": 144,
+      "repo_age_years": 10.173,
+      "releases_per_year": 14.1547
+    },
+    "strapi/strapi": {
+      "status": "ok",
+      "releases": 550,
+      "repo_age_years": 11.053,
+      "releases_per_year": 49.7619
+    },
+    "zulip/zulip": {
+      "status": "ok",
+      "releases": 129,
+      "repo_age_years": 11.066,
+      "releases_per_year": 11.6571
+    }
+  }
+}

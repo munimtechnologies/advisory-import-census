@@ -1,0 +1,12 @@
+{
+  "study/registry-channel-a7/release_cadence_analysis.py": {
+    "bytes": 19507,
+    "git_blob_sha1": "e6f9ebf9ade03d2635e2d7f9991d6d7fc9236ece",
+    "sha256": "9b8e50937556bd34255dcc0d219236309f57de38ac77ad11a0124fca1ff5bb6b"
+  },
+  "study/registry-channel-a7/test_release_cadence.py": {
+    "bytes": 4730,
+    "git_blob_sha1": "5646d9b330bd7ab55b32e833fd9aa031ad89bdbb",
+    "sha256": "9df4529cf0757ccba98f9685d9d151e4580cac0d5f4bebcb96555848cb1c2b17"
+  }
+}

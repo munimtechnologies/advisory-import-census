@@ -21,7 +21,8 @@ Apache-2.0 (code) / CC BY 4.0 (text & data).
 | A5 | go-module rescue (software stratum) | Among advisories that name *no* package, does the project being a Go module at its repo path predict visibility (reviewers attach `github.com/owner/repo` for free)? | **Null (not supported)**: P1 −6.3 pts, p = 0.82; P3 only 31.6% go-rescued. The `proxy.golang.org` go-module probe proved degenerate (22/24 repos mislabelled "go"); package-less rescue is heterogeneous, ecosystem-specific attachment, not a dominant Go repo-path channel ([erratum](registry-channel-a5/ERRATUM.md)) | [`registry-channel-a5/RESULTS.md`](registry-channel-a5/RESULTS.md) |
 | A6 | go-module rescue (out of sample) | Does it hold on 30 fresh no-registry apps, with a valid language-based cross-check and age/CVE controls? | **Primary inconclusive** (frozen proxy covariate left 2 "not_go" repos, below the floor of 4). **Pre-specified language check R2 holds strongly**: Go apps' package-less advisories 74.8% visible (83/111) vs 0.2% (1/638), +74.6 pts, p = 0.0001, 24 repos; 98.8% rescued as the repo-path Go module, all via GitHub's own reviewed records | [`registry-channel-a6/RESULTS.md`](registry-channel-a6/RESULTS.md) |
 | E1 | ecosystem-coverage confound | Does the registry→visibility effect survive holding OSV ecosystem fixed, or is it partly OSV indexing some ecosystems better than others? | **Inconclusive (underpowered)**: only 2 usable strata (floor 3), no p-value computed. Descriptively the gap holds at full size within both: no package named 50.0% vs 4.6%; npm 81.5% vs 5.9%. OSV coverage by stratum: PyPI 81%, npm 76%, Go 70%, Maven 69%, Packagist 12% (mostly one app naming a package that doesn't exist) | [`registry-channel-e1/RESULTS.md`](registry-channel-e1/RESULTS.md) |
-| A7 | release-cadence confound | Is the registry effect reducible to a repository-level covariate, release cadence (GitHub releases per year)? | pre-registered 2026-10-19 with frozen, unit-tested analysis code; job queued; result pending | [`registry-channel-a7/PREREGISTRATION-registry-channel-a7.md`](registry-channel-a7/PREREGISTRATION-registry-channel-a7.md) |
+| A7 | release-cadence confound | Is the registry effect reducible to a repository-level covariate, release cadence (GitHub releases per year)? | **Survives**: cadence-adjusted direct effect +59.6 pts, p = 0.0017; cadence mediates only 1.1% (below A3's 36% and A4's 12.8%). The confound's premise fails — registry repos release *less* often (40.3/yr vs 44.5/yr), Spearman ρ = −0.068. The registry advantage is large in all 3 cadence tertiles (+50.6 / +58.4 / +75.1 pts) | [`registry-channel-a7/RESULTS.md`](registry-channel-a7/RESULTS.md) |
+| E2 | ecosystem confound (pooled) | Does E1's ecosystem test reach ≥ 3 usable strata when the A1∪A2∪A4 frames are pooled (59 apps)? | pre-registered 2026-10-19 with the frame frozen before any pooled data was read; job queued; result pending | [`registry-channel-e2/PREREGISTRATION-registry-channel-e2.md`](registry-channel-e2/PREREGISTRATION-registry-channel-e2.md) |
 
 ## What the chain says so far
 
@@ -29,8 +30,10 @@ An advisory reaches OSV-backed scanners when it can be bound to a package. For a
 self-hosted app that means a real release on an OSV-indexed registry (A1/A2), or, for a
 Go project, the module at the repository path, which exists without any extra
 publishing (A6). Merely *naming* a package on the advisory page is not enough (A3/A4,
-and the coolify and frappe cases in E1/A6). Apps in PHP, Ruby, Python or JavaScript
-that ship only as Docker images or install scripts stay almost entirely blind.
+and the coolify and frappe cases in E1/A6), nor is the project simply being
+well-run: release cadence does not explain the effect (A7). Apps in PHP, Ruby, Python
+or JavaScript that ship only as Docker images or install scripts stay almost entirely
+blind.
 
 ## How to read a study folder
 
