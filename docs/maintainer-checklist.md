@@ -1,0 +1,95 @@
+# Will scanners see your app's security advisories? A maintainer's checklist
+
+You publish a GitHub security advisory for your self-hosted app. Will the people
+running your app find out from their vulnerability scanner? Dependency scanners
+(OSV-Scanner and the tools built on OSV) match **installed packages** against
+advisory records. If no record ties your advisory to a package, your users' scanner
+will never show it, however severe it is.
+
+This checklist turns the findings of the [pre-registered study chain](../study/README.md)
+into steps. Each step says which result it rests on and how strong that evidence is.
+All of it is observational: the studies compare apps, they do not change one app and
+watch what happens. Apache-2.0 / CC BY 4.0.
+
+## 1. Check whether your existing advisories are visible (2 minutes)
+
+For each advisory ID (`GHSA-xxxx-xxxx-xxxx`) on your repository's Security tab:
+
+```
+curl -s https://api.osv.dev/v1/vulns/GHSA-xxxx-xxxx-xxxx
+```
+
+If OSV returns *not found*, or the record has no `affected[].package`, a
+package-matching scanner can't report it. (If the advisory has a CVE, try the CVE ID
+too; the studies count either.) Or check every advisory for a release at once:
+
+```
+python blindspot.py --package repo:<owner>/<repo>@<version>
+```
+
+[blindspot](../README.md) lists your repository's own advisories covering that version
+that OSV can't match to a package.
+
+**How common is "blind"?** Among self-hosted applications, very common. Applications
+were 53 points more often blind than libraries ([H1](../study/app-vs-library/RESULTS.md)).
+Among 30 Docker/binary-only apps, *non-Go* apps' package-less advisories reached
+scanners 1 time in 638 ([A6](../study/registry-channel-a6/RESULTS.md)).
+
+## 2. Find out which group your app is in
+
+| Your app ships as… | What the studies saw | Evidence |
+|---|---|---|
+| A release on an OSV-indexed registry (e.g. npm, PyPI, Packagist, Maven) under a name that matches the project | About 51–58 points *more* visible than apps without one; replicated on a fresh sample | [A2](../study/registry-channel/RESULTS.md), [A1](../study/registry-channel-a1/RESULTS.md) (p = 0.0077, p = 0.0017) |
+| A Go module (`go.mod` at the repository root) | Package-less advisories 74.8% visible (83 of 111), almost always as `Go: github.com/<owner>/<repo>`, attached by GitHub's advisory reviewers | [A6](../study/registry-channel-a6/RESULTS.md) (p = 0.0001) |
+| A Go module with a vanity path (`go.example.org/...`) | Only one app in the sample; both its package-less advisories were visible. Too rare to test | [A8](../study/registry-channel-a8/RESULTS.md) |
+| Docker images, binaries or install scripts only, not Go | Almost always blind: 0 of 190 (GLPI), 0 of 126 (OpenEMR), 0 of 86 (OpenProject), 0 of 49 (Zammad) | [A6](../study/registry-channel-a6/RESULTS.md) |
+
+Releasing more often does **not** explain the difference: registry apps actually
+release slightly *less* often, and the gap is the same size at every release cadence
+([A7](../study/registry-channel-a7/RESULTS.md)).
+
+## 3. When you file the next advisory
+
+- **Fill in the package fields** (ecosystem + package name) on the advisory form when
+  your app has a real package. Use the exact name your users install.
+- **Don't name a package that doesn't exist.** Coolify named
+  `composer:coollabsio/coolify` on 33 advisories, a name with no Packagist release, and
+  0 of 33 reached scanners ([E1](../study/registry-channel-e1/RESULTS.md)). Frappe
+  named `pip:frappe`, which is only a placeholder on PyPI: 4 of 62 reached scanners
+  ([A6](../study/registry-channel-a6/RESULTS.md)). Naming a package explained only
+  about a third of the registry effect
+  ([A3](../study/registry-channel-a3/RESULTS.md)).
+- **Go apps:** name the `Go` ecosystem and your module path exactly as written in
+  `go.mod`. In the studies GitHub's reviewers usually attached it anyway; naming it
+  yourself is our suggestion to save that step, not something the studies tested.
+- **Say in the advisory text which image tags or release versions are affected and
+  fixed.** That doesn't help scanners, but it is what a blind advisory's readers
+  need to act.
+
+## 4. If your app is Docker-only and not Go
+
+The studies found **no free route** for this group. What the evidence suggests, from
+strongest to weakest:
+
+1. Apps that publish a real registry release under a matching name are far more often
+   visible (A1/A2). That is a comparison between apps, not a test of what happens
+   when one app starts publishing, so treat it as likely but unproven.
+2. Tell your users directly. Put a line in your README and install docs pointing to
+   your repository's Security → Advisories page and saying that dependency scanners
+   will not report these advisories. Mention each fix in your release notes.
+3. Users can check your repository in CI with blindspot's GitHub Action, which lists
+   advisories that OSV can't match.
+
+## What this checklist doesn't know
+
+- Every number comes from public GitHub advisory pages and the OSV API at the time of
+  each study (October 2026), with frames of about 30–60 self-hosted apps each. OSV and
+  GitHub's review practice can change.
+- Two follow-ups are still running: whether old blind advisories become visible with
+  time ([L1](../study/registry-channel-l1/PREREGISTRATION-registry-channel-l1.md)) and
+  whether the registry gap survives holding the ecosystem fixed in a pooled sample
+  ([E2](../study/registry-channel-e2/PREREGISTRATION-registry-channel-e2.md)). This page
+  will be updated when they land, whichever way they fall.
+- No result has been reviewed by a human. Corrections are welcome as issues.
+
+Made with AI agents working for MV2 of Munim, Inc.
