@@ -1,0 +1,374 @@
+{
+  "measure": {
+    "visibility": "scanner_visible: an OSV record (by GHSA or CVE alias) names a package; its complement is scanner_blind (reused verbatim from A3)",
+    "go_module": "True iff the repository is a Go module at its own repo path, proven by go.mod (module == github.com/<repo>) OR the Go module proxy serving a version for github.com/<repo> -- a covariate from data sources independent of the OSV visibility measure"
+  },
+  "counts": {
+    "software_typed": 777,
+    "by_go_module": {
+      "go": 724,
+      "not_go": 53
+    },
+    "by_registry_group": {
+      "registry": 104,
+      "no_registry": 673
+    },
+    "no_registry_software_typed": 673
+  },
+  "P1_primary_no_registry": {
+    "visible_shares": {
+      "go": {
+        "k": 43,
+        "n": 620,
+        "pct": 6.9,
+        "ci95": [
+          0.0519,
+          0.0921
+        ]
+      },
+      "not_go": {
+        "k": 7,
+        "n": 53,
+        "pct": 13.2,
+        "ci95": [
+          0.0655,
+          0.2484
+        ]
+      }
+    },
+    "permutation": {
+      "difference_pct_points": -6.3,
+      "p_two_sided": 0.8168,
+      "permutations": 10000,
+      "seed": 20261017,
+      "unit": "repository",
+      "repositories": 16
+    }
+  },
+  "P2_secondary_all": {
+    "visible_shares": {
+      "go": {
+        "k": 95,
+        "n": 724,
+        "pct": 13.1,
+        "ci95": [
+          0.1086,
+          0.1578
+        ]
+      },
+      "not_go": {
+        "k": 7,
+        "n": 53,
+        "pct": 13.2,
+        "ci95": [
+          0.0655,
+          0.2484
+        ]
+      }
+    },
+    "permutation": {
+      "difference_pct_points": -0.1,
+      "p_two_sided": 1.0,
+      "permutations": 10000,
+      "seed": 20261017,
+      "unit": "repository",
+      "repositories": 24
+    }
+  },
+  "P3_rescue_channel": {
+    "go": {
+      "visible_n": 95,
+      "names_repo_go_module": 30,
+      "names_repo_go_module_pct": 31.6,
+      "osv_ecosystems": {
+        "Go": 33,
+        "Maven": 6,
+        "NuGet": 1,
+        "Packagist": 37,
+        "PyPI": 7,
+        "npm": 12
+      }
+    },
+    "not_go": {
+      "visible_n": 7,
+      "names_repo_go_module": 0,
+      "names_repo_go_module_pct": 0.0,
+      "osv_ecosystems": {
+        "Go": 6,
+        "npm": 1
+      }
+    }
+  },
+  "P4_residual": {
+    "all": {
+      "go": {
+        "k": 95,
+        "n": 724,
+        "pct": 13.1,
+        "ci95": [
+          0.1086,
+          0.1578
+        ]
+      },
+      "not_go": {
+        "k": 7,
+        "n": 53,
+        "pct": 13.2,
+        "ci95": [
+          0.0655,
+          0.2484
+        ]
+      }
+    },
+    "no_registry": {
+      "go": {
+        "k": 43,
+        "n": 620,
+        "pct": 6.9,
+        "ci95": [
+          0.0519,
+          0.0921
+        ]
+      },
+      "not_go": {
+        "k": 7,
+        "n": 53,
+        "pct": 13.2,
+        "ci95": [
+          0.0655,
+          0.2484
+        ]
+      }
+    }
+  },
+  "robustness": {
+    "R1_drop_heaviest_each_group_no_registry": {
+      "dropped": [
+        "discourse/discourse",
+        "goauthentik/authentik"
+      ],
+      "visible_shares": {
+        "go": {
+          "k": 43,
+          "n": 323,
+          "pct": 13.3,
+          "ci95": [
+            0.1004,
+            0.1745
+          ]
+        },
+        "not_go": {
+          "k": 0,
+          "n": 7,
+          "pct": 0.0,
+          "ci95": [
+            0.0,
+            0.3543
+          ]
+        }
+      },
+      "permutation": {
+        "difference_pct_points": 13.3,
+        "p_two_sided": 0.9317,
+        "permutations": 10000,
+        "seed": 20261017,
+        "unit": "repository",
+        "repositories": 14
+      }
+    }
+  },
+  "per_repo": [
+    {
+      "repo": "ClickHouse/ClickHouse",
+      "registry_group": "no_registry",
+      "go_module": true,
+      "eligible": 7,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "ToolJet/ToolJet",
+      "registry_group": "no_registry",
+      "go_module": false,
+      "eligible": 7,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "appsmithorg/appsmith",
+      "registry_group": "no_registry",
+      "go_module": true,
+      "eligible": 14,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "coollabsio/coolify",
+      "registry_group": "no_registry",
+      "go_module": true,
+      "eligible": 31,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "directus/directus",
+      "registry_group": "registry",
+      "go_module": true,
+      "eligible": 2,
+      "visible": 2,
+      "visible_pct": 100.0
+    },
+    {
+      "repo": "discourse/discourse",
+      "registry_group": "no_registry",
+      "go_module": true,
+      "eligible": 297,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "element-hq/synapse",
+      "registry_group": "registry",
+      "go_module": true,
+      "eligible": 1,
+      "visible": 1,
+      "visible_pct": 100.0
+    },
+    {
+      "repo": "firefly-iii/firefly-iii",
+      "registry_group": "registry",
+      "go_module": true,
+      "eligible": 3,
+      "visible": 2,
+      "visible_pct": 66.7
+    },
+    {
+      "repo": "go-gitea/gitea",
+      "registry_group": "registry",
+      "go_module": true,
+      "eligible": 15,
+      "visible": 3,
+      "visible_pct": 20.0
+    },
+    {
+      "repo": "goauthentik/authentik",
+      "registry_group": "no_registry",
+      "go_module": false,
+      "eligible": 46,
+      "visible": 7,
+      "visible_pct": 15.2
+    },
+    {
+      "repo": "goharbor/harbor",
+      "registry_group": "no_registry",
+      "go_module": true,
+      "eligible": 20,
+      "visible": 11,
+      "visible_pct": 55.0
+    },
+    {
+      "repo": "grafana/grafana",
+      "registry_group": "no_registry",
+      "go_module": true,
+      "eligible": 26,
+      "visible": 20,
+      "visible_pct": 76.9
+    },
+    {
+      "repo": "grokability/snipe-it",
+      "registry_group": "registry",
+      "go_module": true,
+      "eligible": 71,
+      "visible": 35,
+      "visible_pct": 49.3
+    },
+    {
+      "repo": "jellyfin/jellyfin",
+      "registry_group": "no_registry",
+      "go_module": true,
+      "eligible": 23,
+      "visible": 1,
+      "visible_pct": 4.3
+    },
+    {
+      "repo": "keycloak/keycloak",
+      "registry_group": "no_registry",
+      "go_module": true,
+      "eligible": 11,
+      "visible": 6,
+      "visible_pct": 54.5
+    },
+    {
+      "repo": "louislam/uptime-kuma",
+      "registry_group": "no_registry",
+      "go_module": true,
+      "eligible": 10,
+      "visible": 5,
+      "visible_pct": 50.0
+    },
+    {
+      "repo": "mastodon/mastodon",
+      "registry_group": "no_registry",
+      "go_module": true,
+      "eligible": 57,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "metabase/metabase",
+      "registry_group": "no_registry",
+      "go_module": true,
+      "eligible": 44,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "netbox-community/netbox",
+      "registry_group": "registry",
+      "go_module": true,
+      "eligible": 2,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "nocodb/nocodb",
+      "registry_group": "registry",
+      "go_module": true,
+      "eligible": 3,
+      "visible": 3,
+      "visible_pct": 100.0
+    },
+    {
+      "repo": "open-webui/open-webui",
+      "registry_group": "registry",
+      "go_module": true,
+      "eligible": 7,
+      "visible": 6,
+      "visible_pct": 85.7
+    },
+    {
+      "repo": "outline/outline",
+      "registry_group": "no_registry",
+      "go_module": true,
+      "eligible": 26,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "requarks/wiki",
+      "registry_group": "no_registry",
+      "go_module": true,
+      "eligible": 13,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "zulip/zulip",
+      "registry_group": "no_registry",
+      "go_module": true,
+      "eligible": 41,
+      "visible": 0,
+      "visible_pct": 0.0
+    }
+  ]
+}

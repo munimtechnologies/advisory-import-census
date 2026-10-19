@@ -1,0 +1,118 @@
+{
+  "study": "registry-channel A5 (go-module reviewer-rescue of software-typed advisories)",
+  "census_source": "https://raw.githubusercontent.com/munimtechnologies/advisory-import-census/main/study/registry-channel-a3/attribution_census.csv",
+  "census_sha256": "b550d716c95c1bcc2d84cefaec71568e0d109539512f6c2e3cebc849e70a9123",
+  "classification_frozen_utc": "2026-10-18",
+  "n_all_advisories": 1457,
+  "n_software_typed": 777,
+  "n_repos": 24,
+  "n_go_module_repos": 22,
+  "n_not_go_repos": 2,
+  "gomod_proxy_disagreements": [
+    {
+      "repo": "ClickHouse/ClickHouse",
+      "gomod_match": false,
+      "proxy_ok": true
+    },
+    {
+      "repo": "appsmithorg/appsmith",
+      "gomod_match": false,
+      "proxy_ok": true
+    },
+    {
+      "repo": "coollabsio/coolify",
+      "gomod_match": false,
+      "proxy_ok": true
+    },
+    {
+      "repo": "directus/directus",
+      "gomod_match": false,
+      "proxy_ok": true
+    },
+    {
+      "repo": "discourse/discourse",
+      "gomod_match": false,
+      "proxy_ok": true
+    },
+    {
+      "repo": "element-hq/synapse",
+      "gomod_match": false,
+      "proxy_ok": true
+    },
+    {
+      "repo": "firefly-iii/firefly-iii",
+      "gomod_match": false,
+      "proxy_ok": true
+    },
+    {
+      "repo": "go-gitea/gitea",
+      "gomod_match": false,
+      "proxy_ok": true
+    },
+    {
+      "repo": "goharbor/harbor",
+      "gomod_match": false,
+      "proxy_ok": true
+    },
+    {
+      "repo": "grokability/snipe-it",
+      "gomod_match": false,
+      "proxy_ok": true
+    },
+    {
+      "repo": "jellyfin/jellyfin",
+      "gomod_match": false,
+      "proxy_ok": true
+    },
+    {
+      "repo": "keycloak/keycloak",
+      "gomod_match": false,
+      "proxy_ok": true
+    },
+    {
+      "repo": "louislam/uptime-kuma",
+      "gomod_match": false,
+      "proxy_ok": true
+    },
+    {
+      "repo": "mastodon/mastodon",
+      "gomod_match": false,
+      "proxy_ok": true
+    },
+    {
+      "repo": "metabase/metabase",
+      "gomod_match": false,
+      "proxy_ok": true
+    },
+    {
+      "repo": "netbox-community/netbox",
+      "gomod_match": false,
+      "proxy_ok": true
+    },
+    {
+      "repo": "nocodb/nocodb",
+      "gomod_match": false,
+      "proxy_ok": true
+    },
+    {
+      "repo": "open-webui/open-webui",
+      "gomod_match": false,
+      "proxy_ok": true
+    },
+    {
+      "repo": "outline/outline",
+      "gomod_match": false,
+      "proxy_ok": true
+    },
+    {
+      "repo": "requarks/wiki",
+      "gomod_match": false,
+      "proxy_ok": true
+    },
+    {
+      "repo": "zulip/zulip",
+      "gomod_match": false,
+      "proxy_ok": true
+    }
+  ]
+}
