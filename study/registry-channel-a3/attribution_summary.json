@@ -1,0 +1,481 @@
+{
+  "measure": {
+    "visibility": "scanner_visible: an OSV record (by GHSA or CVE alias) names a package; its complement is scanner_blind",
+    "attribution": "advisory_product_type: 'package' iff the GitHub advisory page names an affected package in a registry ecosystem, else 'software' (generic product box) or 'other'"
+  },
+  "counts": {
+    "eligible": 1457,
+    "by_product_type": {
+      "package": 680,
+      "software": 777,
+      "other": 0
+    },
+    "by_group": {
+      "registry": 620,
+      "no_registry": 837
+    }
+  },
+  "P1_attribution_to_visibility": {
+    "difference_pct_points": 33.5,
+    "p_two_sided": 0.0107,
+    "permutations": 10000,
+    "seed": 20261017,
+    "repositories_with_both_types": 16,
+    "package": {
+      "k": 403,
+      "n": 579,
+      "pct": 69.6
+    },
+    "software": {
+      "k": 101,
+      "n": 280,
+      "pct": 36.1
+    }
+  },
+  "P2_registry_to_attribution": {
+    "package_rate": {
+      "registry": {
+        "k": 516,
+        "n": 620,
+        "pct": 83.2,
+        "ci95": [
+          0.8008,
+          0.8596
+        ]
+      },
+      "no_registry": {
+        "k": 164,
+        "n": 837,
+        "pct": 19.6,
+        "ci95": [
+          0.1705,
+          0.2242
+        ]
+      }
+    },
+    "permutation": {
+      "difference_pct_points": 63.6,
+      "p_two_sided": 0.0053,
+      "permutations": 10000,
+      "seed": 20261017,
+      "unit": "repository",
+      "repositories": 26
+    }
+  },
+  "P3_mediation": {
+    "support_n": 1457,
+    "total_effect_pct_points": 58.2,
+    "registry_rate": {
+      "k": 455,
+      "n": 620,
+      "pct": 73.4,
+      "rate": 0.7338709677419355
+    },
+    "no_registry_rate": {
+      "k": 127,
+      "n": 837,
+      "pct": 15.2,
+      "rate": 0.15173237753882915
+    },
+    "direct_effect_pct_points": 37.2,
+    "mediated_effect_pct_points": 21.0,
+    "mediated_fraction": 0.36,
+    "strata": [
+      {
+        "stratum": "package",
+        "n": 680,
+        "registry": {
+          "k": 403,
+          "n": 516,
+          "pct": 78.1,
+          "rate": 0.7810077519379846
+        },
+        "no_registry": {
+          "k": 77,
+          "n": 164,
+          "pct": 47.0,
+          "rate": 0.4695121951219512
+        },
+        "difference_pct_points": 31.1,
+        "comparison_defined": true
+      },
+      {
+        "stratum": "software",
+        "n": 777,
+        "registry": {
+          "k": 52,
+          "n": 104,
+          "pct": 50.0,
+          "rate": 0.5
+        },
+        "no_registry": {
+          "k": 50,
+          "n": 673,
+          "pct": 7.4,
+          "rate": 0.07429420505200594
+        },
+        "difference_pct_points": 42.6,
+        "comparison_defined": true
+      }
+    ]
+  },
+  "P4_residual": {
+    "package_visible": {
+      "k": 480,
+      "n": 680,
+      "pct": 70.6,
+      "ci95": [
+        0.6706,
+        0.7389
+      ]
+    },
+    "software_visible": {
+      "k": 102,
+      "n": 777,
+      "pct": 13.1,
+      "ci95": [
+        0.1093,
+        0.1568
+      ]
+    }
+  },
+  "robustness": {
+    "R1_drop_heaviest_each_group": {
+      "dropped": [
+        "discourse/discourse",
+        "open-webui/open-webui"
+      ],
+      "P2_permutation": {
+        "difference_pct_points": 48.3,
+        "p_two_sided": 0.0214,
+        "permutations": 10000,
+        "seed": 20261017,
+        "unit": "repository",
+        "repositories": 24
+      }
+    },
+    "R2_ecosystem_split": {
+      "composer": {
+        "n": 49,
+        "visible": 6,
+        "visible_pct": 12.2
+      },
+      "docker": {
+        "n": 28,
+        "visible": 23,
+        "visible_pct": 82.1
+      },
+      "go": {
+        "n": 109,
+        "visible": 76,
+        "visible_pct": 69.7
+      },
+      "helm": {
+        "n": 1,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      "maven": {
+        "n": 95,
+        "visible": 65,
+        "visible_pct": 68.4
+      },
+      "npm": {
+        "n": 254,
+        "visible": 195,
+        "visible_pct": 76.8
+      },
+      "pip": {
+        "n": 169,
+        "visible": 137,
+        "visible_pct": 81.1
+      }
+    },
+    "R3_attribution_to_own_id_in_osv": {
+      "difference_pct_points": 33.5,
+      "p_two_sided": 0.0107,
+      "permutations": 10000,
+      "seed": 20261017,
+      "repositories_with_both_types": 16,
+      "package": {
+        "k": 403,
+        "n": 579,
+        "pct": 69.6
+      },
+      "software": {
+        "k": 101,
+        "n": 280,
+        "pct": 36.1
+      }
+    }
+  },
+  "per_repo": [
+    {
+      "repo": "ClickHouse/ClickHouse",
+      "group": "no_registry",
+      "eligible": 7,
+      "visible": 0,
+      "visible_pct": 0.0,
+      "package": 0,
+      "software": 7,
+      "other": 0
+    },
+    {
+      "repo": "ToolJet/ToolJet",
+      "group": "no_registry",
+      "eligible": 12,
+      "visible": 0,
+      "visible_pct": 0.0,
+      "package": 5,
+      "software": 7,
+      "other": 0
+    },
+    {
+      "repo": "TryGhost/Ghost",
+      "group": "registry",
+      "eligible": 80,
+      "visible": 56,
+      "visible_pct": 70.0,
+      "package": 80,
+      "software": 0,
+      "other": 0
+    },
+    {
+      "repo": "appsmithorg/appsmith",
+      "group": "no_registry",
+      "eligible": 41,
+      "visible": 3,
+      "visible_pct": 7.3,
+      "package": 27,
+      "software": 14,
+      "other": 0
+    },
+    {
+      "repo": "coollabsio/coolify",
+      "group": "no_registry",
+      "eligible": 70,
+      "visible": 0,
+      "visible_pct": 0.0,
+      "package": 39,
+      "software": 31,
+      "other": 0
+    },
+    {
+      "repo": "directus/directus",
+      "group": "registry",
+      "eligible": 78,
+      "visible": 59,
+      "visible_pct": 75.6,
+      "package": 76,
+      "software": 2,
+      "other": 0
+    },
+    {
+      "repo": "discourse/discourse",
+      "group": "no_registry",
+      "eligible": 297,
+      "visible": 0,
+      "visible_pct": 0.0,
+      "package": 0,
+      "software": 297,
+      "other": 0
+    },
+    {
+      "repo": "element-hq/synapse",
+      "group": "registry",
+      "eligible": 22,
+      "visible": 11,
+      "visible_pct": 50.0,
+      "package": 21,
+      "software": 1,
+      "other": 0
+    },
+    {
+      "repo": "firefly-iii/firefly-iii",
+      "group": "registry",
+      "eligible": 5,
+      "visible": 4,
+      "visible_pct": 80.0,
+      "package": 2,
+      "software": 3,
+      "other": 0
+    },
+    {
+      "repo": "go-gitea/gitea",
+      "group": "registry",
+      "eligible": 114,
+      "visible": 73,
+      "visible_pct": 64.0,
+      "package": 99,
+      "software": 15,
+      "other": 0
+    },
+    {
+      "repo": "goauthentik/authentik",
+      "group": "no_registry",
+      "eligible": 47,
+      "visible": 7,
+      "visible_pct": 14.9,
+      "package": 1,
+      "software": 46,
+      "other": 0
+    },
+    {
+      "repo": "goharbor/harbor",
+      "group": "no_registry",
+      "eligible": 28,
+      "visible": 16,
+      "visible_pct": 57.1,
+      "package": 8,
+      "software": 20,
+      "other": 0
+    },
+    {
+      "repo": "grafana/grafana",
+      "group": "no_registry",
+      "eligible": 28,
+      "visible": 21,
+      "visible_pct": 75.0,
+      "package": 2,
+      "software": 26,
+      "other": 0
+    },
+    {
+      "repo": "grokability/snipe-it",
+      "group": "registry",
+      "eligible": 85,
+      "visible": 39,
+      "visible_pct": 45.9,
+      "package": 14,
+      "software": 71,
+      "other": 0
+    },
+    {
+      "repo": "jellyfin/jellyfin",
+      "group": "no_registry",
+      "eligible": 23,
+      "visible": 1,
+      "visible_pct": 4.3,
+      "package": 0,
+      "software": 23,
+      "other": 0
+    },
+    {
+      "repo": "keycloak/keycloak",
+      "group": "no_registry",
+      "eligible": 83,
+      "visible": 68,
+      "visible_pct": 81.9,
+      "package": 72,
+      "software": 11,
+      "other": 0
+    },
+    {
+      "repo": "louislam/uptime-kuma",
+      "group": "no_registry",
+      "eligible": 18,
+      "visible": 11,
+      "visible_pct": 61.1,
+      "package": 8,
+      "software": 10,
+      "other": 0
+    },
+    {
+      "repo": "mastodon/mastodon",
+      "group": "no_registry",
+      "eligible": 57,
+      "visible": 0,
+      "visible_pct": 0.0,
+      "package": 0,
+      "software": 57,
+      "other": 0
+    },
+    {
+      "repo": "metabase/metabase",
+      "group": "no_registry",
+      "eligible": 44,
+      "visible": 0,
+      "visible_pct": 0.0,
+      "package": 0,
+      "software": 44,
+      "other": 0
+    },
+    {
+      "repo": "netbox-community/netbox",
+      "group": "registry",
+      "eligible": 2,
+      "visible": 0,
+      "visible_pct": 0.0,
+      "package": 0,
+      "software": 2,
+      "other": 0
+    },
+    {
+      "repo": "nocodb/nocodb",
+      "group": "registry",
+      "eligible": 48,
+      "visible": 48,
+      "visible_pct": 100.0,
+      "package": 45,
+      "software": 3,
+      "other": 0
+    },
+    {
+      "repo": "open-webui/open-webui",
+      "group": "registry",
+      "eligible": 165,
+      "visible": 144,
+      "visible_pct": 87.3,
+      "package": 158,
+      "software": 7,
+      "other": 0
+    },
+    {
+      "repo": "outline/outline",
+      "group": "no_registry",
+      "eligible": 26,
+      "visible": 0,
+      "visible_pct": 0.0,
+      "package": 0,
+      "software": 26,
+      "other": 0
+    },
+    {
+      "repo": "requarks/wiki",
+      "group": "no_registry",
+      "eligible": 15,
+      "visible": 0,
+      "visible_pct": 0.0,
+      "package": 2,
+      "software": 13,
+      "other": 0
+    },
+    {
+      "repo": "strapi/strapi",
+      "group": "registry",
+      "eligible": 21,
+      "visible": 21,
+      "visible_pct": 100.0,
+      "package": 21,
+      "software": 0,
+      "other": 0
+    },
+    {
+      "repo": "zulip/zulip",
+      "group": "no_registry",
+      "eligible": 41,
+      "visible": 0,
+      "visible_pct": 0.0,
+      "package": 0,
+      "software": 41,
+      "other": 0
+    }
+  ],
+  "source": {
+    "csv": "attribution_census.csv",
+    "classification_frozen_utc": "2026-10-18",
+    "repos_with_advisories": 26,
+    "n_registry": 11,
+    "n_no_registry": 21
+  }
+}
