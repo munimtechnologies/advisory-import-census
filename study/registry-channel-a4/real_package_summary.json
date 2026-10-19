@@ -1,0 +1,488 @@
+{
+  "measure": {
+    "visibility": "scanner_visible: an OSV record (by GHSA or CVE alias) names a package; its complement is scanner_blind",
+    "real_package": "real: the advisory names an affected package that EXISTS on its registry AND whose registry metadata points back to the advisory's own GitHub repo; not_real: software-only or a named package that is absent / points elsewhere; other: undecidable (unprobed ecosystem or product_type 'other')"
+  },
+  "counts": {
+    "eligible": 1429,
+    "by_real_package": {
+      "real": 252,
+      "not_real": 1077,
+      "other": 100
+    },
+    "by_product_type": {
+      "package": 678,
+      "software": 751,
+      "other": 0
+    },
+    "by_group": {
+      "registry": 620,
+      "no_registry": 809
+    }
+  },
+  "P1_realpkg_to_visibility": {
+    "difference_pct_points": 14.4,
+    "p_two_sided": 0.9835,
+    "permutations": 10000,
+    "seed": 20261017,
+    "repositories_with_both_strata": 8,
+    "real": {
+      "k": 131,
+      "n": 172,
+      "pct": 76.2
+    },
+    "not_real": {
+      "k": 134,
+      "n": 217,
+      "pct": 61.8
+    }
+  },
+  "P2_registry_to_realpkg": {
+    "real_rate": {
+      "registry": {
+        "k": 250,
+        "n": 620,
+        "pct": 40.3,
+        "ci95": [
+          0.3653,
+          0.4423
+        ]
+      },
+      "no_registry": {
+        "k": 2,
+        "n": 809,
+        "pct": 0.2,
+        "ci95": [
+          0.0007,
+          0.009
+        ]
+      }
+    },
+    "permutation": {
+      "difference_pct_points": 40.1,
+      "p_two_sided": 0.0219,
+      "permutations": 10000,
+      "seed": 20261017,
+      "unit": "repository",
+      "repositories": 25
+    }
+  },
+  "P3_mediation": {
+    "support_n": 1329,
+    "total_effect_pct_points": 67.7,
+    "registry_rate": {
+      "k": 454,
+      "n": 619,
+      "pct": 73.3,
+      "rate": 0.7334410339256866
+    },
+    "no_registry_rate": {
+      "k": 40,
+      "n": 710,
+      "pct": 5.6,
+      "rate": 0.056338028169014086
+    },
+    "direct_effect_pct_points": 59.0,
+    "mediated_effect_pct_points": 8.7,
+    "mediated_fraction": 0.128,
+    "strata": [
+      {
+        "stratum": "real",
+        "n": 252,
+        "registry": {
+          "k": 186,
+          "n": 250,
+          "pct": 74.4,
+          "rate": 0.744
+        },
+        "no_registry": {
+          "k": 1,
+          "n": 2,
+          "pct": 50.0,
+          "rate": 0.5
+        },
+        "difference_pct_points": 24.4,
+        "comparison_defined": true
+      },
+      {
+        "stratum": "not_real",
+        "n": 1077,
+        "registry": {
+          "k": 268,
+          "n": 369,
+          "pct": 72.6,
+          "rate": 0.7262872628726287
+        },
+        "no_registry": {
+          "k": 39,
+          "n": 708,
+          "pct": 5.5,
+          "rate": 0.05508474576271186
+        },
+        "difference_pct_points": 67.1,
+        "comparison_defined": true
+      }
+    ]
+  },
+  "P4_residual": {
+    "real_visible": {
+      "k": 187,
+      "n": 252,
+      "pct": 74.2,
+      "ci95": [
+        0.6847,
+        0.7922
+      ]
+    },
+    "not_real_visible": {
+      "k": 307,
+      "n": 1077,
+      "pct": 28.5,
+      "ci95": [
+        0.2589,
+        0.3127
+      ]
+    }
+  },
+  "robustness": {
+    "R1_drop_heaviest_each_group": {
+      "dropped": [
+        "discourse/discourse",
+        "open-webui/open-webui"
+      ],
+      "P2_permutation": {
+        "difference_pct_points": 54.6,
+        "p_two_sided": 0.0047,
+        "permutations": 10000,
+        "seed": 20261017,
+        "unit": "repository",
+        "repositories": 23
+      }
+    },
+    "R2_ecosystem_split": {
+      "composer": {
+        "n": 16,
+        "visible": 6,
+        "visible_pct": 37.5
+      },
+      "docker": {
+        "n": 1,
+        "visible": 0,
+        "visible_pct": 0.0
+      },
+      "go": {
+        "n": 1,
+        "visible": 1,
+        "visible_pct": 100.0
+      },
+      "npm": {
+        "n": 214,
+        "visible": 170,
+        "visible_pct": 79.4
+      },
+      "pip": {
+        "n": 21,
+        "visible": 10,
+        "visible_pct": 47.6
+      }
+    },
+    "R3_realpkg_to_own_id_in_osv": {
+      "difference_pct_points": 14.4,
+      "p_two_sided": 0.9835,
+      "permutations": 10000,
+      "seed": 20261017,
+      "repositories_with_both_strata": 8,
+      "real": {
+        "k": 131,
+        "n": 172,
+        "pct": 76.2
+      },
+      "not_real": {
+        "k": 134,
+        "n": 217,
+        "pct": 61.8
+      }
+    }
+  },
+  "resolution_breakdown": {
+    "absent": {
+      "n": 59,
+      "visible": 22,
+      "visible_pct": 37.3
+    },
+    "no_match": {
+      "n": 267,
+      "visible": 203,
+      "visible_pct": 76.0
+    },
+    "unchecked": {
+      "n": 100,
+      "visible": 67,
+      "visible_pct": 67.0
+    },
+    "yes": {
+      "n": 252,
+      "visible": 187,
+      "visible_pct": 74.2
+    }
+  },
+  "per_repo": [
+    {
+      "repo": "ClickHouse/ClickHouse",
+      "group": "no_registry",
+      "eligible": 7,
+      "visible": 0,
+      "visible_pct": 0.0,
+      "real": 0,
+      "not_real": 7,
+      "other": 0
+    },
+    {
+      "repo": "ToolJet/ToolJet",
+      "group": "no_registry",
+      "eligible": 12,
+      "visible": 0,
+      "visible_pct": 0.0,
+      "real": 0,
+      "not_real": 12,
+      "other": 0
+    },
+    {
+      "repo": "TryGhost/Ghost",
+      "group": "registry",
+      "eligible": 80,
+      "visible": 56,
+      "visible_pct": 70.0,
+      "real": 80,
+      "not_real": 0,
+      "other": 0
+    },
+    {
+      "repo": "appsmithorg/appsmith",
+      "group": "no_registry",
+      "eligible": 41,
+      "visible": 3,
+      "visible_pct": 7.3,
+      "real": 0,
+      "not_real": 16,
+      "other": 25
+    },
+    {
+      "repo": "coollabsio/coolify",
+      "group": "no_registry",
+      "eligible": 70,
+      "visible": 0,
+      "visible_pct": 0.0,
+      "real": 0,
+      "not_real": 70,
+      "other": 0
+    },
+    {
+      "repo": "directus/directus",
+      "group": "registry",
+      "eligible": 78,
+      "visible": 59,
+      "visible_pct": 75.6,
+      "real": 70,
+      "not_real": 8,
+      "other": 0
+    },
+    {
+      "repo": "discourse/discourse",
+      "group": "no_registry",
+      "eligible": 297,
+      "visible": 0,
+      "visible_pct": 0.0,
+      "real": 0,
+      "not_real": 297,
+      "other": 0
+    },
+    {
+      "repo": "element-hq/synapse",
+      "group": "registry",
+      "eligible": 22,
+      "visible": 11,
+      "visible_pct": 50.0,
+      "real": 21,
+      "not_real": 1,
+      "other": 0
+    },
+    {
+      "repo": "firefly-iii/firefly-iii",
+      "group": "registry",
+      "eligible": 5,
+      "visible": 4,
+      "visible_pct": 80.0,
+      "real": 2,
+      "not_real": 3,
+      "other": 0
+    },
+    {
+      "repo": "go-gitea/gitea",
+      "group": "registry",
+      "eligible": 114,
+      "visible": 73,
+      "visible_pct": 64.0,
+      "real": 1,
+      "not_real": 113,
+      "other": 0
+    },
+    {
+      "repo": "goauthentik/authentik",
+      "group": "no_registry",
+      "eligible": 47,
+      "visible": 7,
+      "visible_pct": 14.9,
+      "real": 0,
+      "not_real": 47,
+      "other": 0
+    },
+    {
+      "repo": "goharbor/harbor",
+      "group": "no_registry",
+      "eligible": 28,
+      "visible": 16,
+      "visible_pct": 57.1,
+      "real": 0,
+      "not_real": 28,
+      "other": 0
+    },
+    {
+      "repo": "grokability/snipe-it",
+      "group": "registry",
+      "eligible": 85,
+      "visible": 39,
+      "visible_pct": 45.9,
+      "real": 14,
+      "not_real": 71,
+      "other": 0
+    },
+    {
+      "repo": "jellyfin/jellyfin",
+      "group": "no_registry",
+      "eligible": 23,
+      "visible": 1,
+      "visible_pct": 4.3,
+      "real": 0,
+      "not_real": 23,
+      "other": 0
+    },
+    {
+      "repo": "keycloak/keycloak",
+      "group": "no_registry",
+      "eligible": 83,
+      "visible": 68,
+      "visible_pct": 81.9,
+      "real": 0,
+      "not_real": 11,
+      "other": 72
+    },
+    {
+      "repo": "louislam/uptime-kuma",
+      "group": "no_registry",
+      "eligible": 18,
+      "visible": 11,
+      "visible_pct": 61.1,
+      "real": 2,
+      "not_real": 14,
+      "other": 2
+    },
+    {
+      "repo": "mastodon/mastodon",
+      "group": "no_registry",
+      "eligible": 57,
+      "visible": 0,
+      "visible_pct": 0.0,
+      "real": 0,
+      "not_real": 57,
+      "other": 0
+    },
+    {
+      "repo": "metabase/metabase",
+      "group": "no_registry",
+      "eligible": 44,
+      "visible": 0,
+      "visible_pct": 0.0,
+      "real": 0,
+      "not_real": 44,
+      "other": 0
+    },
+    {
+      "repo": "netbox-community/netbox",
+      "group": "registry",
+      "eligible": 2,
+      "visible": 0,
+      "visible_pct": 0.0,
+      "real": 0,
+      "not_real": 2,
+      "other": 0
+    },
+    {
+      "repo": "nocodb/nocodb",
+      "group": "registry",
+      "eligible": 48,
+      "visible": 48,
+      "visible_pct": 100.0,
+      "real": 42,
+      "not_real": 6,
+      "other": 0
+    },
+    {
+      "repo": "open-webui/open-webui",
+      "group": "registry",
+      "eligible": 165,
+      "visible": 144,
+      "visible_pct": 87.3,
+      "real": 0,
+      "not_real": 164,
+      "other": 1
+    },
+    {
+      "repo": "outline/outline",
+      "group": "no_registry",
+      "eligible": 26,
+      "visible": 0,
+      "visible_pct": 0.0,
+      "real": 0,
+      "not_real": 26,
+      "other": 0
+    },
+    {
+      "repo": "requarks/wiki",
+      "group": "no_registry",
+      "eligible": 15,
+      "visible": 0,
+      "visible_pct": 0.0,
+      "real": 0,
+      "not_real": 15,
+      "other": 0
+    },
+    {
+      "repo": "strapi/strapi",
+      "group": "registry",
+      "eligible": 21,
+      "visible": 21,
+      "visible_pct": 100.0,
+      "real": 20,
+      "not_real": 1,
+      "other": 0
+    },
+    {
+      "repo": "zulip/zulip",
+      "group": "no_registry",
+      "eligible": 41,
+      "visible": 0,
+      "visible_pct": 0.0,
+      "real": 0,
+      "not_real": 41,
+      "other": 0
+    }
+  ],
+  "source": {
+    "csv": "real_package_census.csv",
+    "classification_frozen_utc": "2026-10-18",
+    "repos_with_advisories": 25,
+    "n_registry": 11,
+    "n_no_registry": 21
+  }
+}
