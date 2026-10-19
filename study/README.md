@@ -19,6 +19,7 @@ Apache-2.0 (code) / CC BY 4.0 (text & data).
 | A3 | attribution mechanism | Is the registry effect explained by whether the advisory page *names a package*? | **Partial null**: naming mediates only 36% of the gap (threshold was ≥ 50%); within package-named advisories registry apps stay +31 pts more visible | [`registry-channel-a3/RESULTS.md`](registry-channel-a3/RESULTS.md) |
 | A4 | real-package mechanism | Is it whether the named package is a *real, repo-matching registry release* (read from the registry's own metadata)? | pre-registered 2026-10-19; collector launched; results pending | [`registry-channel-a4/PREREGISTRATION-registry-channel-a4.md`](registry-channel-a4/PREREGISTRATION-registry-channel-a4.md) |
 | A5 | go-module rescue (software stratum) | Among advisories that name *no* package, does the project being a Go module at its repo path predict visibility (reviewers attach `github.com/owner/repo` for free)? | pre-registered 2026-10-19; collector launched; results pending | [`registry-channel-a5/PREREGISTRATION-registry-channel-a5.md`](registry-channel-a5/PREREGISTRATION-registry-channel-a5.md) |
+| A6 | go-module rescue (out of sample) | Does A5's Go-module rescue hold on 30 fresh self-hosted apps with no live non-Go registry release, controlling for advisory age and CVE presence? | pre-registered 2026-10-19 (before A5's result existed); collector launched; results pending | [`registry-channel-a6/PREREGISTRATION-registry-channel-a6.md`](registry-channel-a6/PREREGISTRATION-registry-channel-a6.md) |
 
 ## How to read a study folder
 
