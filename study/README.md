@@ -18,6 +18,7 @@ Apache-2.0 (code) / CC BY 4.0 (text & data).
 | A1 | registry-channel (out of sample) | Does A2 replicate on 32 fresh apps sharing no repo with earlier frames? | **Replicated**: −58.2 pts, p = 0.0017, 26 repos with advisories | [`registry-channel-a1/RESULTS.md`](registry-channel-a1/RESULTS.md) |
 | A3 | attribution mechanism | Is the registry effect explained by whether the advisory page *names a package*? | **Partial null**: naming mediates only 36% of the gap (threshold was ≥ 50%); within package-named advisories registry apps stay +31 pts more visible | [`registry-channel-a3/RESULTS.md`](registry-channel-a3/RESULTS.md) |
 | A4 | real-package mechanism | Is it whether the named package is a *real, repo-matching registry release* (read from the registry's own metadata)? | pre-registered 2026-10-19; collector launched; results pending | [`registry-channel-a4/PREREGISTRATION-registry-channel-a4.md`](registry-channel-a4/PREREGISTRATION-registry-channel-a4.md) |
+| A5 | go-module rescue (software stratum) | Among advisories that name *no* package, does the project being a Go module at its repo path predict visibility (reviewers attach `github.com/owner/repo` for free)? | pre-registered 2026-10-19; collector launched; results pending | [`registry-channel-a5/PREREGISTRATION-registry-channel-a5.md`](registry-channel-a5/PREREGISTRATION-registry-channel-a5.md) |
 
 ## How to read a study folder
 
