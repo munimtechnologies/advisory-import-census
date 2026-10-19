@@ -1,0 +1,36 @@
+{
+  "inputs": {
+    "study/registry-channel-a6/oos_go_rescue_census.csv": {
+      "bytes": 177882,
+      "git_blob_sha1": "89c41a26dd9fb14868f5e4950a0cea19a8bd97cd",
+      "sha256": "7be9d9fdc2742dccfb6e82aee8bb45945360947479b0d7f07efaa54dc2b37544"
+    },
+    "study/registry-channel-a6/oos_go_rescue_repo_probe.csv": {
+      "bytes": 3335,
+      "git_blob_sha1": "2d54ff3d79d7f1c335296c9d2a5820dc0be61dec",
+      "sha256": "001431ed1612cc463669a00f9cac1dee76cb518acfc2f4ca43904793b90df43f"
+    },
+    "study/registry-channel-a5/go_rescue_analysis.py": {
+      "bytes": 10760,
+      "git_blob_sha1": "861051715843702a4214006672122eed3bd09fc9",
+      "sha256": "25a283a901fee507d73912b7aab4e6548b696b45b67cbe0b5c187453f674cb4b"
+    }
+  },
+  "analysis_code": {
+    "gomod_class_analysis.py": {
+      "bytes": 10517,
+      "git_blob_sha1": "5e1ea389ca32db2f533cc0f9e4323d27639455ca",
+      "sha256": "7a46b007c0efc769a338692dca7b9654f209d763b1f9133fd6d01280ecb838cf"
+    },
+    "test_gomod_class.py": {
+      "bytes": 6221,
+      "git_blob_sha1": "a02f49c4d79b875ecd25b3b3d65b8c0defc18523",
+      "sha256": "5777e6999eb9229d5298d8f722f14768fd23ed9d048d279ec8c8eae1cafc3cc0"
+    },
+    "fetch_inputs.py": {
+      "bytes": 3499,
+      "git_blob_sha1": "6d3e042c925e2365d1f74b76862a15c30043f2cb",
+      "sha256": "ee9af93666973ffcd5108123485ffbe4dc36f0d32ef56e43fd43aa6af53e9716"
+    }
+  }
+}

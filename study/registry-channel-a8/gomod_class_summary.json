@@ -1,0 +1,404 @@
+{
+  "study": "registry-channel A8 (go.mod module-path class vs Go repo-path rescue)",
+  "measure": {
+    "unit": "package-less advisory (advisory_product_type == 'software'), visibility = scanner_visible, both verbatim from A6",
+    "classes": "root_match: gomod_match True; non_root: gomod_match False and a module line; no_gomod: gomod_status != 200 (baseline only)"
+  },
+  "repos_by_class": {
+    "root_match": 12,
+    "non_root": 1,
+    "no_gomod": 16,
+    "unparsed_gomod": 0
+  },
+  "package_less_advisories_by_class": {
+    "root_match": 100,
+    "non_root": 2,
+    "no_gomod": 647,
+    "unparsed_gomod": 0
+  },
+  "visible_by_class": {
+    "root_match": {
+      "k": 73,
+      "n": 100,
+      "pct": 73.0,
+      "ci95": [
+        0.6357,
+        0.8073
+      ]
+    },
+    "non_root": {
+      "k": 2,
+      "n": 2,
+      "pct": 100.0,
+      "ci95": [
+        0.3424,
+        1.0
+      ]
+    },
+    "no_gomod": {
+      "k": 9,
+      "n": 647,
+      "pct": 1.4,
+      "ci95": [
+        0.0073,
+        0.0262
+      ]
+    },
+    "unparsed_gomod": {
+      "k": 0,
+      "n": 0,
+      "pct": null,
+      "ci95": null
+    }
+  },
+  "P1_primary": {
+    "difference_pct_points": -27.0,
+    "p_two_sided": 0.2981,
+    "permutation": {
+      "difference_pct_points": -27.0,
+      "p_two_sided": 0.2981,
+      "permutations": 10000,
+      "seed": 20261017,
+      "unit": "repository",
+      "repositories": 10
+    },
+    "threshold": ">= +40.0 pts and p < 0.05"
+  },
+  "P2_non_root_not_rescued": {
+    "visible_pct": 100.0,
+    "threshold": "<= 20%",
+    "holds": false
+  },
+  "P3_no_gomod_baseline": {
+    "visible": {
+      "k": 9,
+      "n": 647,
+      "pct": 1.4,
+      "ci95": [
+        0.0073,
+        0.0262
+      ]
+    },
+    "a6_non_go_baseline_pct": 0.2
+  },
+  "non_root_split": {
+    "visible": {
+      "vanity_domain": {
+        "k": 2,
+        "n": 2,
+        "pct": 100.0,
+        "ci95": [
+          0.3424,
+          1.0
+        ]
+      },
+      "github_nonroot": {
+        "k": 0,
+        "n": 0,
+        "pct": null,
+        "ci95": null
+      }
+    },
+    "repos": {
+      "vanity_domain": [
+        "woodpecker-ci/woodpecker"
+      ],
+      "github_nonroot": []
+    }
+  },
+  "verdict": "CONFOUNDED_INSEPARABLE",
+  "verdict_prose_reading": "INCONCLUSIVE_UNDERPOWERED",
+  "census_repos_not_in_probe": [],
+  "per_repo": [
+    {
+      "repo": "traefik/traefik",
+      "module_class": "root_match",
+      "non_root_kind": "",
+      "gomod_module": "github.com/traefik/traefik/v3",
+      "language": "Go",
+      "package_less_advisories": 6,
+      "visible": 6,
+      "visible_pct": 100.0
+    },
+    {
+      "repo": "portainer/portainer",
+      "module_class": "no_gomod",
+      "non_root_kind": "",
+      "gomod_module": "",
+      "language": "TypeScript",
+      "package_less_advisories": 1,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "photoprism/photoprism",
+      "module_class": "root_match",
+      "non_root_kind": "",
+      "gomod_module": "github.com/photoprism/photoprism",
+      "language": "Go",
+      "package_less_advisories": 0,
+      "visible": 0,
+      "visible_pct": null
+    },
+    {
+      "repo": "navidrome/navidrome",
+      "module_class": "root_match",
+      "non_root_kind": "",
+      "gomod_module": "github.com/navidrome/navidrome",
+      "language": "Go",
+      "package_less_advisories": 6,
+      "visible": 5,
+      "visible_pct": 83.3
+    },
+    {
+      "repo": "zitadel/zitadel",
+      "module_class": "root_match",
+      "non_root_kind": "",
+      "gomod_module": "github.com/zitadel/zitadel",
+      "language": "Go",
+      "package_less_advisories": 74,
+      "visible": 52,
+      "visible_pct": 70.3
+    },
+    {
+      "repo": "1Panel-dev/1Panel",
+      "module_class": "no_gomod",
+      "non_root_kind": "",
+      "gomod_module": "",
+      "language": "Go",
+      "package_less_advisories": 10,
+      "visible": 9,
+      "visible_pct": 90.0
+    },
+    {
+      "repo": "casdoor/casdoor",
+      "module_class": "root_match",
+      "non_root_kind": "",
+      "gomod_module": "github.com/casdoor/casdoor",
+      "language": "Go",
+      "package_less_advisories": 0,
+      "visible": 0,
+      "visible_pct": null
+    },
+    {
+      "repo": "drakkan/sftpgo",
+      "module_class": "root_match",
+      "non_root_kind": "",
+      "gomod_module": "github.com/drakkan/sftpgo/v2",
+      "language": "Go",
+      "package_less_advisories": 1,
+      "visible": 1,
+      "visible_pct": 100.0
+    },
+    {
+      "repo": "authelia/authelia",
+      "module_class": "root_match",
+      "non_root_kind": "",
+      "gomod_module": "github.com/authelia/authelia/v4",
+      "language": "Go",
+      "package_less_advisories": 2,
+      "visible": 2,
+      "visible_pct": 100.0
+    },
+    {
+      "repo": "juanfont/headscale",
+      "module_class": "root_match",
+      "non_root_kind": "",
+      "gomod_module": "github.com/juanfont/headscale",
+      "language": "Go",
+      "package_less_advisories": 0,
+      "visible": 0,
+      "visible_pct": null
+    },
+    {
+      "repo": "AdguardTeam/AdGuardHome",
+      "module_class": "root_match",
+      "non_root_kind": "",
+      "gomod_module": "github.com/AdguardTeam/AdGuardHome",
+      "language": "TypeScript",
+      "package_less_advisories": 1,
+      "visible": 1,
+      "visible_pct": 100.0
+    },
+    {
+      "repo": "owncast/owncast",
+      "module_class": "root_match",
+      "non_root_kind": "",
+      "gomod_module": "github.com/owncast/owncast",
+      "language": "Go",
+      "package_less_advisories": 1,
+      "visible": 1,
+      "visible_pct": 100.0
+    },
+    {
+      "repo": "woodpecker-ci/woodpecker",
+      "module_class": "non_root",
+      "non_root_kind": "vanity_domain",
+      "gomod_module": "go.woodpecker-ci.org/woodpecker/v3",
+      "language": "Go",
+      "package_less_advisories": 2,
+      "visible": 2,
+      "visible_pct": 100.0
+    },
+    {
+      "repo": "argoproj/argo-cd",
+      "module_class": "root_match",
+      "non_root_kind": "",
+      "gomod_module": "github.com/argoproj/argo-cd/v3",
+      "language": "Go",
+      "package_less_advisories": 8,
+      "visible": 4,
+      "visible_pct": 50.0
+    },
+    {
+      "repo": "gravitl/netmaker",
+      "module_class": "root_match",
+      "non_root_kind": "",
+      "gomod_module": "github.com/gravitl/netmaker",
+      "language": "Go",
+      "package_less_advisories": 1,
+      "visible": 1,
+      "visible_pct": 100.0
+    },
+    {
+      "repo": "langgenius/dify",
+      "module_class": "no_gomod",
+      "non_root_kind": "",
+      "gomod_module": "",
+      "language": "Python",
+      "package_less_advisories": 15,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "Mintplex-Labs/anything-llm",
+      "module_class": "no_gomod",
+      "non_root_kind": "",
+      "gomod_module": "",
+      "language": "JavaScript",
+      "package_less_advisories": 19,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "mealie-recipes/mealie",
+      "module_class": "no_gomod",
+      "non_root_kind": "",
+      "gomod_module": "",
+      "language": "Python",
+      "package_less_advisories": 0,
+      "visible": 0,
+      "visible_pct": null
+    },
+    {
+      "repo": "jumpserver/jumpserver",
+      "module_class": "no_gomod",
+      "non_root_kind": "",
+      "gomod_module": "",
+      "language": "Python",
+      "package_less_advisories": 20,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "chatwoot/chatwoot",
+      "module_class": "no_gomod",
+      "non_root_kind": "",
+      "gomod_module": "",
+      "language": "Ruby",
+      "package_less_advisories": 4,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "opf/openproject",
+      "module_class": "no_gomod",
+      "non_root_kind": "",
+      "gomod_module": "",
+      "language": "Ruby",
+      "package_less_advisories": 86,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "zammad/zammad",
+      "module_class": "no_gomod",
+      "non_root_kind": "",
+      "gomod_module": "",
+      "language": "Ruby",
+      "package_less_advisories": 49,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "Cacti/cacti",
+      "module_class": "no_gomod",
+      "non_root_kind": "",
+      "gomod_module": "",
+      "language": "PHP",
+      "package_less_advisories": 58,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "glpi-project/glpi",
+      "module_class": "no_gomod",
+      "non_root_kind": "",
+      "gomod_module": "",
+      "language": "PHP",
+      "package_less_advisories": 190,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "FreshRSS/FreshRSS",
+      "module_class": "no_gomod",
+      "non_root_kind": "",
+      "gomod_module": "",
+      "language": "PHP",
+      "package_less_advisories": 23,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "openemr/openemr",
+      "module_class": "no_gomod",
+      "non_root_kind": "",
+      "gomod_module": "",
+      "language": "PHP",
+      "package_less_advisories": 126,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "NginxProxyManager/nginx-proxy-manager",
+      "module_class": "no_gomod",
+      "non_root_kind": "",
+      "gomod_module": "",
+      "language": "TypeScript",
+      "package_less_advisories": 0,
+      "visible": 0,
+      "visible_pct": null
+    },
+    {
+      "repo": "frappe/frappe",
+      "module_class": "no_gomod",
+      "non_root_kind": "",
+      "gomod_module": "",
+      "language": "Python",
+      "package_less_advisories": 23,
+      "visible": 0,
+      "visible_pct": 0.0
+    },
+    {
+      "repo": "TandoorRecipes/recipes",
+      "module_class": "no_gomod",
+      "non_root_kind": "",
+      "gomod_module": "",
+      "language": "HTML",
+      "package_less_advisories": 23,
+      "visible": 0,
+      "visible_pct": 0.0
+    }
+  ]
+}
