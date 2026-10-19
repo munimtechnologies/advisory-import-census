@@ -21,6 +21,12 @@ headline claim is checked against the linked public pages. Code is Apache-2.0; t
 > Details: [Is the gap special to AI/ML tools?](#is-the-gap-special-to-aiml-tools-no) and
 > [`study/AI-vs-control-import-gap.md`](study/AI-vs-control-import-gap.md).
 
+> **Maintain a self-hosted app?** If you publish security advisories for it, see
+> [**Will scanners see your app's advisories? A maintainer's checklist**](docs/maintainer-checklist.md)
+> — the concrete steps these findings imply (check whether your existing advisories are
+> visible, work out which group your app is in, what to fill in when you file the next one),
+> each step tied to the pre-registered result it rests on. All observational.
+
 ## Why this matters
 
 When a maintainer publishes a GitHub **repository security advisory** (a "GRA", at
