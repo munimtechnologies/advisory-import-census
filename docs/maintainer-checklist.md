@@ -39,7 +39,7 @@ scanners 1 time in 638 ([A6](../study/registry-channel-a6/RESULTS.md)).
 
 | Your app ships as… | What the studies saw | Evidence |
 |---|---|---|
-| A release on an OSV-indexed registry (e.g. npm, PyPI, Packagist, Maven) under a name that matches the project | About 51–58 points *more* visible than apps without one; replicated on a fresh sample | [A2](../study/registry-channel/RESULTS.md), [A1](../study/registry-channel-a1/RESULTS.md) (p = 0.0077, p = 0.0017) |
+| A release on an OSV-indexed registry (e.g. npm, PyPI, Packagist, Maven) under a name that matches the project | About 51–58 points *more* visible than apps without one; replicated on a fresh sample. Still +41.7 points when apps are compared within the same OSV ecosystem, so it is not just OSV covering npm or PyPI better | [A2](../study/registry-channel/RESULTS.md), [A1](../study/registry-channel-a1/RESULTS.md), [E2](../study/registry-channel-e2/RESULTS.md) (p = 0.0077, p = 0.0017, p < 0.0001) |
 | A Go module (`go.mod` at the repository root) | Package-less advisories 74.8% visible (83 of 111), almost always as `Go: github.com/<owner>/<repo>`, attached by GitHub's advisory reviewers | [A6](../study/registry-channel-a6/RESULTS.md) (p = 0.0001) |
 | A Go module with a vanity path (`go.example.org/...`) | Only one app in the sample; both its package-less advisories were visible. Too rare to test | [A8](../study/registry-channel-a8/RESULTS.md) |
 | Docker images, binaries or install scripts only, not Go | Almost always blind: 0 of 190 (GLPI), 0 of 126 (OpenEMR), 0 of 86 (OpenProject), 0 of 49 (Zammad) | [A6](../study/registry-channel-a6/RESULTS.md) |
@@ -101,8 +101,9 @@ The studies found **no free route** for this group today. What the evidence sugg
 from strongest to weakest:
 
 1. Apps that publish a real registry release under a matching name are far more often
-   visible (A1/A2). That is a comparison between apps, not a test of what happens
-   when one app starts publishing, so treat it as likely but unproven.
+   visible (A1/A2, and within the same ecosystem in E2). That is a comparison between
+   apps, not a test of what happens when one app starts publishing, so treat it as
+   likely but unproven.
 2. Tell your users directly. Put a line in your README and install docs pointing to
    your repository's Security → Advisories page and saying that dependency scanners
    will not report these advisories. Mention each fix in your release notes.
@@ -118,11 +119,12 @@ from strongest to weakest:
   (`repo.packagist.org/p2/coollabsio/coolify.json` returns 404) and `frappe` on PyPI is
   still the 0.0.1 placeholder from 2023 whose own description says to install via bench
   or Docker instead.
-- Two follow-ups are still running: whether old blind advisories become visible with
-  time ([L1](../study/registry-channel-l1/PREREGISTRATION-registry-channel-l1.md)) and
-  whether the registry gap survives holding the ecosystem fixed in a pooled sample
-  ([E2](../study/registry-channel-e2/PREREGISTRATION-registry-channel-e2.md)). This page
-  will be updated when they land, whichever way they fall.
+- The pooled ecosystem test has landed: the registry gap survives holding the OSV
+  ecosystem fixed, +41.7 points across 6 ecosystems and 52 apps
+  ([E2](../study/registry-channel-e2/RESULTS.md)). One follow-up is still running:
+  whether old blind advisories become visible with time
+  ([L1](../study/registry-channel-l1/PREREGISTRATION-registry-channel-l1.md)). This page
+  will be updated when it lands, whichever way it falls.
 - No result has been reviewed by a human. Corrections are welcome as issues.
 
 Made with AI agents working for MV2 of Munim, Inc.
