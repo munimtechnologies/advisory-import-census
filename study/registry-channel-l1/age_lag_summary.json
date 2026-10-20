@@ -1,0 +1,182 @@
+{
+  "study": "registry-channel L1 (review lag vs permanent gap)",
+  "measure": {
+    "unit": "advisory; visibility = scanner_class == 'scanner_visible' (A4 verbatim)",
+    "bins": "young 14<=age_days<90, mid 90<=age_days<365, old age_days>=365; age<14 dropped",
+    "statistics": "A5 go_rescue_analysis.py (wilson, share, repository-level permutation_test); within-repo permutation is L1's own code"
+  },
+  "counts": {
+    "advisories": 1429,
+    "no_registry": 809,
+    "registry": 620,
+    "no_registry_young": 98,
+    "no_registry_old": 406,
+    "no_registry_repos_with_both_bins": 10,
+    "registry_repos_with_old": 8,
+    "no_registry_repos_with_old": 14
+  },
+  "P1_primary": {
+    "description": "within no_registry, visible(old) - visible(young); prediction: < +15.0 pts",
+    "difference_pct_points": 22.4,
+    "p_two_sided": 0.0001,
+    "within_repo_permutation": {
+      "difference_pct_points": 22.4,
+      "p_two_sided": 0.0001,
+      "permutations": 10000,
+      "seed": 20261017,
+      "unit": "advisory_within_repo",
+      "repos_both_bins": 10
+    },
+    "underpowered": false,
+    "floor": {
+      "min_advisories_per_bin": 20,
+      "min_repos_both_bins": 3
+    },
+    "threshold": "LAG if d1 >= +15.0 pts and p < 0.05"
+  },
+  "P2_old_bin_gap": {
+    "description": "among old advisories, visible(registry) - visible(no_registry)",
+    "difference_pct_points": 74.1,
+    "p_two_sided": 0.0063,
+    "permutation": {
+      "difference_pct_points": 74.1,
+      "p_two_sided": 0.0063,
+      "permutations": 10000,
+      "seed": 20261017,
+      "unit": "repository",
+      "repositories": 22
+    },
+    "underpowered": false,
+    "threshold": "holds if diff >= +25.0 pts and p < 0.05",
+    "holds": true
+  },
+  "P3_descriptive": {
+    "all_advisories": {
+      "registry": {
+        "young": {
+          "k": 72,
+          "n": 229,
+          "pct": 31.4,
+          "ci95": [
+            0.2578,
+            0.3772
+          ]
+        },
+        "mid": {
+          "k": 299,
+          "n": 304,
+          "pct": 98.4,
+          "ci95": [
+            0.9621,
+            0.993
+          ]
+        },
+        "old": {
+          "k": 84,
+          "n": 87,
+          "pct": 96.6,
+          "ci95": [
+            0.9035,
+            0.9882
+          ]
+        }
+      },
+      "no_registry": {
+        "young": {
+          "k": 0,
+          "n": 98,
+          "pct": 0.0,
+          "ci95": [
+            0.0,
+            0.0377
+          ]
+        },
+        "mid": {
+          "k": 15,
+          "n": 305,
+          "pct": 4.9,
+          "ci95": [
+            0.03,
+            0.0795
+          ]
+        },
+        "old": {
+          "k": 91,
+          "n": 406,
+          "pct": 22.4,
+          "ci95": [
+            0.1863,
+            0.2672
+          ]
+        }
+      }
+    },
+    "package_typed_advisories": {
+      "registry": {
+        "young": {
+          "k": 70,
+          "n": 179,
+          "pct": 39.1,
+          "ci95": [
+            0.3226,
+            0.4641
+          ]
+        },
+        "mid": {
+          "k": 254,
+          "n": 258,
+          "pct": 98.4,
+          "ci95": [
+            0.9608,
+            0.994
+          ]
+        },
+        "old": {
+          "k": 79,
+          "n": 79,
+          "pct": 100.0,
+          "ci95": [
+            0.9536,
+            1.0
+          ]
+        }
+      },
+      "no_registry": {
+        "young": {
+          "k": 0,
+          "n": 31,
+          "pct": 0.0,
+          "ci95": [
+            -0.0,
+            0.1103
+          ]
+        },
+        "mid": {
+          "k": 9,
+          "n": 59,
+          "pct": 15.3,
+          "ci95": [
+            0.0824,
+            0.2652
+          ]
+        },
+        "old": {
+          "k": 67,
+          "n": 72,
+          "pct": 93.1,
+          "ci95": [
+            0.8475,
+            0.97
+          ]
+        }
+      }
+    }
+  },
+  "verdict": "LAG",
+  "load_counts": {
+    "off_frame": 0,
+    "age_missing": 0,
+    "age_below_floor": 0,
+    "kept": 1429
+  }
+}

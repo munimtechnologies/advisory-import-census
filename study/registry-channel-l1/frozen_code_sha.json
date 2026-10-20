@@ -1,0 +1,36 @@
+{
+  "inputs": {
+    "study/registry-channel-a4/real_package_census.csv": {
+      "bytes": 362229,
+      "git_blob_sha1": "4617c2df697f36eeb4c4d4fe8483bbae7119bcfd",
+      "sha256": "cc680a3a75ce0a65106b4e41c7ee5efed437c5278290ad64e4f162cf666d0804"
+    },
+    "study/registry-channel-a4/registry_classification.json": {
+      "bytes": 10033,
+      "git_blob_sha1": "260a9c04dedaa108437c84082346ff72ed7ad635",
+      "sha256": "6f2f559ba9a16fb7fd0f08dd84a7309722ea15c243179b7a57210a2876c59f03"
+    },
+    "study/registry-channel-a5/go_rescue_analysis.py": {
+      "bytes": 10760,
+      "git_blob_sha1": "861051715843702a4214006672122eed3bd09fc9",
+      "sha256": "25a283a901fee507d73912b7aab4e6548b696b45b67cbe0b5c187453f674cb4b"
+    }
+  },
+  "analysis_code": {
+    "age_lag_analysis.py": {
+      "bytes": 14682,
+      "git_blob_sha1": "c55542938cd354013fb654c07c583ac3256b8d2c",
+      "sha256": "7bd68f8d122d600488d3084fab92df7224bde62cca55708bf11534de2f87495a"
+    },
+    "test_age_lag.py": {
+      "bytes": 7726,
+      "git_blob_sha1": "a6293b120c9e5cab695d4cdb61e3cc6ce73e9765",
+      "sha256": "b8fdac3281db8ad2a98bcf27ff8950c5ac887563dd90be3cfe8a78f54a6302e4"
+    },
+    "fetch_inputs.py": {
+      "bytes": 3620,
+      "git_blob_sha1": "3c6e3a3b5c95365f6db5d6f263bbaaf8d5540238",
+      "sha256": "bbb437146e7896d6381f59968f301ac2bdc0a39dcabbbd1f1d9f884ea3a82fa1"
+    }
+  }
+}
