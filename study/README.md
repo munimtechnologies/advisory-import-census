@@ -24,7 +24,7 @@ Apache-2.0 (code) / CC BY 4.0 (text & data).
 | A7 | release-cadence confound | Is the registry effect reducible to a repository-level covariate, release cadence (GitHub releases per year)? | **Survives**: cadence-adjusted direct effect +59.6 pts, p = 0.0017; cadence mediates only 1.1% (below A3's 36% and A4's 12.8%). The confound's premise fails — registry repos release *less* often (40.3/yr vs 44.5/yr), Spearman ρ = −0.068. The registry advantage is large in all 3 cadence tertiles (+50.6 / +58.4 / +75.1 pts) | [`registry-channel-a7/RESULTS.md`](registry-channel-a7/RESULTS.md) |
 | E2 | ecosystem confound (pooled) | Does E1's ecosystem test reach ≥ 3 usable strata when the A1∪A2∪A4 frames are pooled (59 apps)? | **Survives**: 6 usable strata, 52 repos; ecosystem-adjusted difference +41.7 pts, p < 0.0001 (bar was ≥ +25, p < 0.05). Positive in every stratum: no package named 50.0% vs 6.0%, npm 77.7% vs 7.8%, Go 80.7% vs 57.4% (the Go rescue), Packagist 37.5% vs 0%, PyPI 80.4% vs 40.0%. Crude gap +57.0, so ecosystem composition accounts for about a quarter of it (descriptive) | [`registry-channel-e2/RESULTS.md`](registry-channel-e2/RESULTS.md) |
 | A8 | Go module-path class | Within Go apps, is A6's repo-path rescue confined to modules whose `go.mod` path *is* the repo root, and does it fail for vanity / non-root paths (e.g. `filippo.io/...`)? | **Confounded / inseparable**: non-root module paths barely exist among real self-hosted Go apps — 12 of 13 Go-module repos declare `github.com/owner/repo` at the root; the one vanity case (woodpecker, `go.woodpecker-ci.org/...`) has 2 package-less advisories, both visible. Root-match 73.0% (73/100) vs non-root 100% (2/2), −27.0 pts, p = 0.298. The no-`go.mod` class's 1.4% comes entirely from one mis-probed Go app (1Panel); every non-Go app there is 0% | [`registry-channel-a8/RESULTS.md`](registry-channel-a8/RESULTS.md) |
-| L1 | review lag vs permanent gap | Within the same no-registry repos, do older advisories become visible (an import lag that closes with age), or does the blind spot stay (a permanent gap)? | pre-registered 2026-10-19 as a re-analysis of A4's published census (within-repo permutation); analysis code and offline tests committed; job queued; result pending | [`registry-channel-l1/PREREGISTRATION-registry-channel-l1.md`](registry-channel-l1/PREREGISTRATION-registry-channel-l1.md) |
+| L1 | review lag vs permanent gap | Within the same no-registry repos, do older advisories become visible (an import lag that closes with age), or does the blind spot stay (a permanent gap)? | **LAG, but the gap survives**: within no-registry apps, old (≥ 1 yr) advisories are +22.4 pts more visible than young (22.4% vs 0.0%), within-repo permutation p = 0.0001 — so part of the blind spot *is* import lag, falsifying a strict "permanent" reading. The gap does not close, though: among old advisories registry apps are still +74.1 pts more visible (96.6% vs 22.4%), p = 0.0063. The catch-up is concentrated in advisories that name a package (old no-registry package-typed 93.1% visible); no-package / Docker-only apps stay blind at every age | [`registry-channel-l1/RESULTS.md`](registry-channel-l1/RESULTS.md) |
 
 ## What the chain says so far
 
@@ -37,7 +37,10 @@ so the Go rescue covers nearly every Go self-hosted app rather than a fragile su
 and the coolify and frappe cases in E1/A6), nor is the project simply being
 well-run: release cadence does not explain the effect (A7). Nor is it just OSV
 covering some ecosystems better than others: holding the ecosystem fixed, about three
-quarters of the gap remains (E2). Apps in PHP, Ruby, Python
+quarters of the gap remains (E2). Nor is it only recent advisories awaiting import:
+older advisories do catch up where they name a package, but among advisories at least a
+year old a +74-point registry gap remains, and no-package Docker-only apps stay blind at
+every age (L1). Apps in PHP, Ruby, Python
 or JavaScript that ship only as Docker images or install scripts stay almost entirely
 blind.
 
