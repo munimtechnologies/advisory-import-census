@@ -243,7 +243,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: munimtechnologies/advisory-import-census@v0.9.9
+      - uses: munimtechnologies/advisory-import-census@v0.9.24
         with:
           lock: uv.lock          # or package-lock.json, yarn.lock, pnpm-lock.yaml, go.mod, ...
           # requirements: requirements.txt
@@ -285,7 +285,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: munimtechnologies/advisory-import-census@v0.9.9
+      - uses: munimtechnologies/advisory-import-census@v0.9.24
         with:
           lock: package-lock.json
           sarif: blindspot.sarif
