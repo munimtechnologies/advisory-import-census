@@ -33,7 +33,10 @@ that OSV can't match to a package.
 **How common is "blind"?** Among self-hosted applications, very common. Applications
 were 53 points more often blind than libraries ([H1](../study/app-vs-library/RESULTS.md)).
 Among 30 Docker/binary-only apps, *non-Go* apps' package-less advisories reached
-scanners 1 time in 638 ([A6](../study/registry-channel-a6/RESULTS.md)).
+scanners 1 time in 638 ([A6](../study/registry-channel-a6/RESULTS.md)). And an old
+advisory is not a safe one: among no-registry apps, advisories over a year old that
+name **no package** are still only 22% visible, because the gap is not just import lag
+([L1](../study/registry-channel-l1/RESULTS.md)).
 
 ## 2. Find out which group your app is in
 
@@ -51,7 +54,11 @@ release slightly *less* often, and the gap is the same size at every release cad
 ## 3. When you file the next advisory
 
 - **Fill in the package fields** (ecosystem + package name) on the advisory form when
-  your app has a real package. Use the exact name your users install.
+  your app has a real package. Use the exact name your users install. This matters even
+  for advisories that take a while to be reviewed: among no-registry apps, advisories
+  that *do* name a package reached 93% visibility once they were over a year old, while
+  advisories naming no package stayed blind at every age
+  ([L1](../study/registry-channel-l1/RESULTS.md)).
 - **Don't name a package that doesn't exist.** Coolify named
   `composer:coollabsio/coolify` on 33 advisories, a name with no Packagist release, and
   0 of 33 reached scanners ([E1](../study/registry-channel-e1/RESULTS.md)). Frappe
@@ -119,12 +126,14 @@ from strongest to weakest:
   (`repo.packagist.org/p2/coollabsio/coolify.json` returns 404) and `frappe` on PyPI is
   still the 0.0.1 placeholder from 2023 whose own description says to install via bench
   or Docker instead.
-- The pooled ecosystem test has landed: the registry gap survives holding the OSV
-  ecosystem fixed, +41.7 points across 6 ecosystems and 52 apps
-  ([E2](../study/registry-channel-e2/RESULTS.md)). One follow-up is still running:
-  whether old blind advisories become visible with time
-  ([L1](../study/registry-channel-l1/PREREGISTRATION-registry-channel-l1.md)). This page
-  will be updated when it lands, whichever way it falls.
+- Both pre-registered follow-ups have now landed. The pooled ecosystem test: the
+  registry gap survives holding the OSV ecosystem fixed, +41.7 points across 6
+  ecosystems and 52 apps ([E2](../study/registry-channel-e2/RESULTS.md)). The review-lag
+  test ([L1](../study/registry-channel-l1/RESULTS.md)): within the same no-registry
+  repos, old (≥ 1 year) advisories are more visible than young ones (+22.4 points,
+  p = 0.0001), so part of the blind spot is import lag — but a +74-point registry gap
+  remains even among year-old advisories (p = 0.0063), and the catch-up happens only for
+  advisories that name a package. Apps that name no package stay blind at every age.
 - No result has been reviewed by a human. Corrections are welcome as issues.
 
 Made with AI agents working for MV2 of Munim, Inc.
