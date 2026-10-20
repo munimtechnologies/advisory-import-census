@@ -48,8 +48,9 @@ name **no package** are still only 22% visible, because the gap is not just impo
 | Docker images, binaries or install scripts only, not Go | Almost always blind: 0 of 190 (GLPI), 0 of 126 (OpenEMR), 0 of 86 (OpenProject), 0 of 49 (Zammad) | [A6](../study/registry-channel-a6/RESULTS.md) |
 
 Releasing more often does **not** explain the difference: registry apps actually
-release slightly *less* often, and the gap is the same size at every release cadence
-([A7](../study/registry-channel-a7/RESULTS.md)).
+release slightly *less* often (40.3 vs 44.5 releases a year), and the gap is large in
+every release-cadence third, widest among the most frequent releasers (+50.6 / +58.4 /
++75.1 points from least to most frequent) ([A7](../study/registry-channel-a7/RESULTS.md)).
 
 ## 3. When you file the next advisory
 
@@ -125,7 +126,8 @@ from strongest to weakest:
 - Re-checked 2026-10-19: `coollabsio/coolify` is still absent from Packagist
   (`repo.packagist.org/p2/coollabsio/coolify.json` returns 404) and `frappe` on PyPI is
   still the 0.0.1 placeholder from 2023 whose own description says to install via bench
-  or Docker instead.
+  or Docker instead. Re-checked 2026-10-20: all three upstream issues above are still
+  open with no new replies.
 - Both pre-registered follow-ups have now landed. The pooled ecosystem test: the
   registry gap survives holding the OSV ecosystem fixed, +41.7 points across 6
   ecosystems and 52 apps ([E2](../study/registry-channel-e2/RESULTS.md)). The review-lag
