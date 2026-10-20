@@ -1,0 +1,20 @@
+{
+  "ecosystem_adjusted_analysis.py": {
+    "bytes": 21228,
+    "git_blob_sha1": "3c1ee283448fd5bbdd479cedfd432135e5d5ea1f",
+    "sha256": "44650cf1b85f9ffe6e6ab357b1d6daaef35ec6907268c99e2c2f8f78c4532473",
+    "source": "https://raw.githubusercontent.com/munimtechnologies/advisory-import-census/main/study/registry-channel-e1/ecosystem_adjusted_analysis.py"
+  },
+  "real_package_census.py": {
+    "bytes": 28374,
+    "git_blob_sha1": "def387a9a6cc4b93cfe1fd61df3d509e299bb4c1",
+    "sha256": "06edd20664f74d86affb285b6fcb046ac8ee4537b5c62a96aa4e88e4d4172f8b",
+    "source": "https://raw.githubusercontent.com/munimtechnologies/advisory-import-census/main/study/registry-channel-a4/real_package_census.py"
+  },
+  "test_ecosystem_adjusted_analysis.py": {
+    "bytes": 11443,
+    "git_blob_sha1": "2784f015b38a0e0858d2f39b606f325e06148e07",
+    "sha256": "7d6062741a878cfc980e579a06a5ce352d9357eb2481df3e761178ad802f4a46",
+    "source": "https://raw.githubusercontent.com/munimtechnologies/advisory-import-census/main/study/registry-channel-e1/test_ecosystem_adjusted_analysis.py"
+  }
+}

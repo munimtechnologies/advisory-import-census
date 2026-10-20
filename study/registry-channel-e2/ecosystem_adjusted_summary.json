@@ -1,0 +1,366 @@
+{
+  "frame_apps": 52,
+  "eligible_advisories_in_frame": 2338,
+  "included_advisories": 2338,
+  "excluded_other": 0,
+  "product_type_counts": {
+    "package": 1268,
+    "software": 1070
+  },
+  "P1_adjusted": {
+    "adjusted_difference_pts": 41.71,
+    "threshold_pts": 25.0,
+    "permutation_p_two_sided": 0.0,
+    "permutation_p_one_sided": 0.0,
+    "n_permutations": 10000,
+    "seed": 20261017,
+    "usable_strata": [
+      "Go",
+      "Packagist",
+      "PyPI",
+      "none",
+      "npm",
+      "other"
+    ],
+    "usable_strata_count": 6,
+    "distinct_repos_in_usable": [
+      "9001/copyparty",
+      "ClickHouse/ClickHouse",
+      "DIYgod/RSSHub",
+      "LibreChat-AI/LibreChat",
+      "RocketChat/Rocket.Chat",
+      "Stirling-Tools/Stirling-PDF",
+      "ToolJet/ToolJet",
+      "TryGhost/Ghost",
+      "appsmithorg/appsmith",
+      "calcom/cal.diy",
+      "coder/code-server",
+      "coollabsio/coolify",
+      "dani-garcia/vaultwarden",
+      "directus/directus",
+      "discourse/discourse",
+      "element-hq/synapse",
+      "firefly-iii/firefly-iii",
+      "getsentry/sentry",
+      "go-gitea/gitea",
+      "goauthentik/authentik",
+      "gogs/gogs",
+      "goharbor/harbor",
+      "grokability/snipe-it",
+      "hoppscotch/hoppscotch",
+      "huginn/huginn",
+      "immich-app/immich",
+      "jellyfin/jellyfin",
+      "keycloak/keycloak",
+      "laurent22/joplin",
+      "lobehub/lobehub",
+      "louislam/uptime-kuma",
+      "makeplane/plane",
+      "mastodon/mastodon",
+      "metabase/metabase",
+      "n8n-io/n8n",
+      "netbox-community/netbox",
+      "nocodb/nocodb",
+      "open-webui/open-webui",
+      "outline/outline",
+      "paperless-ngx/paperless-ngx",
+      "payloadcms/payload",
+      "penpot/penpot",
+      "pi-hole/pi-hole",
+      "pocketbase/pocketbase",
+      "reactive-resume/reactive-resume",
+      "requarks/wiki",
+      "siyuan-note/siyuan",
+      "strapi/strapi",
+      "syncthing/syncthing",
+      "twentyhq/twenty",
+      "usememos/memos",
+      "zulip/zulip"
+    ],
+    "distinct_repos_in_usable_count": 52,
+    "power_floor": {
+      "min_repos_per_group": 2,
+      "min_usable_strata": 3,
+      "min_total_repos": 6,
+      "underpowered": false
+    },
+    "strata_detail": [
+      {
+        "stratum": "Go",
+        "registry": {
+          "repos": 3,
+          "adv": 166,
+          "visible": 134,
+          "visible_pct": 80.7
+        },
+        "no_registry": {
+          "repos": 2,
+          "adv": 155,
+          "visible": 89,
+          "visible_pct": 57.4
+        },
+        "diff_pts": 23.3,
+        "weight": 80.156
+      },
+      {
+        "stratum": "Packagist",
+        "registry": {
+          "repos": 2,
+          "adv": 16,
+          "visible": 6,
+          "visible_pct": 37.5
+        },
+        "no_registry": {
+          "repos": 2,
+          "adv": 34,
+          "visible": 0,
+          "visible_pct": 0.0
+        },
+        "diff_pts": 37.5,
+        "weight": 10.88
+      },
+      {
+        "stratum": "PyPI",
+        "registry": {
+          "repos": 4,
+          "adv": 204,
+          "visible": 164,
+          "visible_pct": 80.4
+        },
+        "no_registry": {
+          "repos": 3,
+          "adv": 5,
+          "visible": 2,
+          "visible_pct": 40.0
+        },
+        "diff_pts": 40.4,
+        "weight": 4.88
+      },
+      {
+        "stratum": "none",
+        "registry": {
+          "repos": 16,
+          "adv": 146,
+          "visible": 73,
+          "visible_pct": 50.0
+        },
+        "no_registry": {
+          "repos": 29,
+          "adv": 924,
+          "visible": 55,
+          "visible_pct": 6.0
+        },
+        "diff_pts": 44.0,
+        "weight": 126.079
+      },
+      {
+        "stratum": "npm",
+        "registry": {
+          "repos": 10,
+          "adv": 497,
+          "visible": 386,
+          "visible_pct": 77.7
+        },
+        "no_registry": {
+          "repos": 12,
+          "adv": 51,
+          "visible": 4,
+          "visible_pct": 7.8
+        },
+        "diff_pts": 69.8,
+        "weight": 46.254
+      },
+      {
+        "stratum": "other",
+        "registry": {
+          "repos": 3,
+          "adv": 4,
+          "visible": 2,
+          "visible_pct": 50.0
+        },
+        "no_registry": {
+          "repos": 4,
+          "adv": 17,
+          "visible": 5,
+          "visible_pct": 29.4
+        },
+        "diff_pts": 20.6,
+        "weight": 3.238
+      }
+    ],
+    "verdict": "SURVIVES"
+  },
+  "P2_composition": {
+    "well_indexed_set": [
+      "npm",
+      "PyPI",
+      "Go",
+      "RubyGems",
+      "crates.io",
+      "Packagist"
+    ],
+    "n_apps_with_eligible_advisories": 52,
+    "n_registry_apps": 22,
+    "n_no_registry_apps": 30,
+    "mean_well_indexed_share_registry": 0.6344,
+    "mean_well_indexed_share_no_registry": 0.1359,
+    "share_difference": 0.4985,
+    "permutation_p_two_sided": 0.0,
+    "per_group_stratum_table": {
+      "Go": {
+        "registry": {
+          "adv": 166,
+          "repos": 3
+        },
+        "no_registry": {
+          "adv": 155,
+          "repos": 2
+        }
+      },
+      "Maven": {
+        "registry": {
+          "adv": 0,
+          "repos": 0
+        },
+        "no_registry": {
+          "adv": 101,
+          "repos": 3
+        }
+      },
+      "Packagist": {
+        "registry": {
+          "adv": 16,
+          "repos": 2
+        },
+        "no_registry": {
+          "adv": 34,
+          "repos": 2
+        }
+      },
+      "PyPI": {
+        "registry": {
+          "adv": 204,
+          "repos": 4
+        },
+        "no_registry": {
+          "adv": 5,
+          "repos": 3
+        }
+      },
+      "crates.io": {
+        "registry": {
+          "adv": 0,
+          "repos": 0
+        },
+        "no_registry": {
+          "adv": 18,
+          "repos": 1
+        }
+      },
+      "none": {
+        "registry": {
+          "adv": 146,
+          "repos": 16
+        },
+        "no_registry": {
+          "adv": 924,
+          "repos": 29
+        }
+      },
+      "npm": {
+        "registry": {
+          "adv": 497,
+          "repos": 10
+        },
+        "no_registry": {
+          "adv": 51,
+          "repos": 12
+        }
+      },
+      "other": {
+        "registry": {
+          "adv": 4,
+          "repos": 3
+        },
+        "no_registry": {
+          "adv": 17,
+          "repos": 4
+        }
+      }
+    }
+  },
+  "P3_osv_coverage_by_ecosystem": {
+    "Go": {
+      "n": 321,
+      "visible": 223,
+      "visible_pct": 69.5,
+      "ci95": [
+        0.6423,
+        0.7425
+      ]
+    },
+    "Maven": {
+      "n": 101,
+      "visible": 65,
+      "visible_pct": 64.4,
+      "ci95": [
+        0.5465,
+        0.7301
+      ]
+    },
+    "Packagist": {
+      "n": 50,
+      "visible": 6,
+      "visible_pct": 12.0,
+      "ci95": [
+        0.0562,
+        0.2381
+      ]
+    },
+    "PyPI": {
+      "n": 209,
+      "visible": 166,
+      "visible_pct": 79.4,
+      "ci95": [
+        0.7344,
+        0.8435
+      ]
+    },
+    "crates.io": {
+      "n": 18,
+      "visible": 3,
+      "visible_pct": 16.7,
+      "ci95": [
+        0.0584,
+        0.3922
+      ]
+    },
+    "none": {
+      "n": 1070,
+      "visible": 128,
+      "visible_pct": 12.0,
+      "ci95": [
+        0.1015,
+        0.1404
+      ]
+    },
+    "npm": {
+      "n": 548,
+      "visible": 390,
+      "visible_pct": 71.2,
+      "ci95": [
+        0.6724,
+        0.748
+      ]
+    },
+    "other": {
+      "n": 21,
+      "visible": 7,
+      "visible_pct": 33.3,
+      "ci95": [
+        0.1719,
+        0.5463
+      ]
+    }
+  }
+}
