@@ -1,0 +1,18 @@
+{
+  "study": "registry-channel O1 (panel re-check of A4's 1,429 advisories)",
+  "purpose": "Records the git blob shas of the O1 pre-registration, collector, analysis and offline tests as committed BEFORE the second snapshot (T2, not before 2026-11-16 00:00 UTC). Any later change to these files shows up as a sha mismatch.",
+  "recorded_at_utc": "2026-10-22T04:50:00Z",
+  "repo": "munimtechnologies/advisory-import-census",
+  "code_commit": "7bacac11f1c1485af93beae67a21ff7d7c77ee9a",
+  "code_commit_date_utc": "2026-10-22T02:32:17Z",
+  "prereg_commit": "01a9a469221c0d25960374e1565e1e398f7c4682",
+  "prereg_commit_date_utc": "2026-10-22T00:28:44Z",
+  "blobs": {
+    "study/registry-channel-o1/PREREGISTRATION-registry-channel-o1.md": {"sha": "c620a888f3a1a0ef1a12394b927467af4988cc83", "size": 8470},
+    "study/registry-channel-o1/panel_recheck.py": {"sha": "b8fd6414207ea1460870cde0a77287bb5417e1c5", "size": 21905},
+    "study/registry-channel-o1/panel_analysis.py": {"sha": "db5ab4d1405dbb52d598b78a552893917b726167", "size": 14782},
+    "study/registry-channel-o1/test_panel.py": {"sha": "d7749ad85cdc111b48731f0c740a8730b76f6d82", "size": 13147}
+  },
+  "source": "GitHub contents API at ref 7bacac11 (git blob sha = sha1(\"blob <len>\\0\" + bytes)); check with `git hash-object <file>`.",
+  "note": "Made with AI agents working for MV2 of Munim, Inc. No human review. CC BY 4.0."
+}
