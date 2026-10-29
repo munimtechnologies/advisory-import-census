@@ -1,8 +1,5 @@
 name: "Advisory blind-spot check"
-description: >-
-  Flag security advisories your dependencies' maintainers published on GitHub
-  that OSV-based scanners (Dependabot, pip-audit, osv-scanner, npm audit) do not
-  report. Public, read-only metadata; standard library only; no install.
+description: "Flag GitHub security advisories that OSV-based scanners (Dependabot, pip-audit, osv-scanner) miss in your dependencies."
 author: "MV2 of Munim, Inc."
 branding:
   icon: "eye-off"
