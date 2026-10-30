@@ -118,6 +118,53 @@ from strongest to weakest:
 3. Users can check your repository in CI with blindspot's GitHub Action, which lists
    advisories that OSV can't match.
 
+## 5. If your advisory names a package but is not in the database yet
+
+GitHub's page
+[About repository security advisories](https://docs.github.com/en/code-security/security-advisories/working-with-repository-security-advisories/about-repository-security-advisories)
+says GitHub "will review each published security advisory" and add it to the GitHub
+Advisory Database, and that "This process can take up to 72 hours". Advisories that
+name a package in a supported ecosystem usually do get added, but often later than
+that. Until then, Dependabot, `npm audit`, OSV and the tools built on OSV don't report
+them.
+
+- **Check where it stands.** This prints `404` until the advisory is in the global
+  database:
+
+  ```
+  curl -s -o /dev/null -w "%{http_code}\n" https://api.github.com/advisories/GHSA-xxxx-xxxx-xxxx
+  ```
+
+  Once it is in, that global record's `published_at` is the day GitHub added it, not
+  the day you published it on your repository. Compare the two dates to see how long
+  review took.
+- **What the wait looks like (all checked 2026-10-30).** go-jose published
+  GHSA-mgcc-cww5-fp2q (Go) on its repository on 2026-10-14, and it entered the global
+  database on 2026-10-27, 13 days later. GHSA-vvm8-gf78-28g4 from the same project
+  took 9 days (2026-10-19 to 2026-10-28). GHSA-44f3-xgp9-pvp2 (npm `hackmyagent`),
+  published on its repository on 2026-08-09, still returned 404. Across 2,486
+  repository advisories from 45 projects published in 2026, Safeguard measured a
+  median of 5.4 days for those that arrived, and found 30.7% not in the database or
+  OSV at all on 2026-10-18
+  ([report](https://safeguard.sh/resources/blog/github-repository-advisories-missing-from-advisory-database-2026-data)).
+- **Rule out your own side first.** The ecosystem and package name must match what
+  your users install (section 3). If your repository is a fork, the same GitHub page
+  says Dependabot alerts are sent only when the fork has its own uniquely named
+  package on a public registry.
+- **Where to ask.** The place is the
+  [github/advisory-database issue tracker](https://github.com/github/advisory-database/issues).
+  Search it for your GHSA ID before opening an issue. Expect to wait there too: on
+  2026-10-30,
+  [#10342](https://github.com/github/advisory-database/issues/10342) (opened
+  2026-10-13, eight advisories),
+  [#10688](https://github.com/github/advisory-database/issues/10688) and
+  [#10746](https://github.com/github/advisory-database/issues/10746) (21 advisories)
+  had no replies, and the go-jose reporter closed
+  [#10687](https://github.com/github/advisory-database/issues/10687) themselves once
+  the advisory appeared.
+- **Meanwhile, tell your users directly** (section 4, step 2): a line in the release
+  notes reaches them while scanners are still silent.
+
 ## What this checklist doesn't know
 
 - Every number comes from public GitHub advisory pages and the OSV API at the time of
@@ -126,8 +173,11 @@ from strongest to weakest:
 - Re-checked 2026-10-19: `coollabsio/coolify` is still absent from Packagist
   (`repo.packagist.org/p2/coollabsio/coolify.json` returns 404) and `frappe` on PyPI is
   still the 0.0.1 placeholder from 2023 whose own description says to install via bench
-  or Docker instead. Re-checked 2026-10-20: all three upstream issues above are still
-  open with no new replies.
+  or Docker instead. Re-checked 2026-10-20 and again 2026-10-30: all three upstream
+  issues in section 4 are still open, with no new reply from GitHub staff.
+- Section 5's examples are single advisories, picked because their maintainers or
+  users asked about them in public. They show that long waits happen, not how often.
+  For rates, see Safeguard's report.
 - Both pre-registered follow-ups have now landed. The pooled ecosystem test: the
   registry gap survives holding the OSV ecosystem fixed, +41.7 points across 6
   ecosystems and 52 apps ([E2](../study/registry-channel-e2/RESULTS.md)). The review-lag
