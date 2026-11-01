@@ -1,0 +1,163 @@
+{
+ "db_commit": "8c754a94a2b53a40596f738abc8bf9c075923320",
+ "db_commit_date": "2026-11-01T15:35:41Z",
+ "seed": 20261103,
+ "cve_release": "cve_2026-11-01_1700Z",
+ "cve_asset": "2026-11-01_all_CVEs_at_midnight.zip.zip",
+ "cve_read_at": "2026-11-01T18:14:59Z",
+ "verdicts": {
+  "P1": {
+   "value": 54,
+   "held": "yes",
+   "claim": ">= 20 live reviewed GHSAs hold at least one CVE alias whose CVE record is REJECTED"
+  },
+  "P2": {
+   "value": [
+    54,
+    54,
+    100.0
+   ],
+   "held": "yes",
+   "claim": ">= 50% of those GHSAs hold no PUBLISHED CVE alias at all"
+  },
+  "P3": {
+   "value": [
+    14,
+    54,
+    25.9
+   ],
+   "held": "no",
+   "claim": ">= 40% of those GHSAs have a found replacement: a PUBLISHED CVE named in the rejection reason or held by a linking 2025-26 unreviewed GHSA and citing the reviewed GHSA"
+  },
+  "P4": {
+   "value": [
+    18,
+    54,
+    33.3
+   ],
+   "held": "no",
+   "claim": ">= 60% of the distinct REJECTED aliases were assigned by GitHub_M or VulnCheck"
+  },
+  "P5": {
+   "value": [
+    5,
+    15,
+    33.3
+   ],
+   "held": "no",
+   "claim": ">= 70% of distinct replacement CVEs are held only by unreviewed GHSAs that list no package"
+  },
+  "P6": {
+   "value": null,
+   "held": "graded by hand after the run",
+   "claim": ">= 80% of the seeded grading sample: the replacement CVE describes the same flaw as the reviewed GHSA (graded by hand from grading_sample.csv before results are opened)"
+  }
+ },
+ "descriptive": {
+  "live_reviewed": 36244,
+  "live_unreviewed_loaded": 122272,
+  "reviewed_with_cve": 32550,
+  "alias_states": {
+   "MISSING": 143,
+   "PUBLISHED": 32353,
+   "REJECTED": 54
+  },
+  "rows": 54,
+  "reason_classes": {
+   "unspecified": 18,
+   "other": 14,
+   "duplicate": 11,
+   "not_vuln": 9,
+   "error": 2
+  },
+  "rejected_assigners": {
+   "@huntr_ai": 13,
+   "GitHub_M": 9,
+   "VulnCheck": 9,
+   "mitre": 8,
+   "redhat": 4,
+   "VulDB": 3,
+   "apache": 3,
+   "@huntrdev": 2,
+   "Checkmarx": 1,
+   "Liferay": 1,
+   "hackerone": 1
+  },
+  "untouched_since_rejection": 41,
+  "rows_by_reviewed_year": {
+   "2021": 2,
+   "2022": 7,
+   "2023": 3,
+   "2024": 7,
+   "2025": 17,
+   "2026": 18
+  },
+  "replacement_pairs": 15,
+  "replacement_via": {
+   "reason": 11,
+   "cites": 4
+  },
+  "replacement_held_by_reviewed": 9,
+  "replacement_held_by_none": 1,
+  "mismatch_aliases": 89,
+  "missing_aliases": 143
+ },
+ "sample": [
+  [
+   "GHSA-2j32-q6rx-h844",
+   "CVE-2026-110904"
+  ],
+  [
+   "GHSA-34rf-p3r3-58x2",
+   "CVE-2024-1561"
+  ],
+  [
+   "GHSA-rhm7-7469-rcpw",
+   "CVE-2024-43369"
+  ],
+  [
+   "GHSA-r54r-wmmq-mh84",
+   "CVE-2026-27670"
+  ],
+  [
+   "GHSA-79jw-6wg7-r9g4",
+   "CVE-2021-28860"
+  ],
+  [
+   "GHSA-p7v4-gm6j-cw9m",
+   "CVE-2020-35128"
+  ],
+  [
+   "GHSA-273h-m46v-96q4",
+   "CVE-2026-56367"
+  ],
+  [
+   "GHSA-8h5w-f6q9-wg35",
+   "CVE-2023-36189"
+  ],
+  [
+   "GHSA-h8hf-x3f4-xwgp",
+   "CVE-2022-2564"
+  ],
+  [
+   "GHSA-gf47-qgg5-9g9q",
+   "CVE-2026-66053"
+  ],
+  [
+   "GHSA-h3m5-97jq-qjrf",
+   "CVE-2026-56784"
+  ],
+  [
+   "GHSA-p3j6-f45h-hw5f",
+   "CVE-2024-33434"
+  ],
+  [
+   "GHSA-wr6m-jg37-68xh",
+   "CVE-2026-28461"
+  ],
+  [
+   "GHSA-f7jh-m6wp-jm7f",
+   "CVE-2024-10234"
+  ]
+ ]
+}
