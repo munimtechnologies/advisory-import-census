@@ -7,6 +7,7 @@ Each row is a reviewed GHSA plus an unreviewed "twin" GHSA that lists no package
 same vulnerability**. These were graded SAME by hand from the two advisory texts, in a seeded sample of 40 of 71 twins.
 In every row below the twin's CVE record cites the reviewed advisory. The Ghost invite-token pair was also verified by
 reading both CVE records in full. The other 31 twins in the study are not graded, so this is not a complete list.
+(Update, later on 2026-11-01: those 31 have now been graded too, as exploratory work. See the section after the table.)
 
 | Project | Reviewed GHSA | Its CVE (assigner, published) | Twin GHSA | Other CVE (assigner, published) |
 |---|---|---|---|---|
@@ -43,6 +44,35 @@ flaw should end with one rejected as a duplicate. Which one is up to the CNAs in
 
 **For maintainers:** if your project is listed, saying in your advisory or release notes which CVE ID you use helps
 people who search by CVE. Your CNA can tell you how to handle the other ID.
+
+## Exploratory addition (S5b, 2026-11-01): the other 31 twins
+
+The 31 twins outside S5's seeded sample were graded by hand on 2026-11-01, after S5 was graded and with the same
+rule: [study/second-cve-s5/grades-s5b.csv](../../study/second-cve-s5/grades-s5b.csv). This is exploratory. Nothing
+was predicted for these rows. **19 SAME, 7 DIFFERENT, 5 UNCLEAR.** Across all 71 twins, that makes 43 SAME
+(24 from the pre-registered sample, 19 from this addition).
+
+Reading the CVE records for some of the 19 found four cases where the **reviewed advisory's own CVE alias is wrong**.
+All records were read from `cveawg.mitre.org/api/cve/` and `api.github.com/advisories` on 2026-11-01:
+
+| Reviewed GHSA (package) | Its CVE alias | What the CVE record says | Live CVE for this flaw (held by) |
+|---|---|---|---|
+| GHSA-h3m5-97jq-qjrf, OpenRemote removeAlarms IDOR, critical (Maven io.openremote:openremote-manager) | CVE-2026-56120 | REJECTED by VulnCheck on 2026-06-23: "a duplicate of CVE-2026-56784" | CVE-2026-56784, VulnCheck, cites GHSA-h3m5 (GHSA-pv42-3qx9-m56g, no package) |
+| GHSA-wr6m-jg37-68xh, OpenClaw Zalo webhook memory growth (npm openclaw) | CVE-2026-32066 | REJECTED by VulnCheck on 2026-03-23, 32 minutes after it was published | CVE-2026-28461, VulnCheck, cites GHSA-wr6m (GHSA-vfw9-h883-6h9x, no package) |
+| GHSA-r54r-wmmq-mh84, OpenClaw ZIP extraction race (npm openclaw) | CVE-2026-28483 | REJECTED by VulnCheck on 2026-03-23, 32 minutes after it was published | CVE-2026-27670, VulnCheck, cites GHSA-r54r (GHSA-2g8c-6qfq-528m, no package) |
+| GHSA-h3x4-hc5v-v2gm, OpenClaw Windows media loaders (npm openclaw) | CVE-2026-34426 | PUBLISHED, but it describes a different flaw: the env-override approval bypass in GHSA-98ch-45wp-ch47. Its reference URL points to GHSA-98ch, with a label that names GHSA-h3x4. GHSA-98ch has no CVE | CVE-2026-34510, VulnCheck, cites GHSA-h3x4 (GHSA-w4h3-gpv2-82qc, no package) |
+
+With the ImageMagick row above, that makes five reviewed advisories where a lookup by the flaw's live CVE finds no
+affected package. Four hold a rejected CVE, and one holds a CVE meant for a different advisory. For n8n we read
+both records, and both are PUBLISHED. We haven't read the reviewed-alias records for the other 14 SAME rows in this
+addition (Grav x4, Ghost x4, Kuma, Traefik HTTP/3, Argo CD, Better Auth, python-utcp, Figma MCP), so we don't claim
+both of their IDs are live. A pre-registered census of
+every reviewed advisory with a rejected CVE alias is study S6:
+[study/rejected-alias-s6/PREREG.md](../../study/rejected-alias-s6/PREREG.md).
+
+Direction in the 19 exploratory SAME rows (dates from the job): the twin's CVE came first in 13, on the same day in 2,
+and later in 4. In one of those 4 (n8n GHSA-g3r5-9h93-4j2c), the reviewed record holds VulnCheck's earlier CVE, while
+GitHub's own later CVE (CVE-2026-71539) sits on the packageless twin.
 
 **To check one row yourself:** `GET https://cveawg.mitre.org/api/cve/{CVE}` for both CVEs (state, assigner,
 datePublished, references), and `GET https://api.github.com/advisories?cve_id={other CVE}`.
