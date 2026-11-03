@@ -1,0 +1,80 @@
+{
+ "db_commit": "b072a7035022e5610bcd8330b419d99e8b8ed915",
+ "db_commit_date": "2026-11-02T12:35:46Z",
+ "read_at": "2026-11-02T15:05:48Z",
+ "advisories_found": 143,
+ "verdicts": {
+  "P1": {
+   "value": [
+    138,
+    143,
+    96.5
+   ],
+   "held": "yes",
+   "claim": ">= 50% of the distinct IDs whose state was read are RESERVED"
+  },
+  "P2": {
+   "value": [
+    1,
+    143,
+    0.7
+   ],
+   "held": "no",
+   "claim": ">= 10% of the distinct IDs whose state was read are REJECTED"
+  },
+  "P3": {
+   "value": 4,
+   "held": "yes",
+   "claim": ">= 3 distinct IDs are NOT_FOUND (never allocated)"
+  },
+  "P4": {
+   "value": [
+    55,
+    138,
+    39.9
+   ],
+   "held": "no",
+   "claim": ">= 50% of RESERVED IDs sit on a reviewed advisory published at least 180 days before the read date"
+  },
+  "P5": {
+   "value": [
+    0,
+    138,
+    0.0
+   ],
+   "held": "yes",
+   "claim": "GitHub_M owns at most 10% of the RESERVED IDs"
+  },
+  "P6": {
+   "value": null,
+   "held": "graded by hand after the run",
+   "claim": ">= 50% of NOT_FOUND IDs have a typo candidate graded SAME by hand (graded from grading_sample.csv)"
+  }
+ },
+ "descriptive": {
+  "population_rows": 143,
+  "distinct_ids": 143,
+  "states": {
+   "RESERVED": 138,
+   "NOT_FOUND": 4,
+   "REJECTED": 1
+  },
+  "owning_cna_by_state": {
+   "RESERVED": {
+    "[REDACTED]": 138
+   },
+   "REJECTED": {
+    "redhat": 1
+   },
+   "NOT_FOUND": {
+    "": 4
+   }
+  },
+  "rejected_with_record": 0,
+  "rejected_only_alias": 1,
+  "published_after_snapshot": 0,
+  "not_on_live_advisory_now": 0,
+  "not_found_with_candidate": 0,
+  "candidate_pairs": 0
+ }
+}

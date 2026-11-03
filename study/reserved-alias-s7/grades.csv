@@ -1,0 +1,5 @@
+cve,reviewed,package,candidate,grade,note
+CVE-2016-1000249,GHSA-2r7f-4h2c-5x73,npm fury-adapter-swagger,,NO_CANDIDATE,advisory text and references mention no other CVE ID
+CVE-2016-1000253,GHSA-g48f-pgwh-wwxx,composer onelogin/php-saml,,NO_CANDIDATE,only other occurrence is the FriendsOfPHP file name CVE-2016-1000253.yaml (same ID)
+CVE-2016-1000273,GHSA-cqhr-jqvc-qw9p,maven net.bull.javamelody:javamelody-core,,NO_CANDIDATE,advisory text and references mention no other CVE ID
+CVE-2016-1000305,GHSA-g65v-27r3-5p6m,rubygems guard-livereload,,NO_CANDIDATE,only other occurrence is the rubysec file name CVE-2016-1000305.yml (same ID)
