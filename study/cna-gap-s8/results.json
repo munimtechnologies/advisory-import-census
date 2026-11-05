@@ -1,0 +1,186 @@
+{
+ "db_commit": "d1287b4afbb2162e934ca802152807fbed394acf",
+ "db_commit_date": "2026-11-05T09:36:51Z",
+ "read_at": "2026-11-05T10:39:23Z",
+ "nvd_total": 22758,
+ "nvd_fetched": 22758,
+ "nvd_pages_failed": 0,
+ "global_advisories_indexed": 161406,
+ "window": [
+  "2025-01-01",
+  "2026-09-30"
+ ],
+ "seed": 20261104,
+ "verdicts": {
+  "P1": {
+   "value": [
+    6064,
+    13769,
+    44.0
+   ],
+   "held": "no",
+   "claim": "5% <= share of population CVEs with no live global advisory (NONE or WITHDRAWN_ONLY) <= 30%"
+  },
+  "P2": {
+   "value": [
+    6,
+    7705,
+    0.1
+   ],
+   "held": "yes",
+   "claim": "<= 3% of covered population CVEs are covered only by an unreviewed advisory"
+  },
+  "P3": {
+   "value": [
+    5913,
+    6064,
+    97.5
+   ],
+   "held": "yes",
+   "claim": ">= 90% of uncovered CVEs are REPO_ONLY (cited repository advisory absent from the global database)"
+  },
+  "P4": {
+   "value": {
+    "2025": [
+     1449,
+     2867,
+     50.5
+    ],
+    "2026": [
+     4615,
+     10902,
+     42.3
+    ]
+   },
+   "held": "no",
+   "claim": "uncovered share for CVEs published 2026-01-01..2026-09-30 is higher than for 2025"
+  },
+  "P5": {
+   "value": [
+    20,
+    20,
+    100.0
+   ],
+   "held": "yes",
+   "claim": ">= 18 of the 20 sampled uncovered CVEs return [] from GET /advisories?cve_id= (errors excluded)"
+  },
+  "P6": {
+   "value": [
+    16,
+    20,
+    80.0
+   ],
+   "held": "yes",
+   "claim": ">= 14 of the 20 sampled uncovered CVEs cite a repository advisory with no package in a supported registry (errors excluded; scaled to the CVEs read)"
+  }
+ },
+ "descriptive": {
+  "nvd_records": 22758,
+  "population": 13769,
+  "coverage": {
+   "REVIEWED": 7699,
+   "NONE": 6061,
+   "UNREVIEWED_ONLY": 6,
+   "WITHDRAWN_ONLY": 3
+  },
+  "uncovered_kind": {
+   "REPO_ONLY": 5913,
+   "GLOBAL_WITHOUT_ALIAS": 78,
+   "NO_REPO_ADVISORY_REF": 73
+  },
+  "ref_global_state_of_uncovered": {
+   "NOT_GLOBAL": 5913,
+   "REVIEWED": 75,
+   "(no ref)": 73,
+   "REVIEWED_WITHDRAWN": 3
+  },
+  "uncovered_by_month": {
+   "2025-01": 107,
+   "2025-02": 96,
+   "2025-03": 103,
+   "2025-04": 82,
+   "2025-05": 124,
+   "2025-06": 98,
+   "2025-07": 162,
+   "2025-08": 120,
+   "2025-09": 109,
+   "2025-10": 142,
+   "2025-11": 141,
+   "2025-12": 165,
+   "2026-01": 330,
+   "2026-02": 397,
+   "2026-03": 649,
+   "2026-04": 530,
+   "2026-05": 478,
+   "2026-06": 492,
+   "2026-07": 452,
+   "2026-08": 643,
+   "2026-09": 644
+  },
+  "population_by_month": {
+   "2025-01": 216,
+   "2025-02": 168,
+   "2025-03": 206,
+   "2025-04": 198,
+   "2025-05": 230,
+   "2025-06": 208,
+   "2025-07": 272,
+   "2025-08": 242,
+   "2025-09": 246,
+   "2025-10": 272,
+   "2025-11": 275,
+   "2025-12": 334,
+   "2026-01": 639,
+   "2026-02": 880,
+   "2026-03": 1559,
+   "2026-04": 1236,
+   "2026-05": 1307,
+   "2026-06": 1169,
+   "2026-07": 1305,
+   "2026-08": 1364,
+   "2026-09": 1443
+  },
+  "top_repos_uncovered": {
+   "LabRedesCefetRJ/WeGIA": 173,
+   "discourse/discourse": 158,
+   "InternationalColorConsortium/iccDEV": 105,
+   "openemr/openemr": 83,
+   "FreeRDP/FreeRDP": 82,
+   "(no ref)": 73,
+   "freescout-help-desk/freescout": 73,
+   "chamilo/chamilo-lms": 72,
+   "coollabsio/coolify": 69,
+   "rabbitmq/rabbitmq-server": 69,
+   "ChurchCRM/CRM": 68,
+   "OISF/suricata": 67,
+   "dataease/dataease": 61,
+   "Dokploy/dokploy": 57,
+   "vim/vim": 54,
+   "frappe/frappe": 52,
+   "glpi-project/glpi": 52,
+   "wazuh/wazuh": 52,
+   "nextcloud/security-advisories": 51,
+   "opf/openproject": 49,
+   "1Panel-dev/MaxKB": 40,
+   "zammad/zammad": 40,
+   "emlog/emlog": 38,
+   "Combodo/iTop": 37,
+   "FreePBX/security-reporting": 37
+  },
+  "nvd_status_of_uncovered": {
+   "Analyzed": 3410,
+   "Deferred": 2262,
+   "Awaiting Analysis": 210,
+   "Modified": 180,
+   "Undergoing Analysis": 2
+  },
+  "late_window_2026_10": {
+   "population": 1627,
+   "coverage": {
+    "REVIEWED": 841,
+    "NONE": 782,
+    "UNREVIEWED_ONLY": 4
+   }
+  }
+ }
+}
