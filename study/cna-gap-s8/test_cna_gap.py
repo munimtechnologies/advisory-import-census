@@ -1,4 +1,10 @@
-"""Tests for cna_gap.py (study S8). Offline: every HTTP call is faked. Apache-2.0."""
+"""Tests for cna_gap.py (study S8). Offline: every HTTP call is faked. Apache-2.0.
+
+Amendment 1 (2026-11-05): the index fixtures now use real-format CVE IDs (CVE-2026-10010 to -10013). The first job
+(cna-gap-s8-v1) stopped in this test step because the fixtures used 2-digit IDs such as CVE-2026-10, which
+cna_gap.CVE_RE correctly rejects (a CVE ID has at least 4 digits after the year). No data was read; cna_gap.py and
+the predictions are unchanged. See AMENDMENT-1.md.
+"""
 import json
 import os
 import shutil
@@ -11,6 +17,11 @@ G1 = "GHSA-6mc7-6948-w5h4"
 G2 = "GHSA-rj8c-c4p8-3c5h"
 G3 = "GHSA-2r7f-4h2c-5x73"
 G4 = "GHSA-g48f-pgwh-wwxx"
+
+C10 = "CVE-2026-10010"
+C11 = "CVE-2026-10011"
+C12 = "CVE-2026-10012"
+C13 = "CVE-2026-10013"
 
 
 def nvd_cve(cve, published="2026-03-01T10:00:00.000", status="Awaiting Analysis", refs=()):
@@ -77,10 +88,10 @@ class IndexClassifyTests(unittest.TestCase):
         self.tmp = tempfile.mkdtemp()
         rv = os.path.join(self.tmp, "reviewed")
         un = os.path.join(self.tmp, "unreviewed")
-        write_adv(self.tmp, "reviewed", G2, ["CVE-2026-10", "cve-2026-11"])
-        write_adv(self.tmp, "unreviewed", G3, ["CVE-2026-12"])
-        write_adv(self.tmp, "reviewed", G4, ["CVE-2026-13"], withdrawn=True)
-        write_adv(self.tmp, "reviewed", "GHSA-h6r2-r3xv-333f", [])
+        write_adv(self.tmp, "reviewed", G2, [C10, C11.lower()])
+        write_adv(self.tmp, "unreviewed", G3, [C12])
+        write_adv(self.tmp, "reviewed", G4, [C13], withdrawn=True)
+        write_adv(self.tmp, "reviewed", "GHSA-h6r2-r3xv-333f", ["CVE-2026-10", "GO-2026-1", "PYSEC-2026-1"])
         self.by_cve, self.by_ghsa = cg.build_index({"reviewed": rv, "unreviewed": un, "missing": None})
 
     def tearDown(self):
@@ -91,23 +102,28 @@ class IndexClassifyTests(unittest.TestCase):
         return cg.reduce_nvd(nvd_cve(cve, refs=refs))
 
     def test_index(self):
-        self.assertEqual(self.by_cve["CVE-2026-11"], [(G2, "reviewed", False)])
-        self.assertEqual(self.by_ghsa[G4], ("reviewed", True, ["CVE-2026-13"]))
+        self.assertEqual(self.by_cve[C11], [(G2, "reviewed", False)])
+        self.assertEqual(self.by_ghsa[G4], ("reviewed", True, [C13]))
         self.assertIn("GHSA-h6r2-r3xv-333f", self.by_ghsa)
 
+    def test_index_keeps_only_well_formed_cve_aliases(self):
+        # A malformed ID (2 digits after the year) and non-CVE aliases are not CVE aliases.
+        self.assertEqual(self.by_ghsa["GHSA-h6r2-r3xv-333f"], ("reviewed", False, []))
+        self.assertNotIn("CVE-2026-10", self.by_cve)
+
     def test_reviewed(self):
-        row = cg.classify(self.rec("CVE-2026-10", G2), self.by_cve, self.by_ghsa)
+        row = cg.classify(self.rec(C10, G2), self.by_cve, self.by_ghsa)
         self.assertEqual((row["coverage"], row["uncovered_kind"], row["ref_global_state"]),
                          ("REVIEWED", "", "REVIEWED"))
         self.assertFalse(cg.uncovered(row))
 
     def test_unreviewed_only(self):
-        row = cg.classify(self.rec("CVE-2026-12", G1), self.by_cve, self.by_ghsa)
+        row = cg.classify(self.rec(C12, G1), self.by_cve, self.by_ghsa)
         self.assertEqual((row["coverage"], row["ref_global_state"]), ("UNREVIEWED_ONLY", "NOT_GLOBAL"))
         self.assertFalse(cg.uncovered(row))
 
     def test_withdrawn_only(self):
-        row = cg.classify(self.rec("CVE-2026-13", G4), self.by_cve, self.by_ghsa)
+        row = cg.classify(self.rec(C13, G4), self.by_cve, self.by_ghsa)
         self.assertEqual((row["coverage"], row["uncovered_kind"], row["ref_global_state"]),
                          ("WITHDRAWN_ONLY", "GLOBAL_WITHOUT_ALIAS", "REVIEWED_WITHDRAWN"))
         self.assertTrue(cg.uncovered(row))
@@ -117,11 +133,11 @@ class IndexClassifyTests(unittest.TestCase):
         self.assertEqual((row["coverage"], row["uncovered_kind"]), ("NONE", "REPO_ONLY"))
 
     def test_global_without_alias(self):
-        row = cg.classify(self.rec("CVE-2026-99", "GHSA-h6r2-r3xv-333f"), self.by_cve, self.by_ghsa)
+        row = cg.classify(self.rec("CVE-2026-10099", "GHSA-h6r2-r3xv-333f"), self.by_cve, self.by_ghsa)
         self.assertEqual((row["coverage"], row["uncovered_kind"]), ("NONE", "GLOBAL_WITHOUT_ALIAS"))
 
     def test_no_ref(self):
-        row = cg.classify(self.rec("CVE-2026-98"), self.by_cve, self.by_ghsa)
+        row = cg.classify(self.rec("CVE-2026-10098"), self.by_cve, self.by_ghsa)
         self.assertEqual((row["coverage"], row["uncovered_kind"]), ("NONE", "NO_REPO_ADVISORY_REF"))
 
 
@@ -207,9 +223,9 @@ class RunTests(unittest.TestCase):
         tmp = tempfile.mkdtemp()
         try:
             db = os.path.join(tmp, "db")
-            write_adv(os.path.join(db, "advisories"), "github-reviewed", G2, ["CVE-2026-10"])
+            write_adv(os.path.join(db, "advisories"), "github-reviewed", G2, [C10])
             page = {"totalResults": 2, "vulnerabilities": [
-                {"cve": nvd_cve("CVE-2026-10", refs=["https://github.com/o/r/security/advisories/" + G2])},
+                {"cve": nvd_cve(C10, refs=["https://github.com/o/r/security/advisories/" + G2])},
                 {"cve": nvd_cve("CVE-2026-49481", refs=["https://github.com/o/r/security/advisories/" + G1])}]}
 
             def get(url):
