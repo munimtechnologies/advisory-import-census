@@ -1,0 +1,16 @@
+# S9a: do late GitHub-CNA CVEs reach the reviewed advisory they cite? (job output)
+
+advisory-database 9f58b825cb0cc6baa792ddb37e7c227a5d525395 2026-10-30T15:42:09Z; cves.csv sha256 4088acc78d3211e8a5c3d2f4ddd5a308859d0fa348df02b9da1b69294481ae58; run 2026-11-06T13:11:07Z.
+
+Gate: PASSED {"rows": true, "reviewed": true, "global_without_alias": true, "eligible_missing_in_range": true}
+
+| Prediction | Claim | Value | Held |
+|---|---|---|---|
+| P1 | <= 10% of eligible late CVEs are MISSING | [64, 3685, 1.74] | yes |
+| P2 | >= 30% of eligible late CVEs whose advisory was published 2026-06-18..19 are MISSING | [41, 202, 20.3] | no |
+| P3 | <= 3% of eligible late CVEs whose advisory was published outside 2026-06-01..07-31 are MISSING | [6, 2545, 0.24] | yes |
+| P4 | MISSING rate for lag >= 30 days is higher than for lag 1-29 days | {"lag_ge_30": [25, 666, 3.75], "lag_1_29": [39, 3019, 1.29]} | yes |
+| P5 | late CVEs are between 2% and 20% of eligible CVEs | [3685, 7703, 47.84] | no |
+| P6 | >= 50% of eligible late CVEs that ARE listed sit in an advisory whose 'modified' date is on or after the CVE's NVD published date | [2644, 3621, 73.02] | yes |
+
+Descriptive: {"population_rows": 13769, "coverage_reviewed": 7699, "global_without_alias": 78, "status": {"LISTS_THIS": 7660, "LISTS_THIS_AND_OTHERS": 0, "LISTS_NONE": 65, "LISTS_NONE_HELD_ELSEWHERE": 5, "LISTS_OTHER": 37, "REF_WITHDRAWN": 3, "REF_NOT_REVIEWED": 5921, "NO_REF": 78}, "eligible": 7703, "eligible_missing": 65, "late": 3685, "late_missing": 64, "not_late": [1, 4018, 0.02], "late_by_adv_month_missing_of_n": {"2019-09": [0, 1], "2023-02": [0, 1], "2023-10": [0, 1], "2024-08": [0, 1], "2025-01": [0, 1], "2025-02": [0, 1], "2025-03": [0, 4], "2025-04": [0, 26], "2025-05": [0, 20], "2025-06": [1, 24], "2025-07": [0, 26], "2025-08": [1, 36], "2025-09": [0, 32], "2025-10": [0, 8], "2025-11": [1, 53], "2025-12": [0, 45], "2026-01": [0, 86], "2026-02": [1, 177], "2026-03": [0, 496], "2026-04": [2, 497], "2026-05": [0, 906], "2026-06": [47, 717], "2026-07": [11, 423], "2026-08": [0, 78], "2026-09": [0, 25]}, "late_by_lag_days": {"1-6": [11, 1799, 0.61], "7-29": [28, 1220, 2.3], "30-89": [23, 636, 3.62], "90+": [2, 30, 6.67]}}
