@@ -1,0 +1,35 @@
+{
+ "meta": {
+  "db_commit": "9f58b825cb0cc6baa792ddb37e7c227a5d525395",
+  "read_at": "2026-11-05T20:53:39Z",
+  "reviewed_files_indexed": 37428
+ },
+ "summary": {
+  "rows": 78,
+  "cveawg_errors": 0,
+  "kinds": {
+   "MISSING_ALIAS": 65,
+   "HOLDS_OTHER_CVE": 10,
+   "WITHDRAWN_ADVISORY": 3,
+   "ADVISORY_NOT_FOUND": 0
+  },
+  "candidates": 65,
+  "missing_alias_cve_after_advisory": 63,
+  "missing_alias_days_median": 19,
+  "missing_alias_title_matches": 33,
+  "missing_alias_ecosystems": {
+   "npm": 22,
+   "PyPI": 16,
+   "RubyGems": 12,
+   "Go": 10,
+   "Packagist": 2,
+   "GitHub Actions": 1,
+   "Maven": 1,
+   "crates.io": 1
+  },
+  "bundled_ghsas": [
+   "GHSA-5f42-97gr-vfhq",
+   "GHSA-j8px-rmrx-76h9"
+  ]
+ }
+}
