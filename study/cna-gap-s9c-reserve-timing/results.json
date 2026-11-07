@@ -1,0 +1,461 @@
+{
+ "meta": {
+  "input": "https://raw.githubusercontent.com/munimtechnologies/advisory-import-census/main/study/cna-gap-s9a/rows.csv",
+  "input_sha256": "897fb04c44b650d991d61691eec5b70ed1bfef9ea36b5ef8069f2fc2d56f8117",
+  "amendment": 1,
+  "run_at": "2026-11-07T00:45:14Z"
+ },
+ "gate": {
+  "passed": true,
+  "checks": {
+   "rows": true,
+   "late": true,
+   "late_missing": true,
+   "fetch": true,
+   "known": true,
+   "input_sha256": true
+  }
+ },
+ "predictions": [
+  {
+   "id": "Q1",
+   "claim": ">= 80% of eligible late LISTED CVEs were reserved BEFORE review",
+   "value": [
+    3272,
+    3621,
+    90.36
+   ],
+   "held": true
+  },
+  {
+   "id": "Q2",
+   "claim": ">= 50% of eligible late CVEs reserved AFTER review are LISTED (alias added later)",
+   "value": [
+    349,
+    410,
+    85.12
+   ],
+   "held": true
+  },
+  {
+   "id": "Q3",
+   "claim": ">= 60% of eligible late MISSING CVEs were reserved AFTER review",
+   "value": [
+    61,
+    64,
+    95.31
+   ],
+   "held": true
+  },
+  {
+   "id": "Q4",
+   "claim": "among AFTER CVEs, the MISSING rate is higher for advisories published 2026-06-01..07-31 than outside",
+   "value": {
+    "in_window": [
+     57,
+     173,
+     32.95
+    ],
+    "outside": [
+     4,
+     237,
+     1.69
+    ]
+   },
+   "held": true
+  },
+  {
+   "id": "Q5",
+   "claim": ">= 95% of AFTER CVEs that are LISTED sit in an advisory modified on or after dateReserved",
+   "value": [
+    349,
+    349,
+    100.0
+   ],
+   "held": true
+  },
+  {
+   "id": "Q6",
+   "claim": ">= 30% of BEFORE MISSING CVEs name a different GHSA as CNA source.advisory",
+   "value": [
+    1,
+    3,
+    33.33
+   ],
+   "held": true
+  }
+ ],
+ "descriptive": {
+  "population": 3685,
+  "fetch": {
+   "OK": 3685
+  },
+  "timing_by_status": {
+   "BEFORE|LISTED": 3272,
+   "AFTER|LISTED": 349,
+   "BEFORE|MISSING": 3,
+   "AFTER|MISSING": 61
+  },
+  "source_mismatch_by_timing_status": {
+   "BEFORE|MISSING": 1
+  },
+  "after_listed_days_reserved_to_modified": {
+   "n": 349,
+   "median": 8.23,
+   "min": 0.08,
+   "max": 200.64
+  },
+  "by_adv_month": {
+   "2026-06": {
+    "BEFORE": [
+     1,
+     622
+    ],
+    "AFTER": [
+     46,
+     95
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-06": {
+    "BEFORE": [
+     1,
+     24
+    ],
+    "AFTER": [
+     0,
+     0
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-05": {
+    "BEFORE": [
+     0,
+     19
+    ],
+    "AFTER": [
+     0,
+     1
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-04": {
+    "BEFORE": [
+     0,
+     24
+    ],
+    "AFTER": [
+     0,
+     2
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2024-08": {
+    "BEFORE": [
+     0,
+     0
+    ],
+    "AFTER": [
+     0,
+     1
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2026-09": {
+    "BEFORE": [
+     0,
+     25
+    ],
+    "AFTER": [
+     0,
+     0
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-02": {
+    "BEFORE": [
+     0,
+     1
+    ],
+    "AFTER": [
+     0,
+     0
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-01": {
+    "BEFORE": [
+     0,
+     0
+    ],
+    "AFTER": [
+     0,
+     1
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2019-09": {
+    "BEFORE": [
+     0,
+     0
+    ],
+    "AFTER": [
+     0,
+     1
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2023-10": {
+    "BEFORE": [
+     0,
+     0
+    ],
+    "AFTER": [
+     0,
+     1
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2023-02": {
+    "BEFORE": [
+     0,
+     0
+    ],
+    "AFTER": [
+     0,
+     1
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-03": {
+    "BEFORE": [
+     0,
+     1
+    ],
+    "AFTER": [
+     0,
+     3
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-08": {
+    "BEFORE": [
+     0,
+     34
+    ],
+    "AFTER": [
+     1,
+     2
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2026-07": {
+    "BEFORE": [
+     0,
+     345
+    ],
+    "AFTER": [
+     11,
+     78
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-11": {
+    "BEFORE": [
+     1,
+     53
+    ],
+    "AFTER": [
+     0,
+     0
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-07": {
+    "BEFORE": [
+     0,
+     24
+    ],
+    "AFTER": [
+     0,
+     2
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-09": {
+    "BEFORE": [
+     0,
+     29
+    ],
+    "AFTER": [
+     0,
+     3
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2026-01": {
+    "BEFORE": [
+     0,
+     80
+    ],
+    "AFTER": [
+     0,
+     6
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-10": {
+    "BEFORE": [
+     0,
+     6
+    ],
+    "AFTER": [
+     0,
+     2
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2026-03": {
+    "BEFORE": [
+     0,
+     478
+    ],
+    "AFTER": [
+     0,
+     18
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2026-05": {
+    "BEFORE": [
+     0,
+     893
+    ],
+    "AFTER": [
+     0,
+     13
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2026-02": {
+    "BEFORE": [
+     0,
+     168
+    ],
+    "AFTER": [
+     1,
+     9
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-12": {
+    "BEFORE": [
+     0,
+     40
+    ],
+    "AFTER": [
+     0,
+     5
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2026-04": {
+    "BEFORE": [
+     0,
+     331
+    ],
+    "AFTER": [
+     2,
+     166
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2026-08": {
+    "BEFORE": [
+     0,
+     78
+    ],
+    "AFTER": [
+     0,
+     0
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   }
+  }
+ }
+}
