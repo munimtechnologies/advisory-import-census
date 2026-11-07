@@ -1,0 +1,266 @@
+{
+ "db_commit": "b072a7035022e5610bcd8330b419d99e8b8ed915",
+ "db_commit_date": "2026-11-02T12:35:46Z",
+ "read_at": "2026-11-07T03:09:11Z",
+ "nvd_total": 124810,
+ "nvd_fetched": 124810,
+ "nvd_pages_failed": 0,
+ "global_advisories_indexed": 159927,
+ "window": [
+  "2025-01-01",
+  "2026-09-30"
+ ],
+ "seed": 20261106,
+ "verdicts": {
+  "Q1": {
+   "value": [
+    1011,
+    4411,
+    22.9
+   ],
+   "held": "no",
+   "claim": "Arm O: <= 10% of CVEs have no live global advisory (NONE or WITHDRAWN_ONLY)"
+  },
+  "Q2": {
+   "value": {
+    "O": [
+     1011,
+     4411,
+     22.9
+    ],
+    "G": [
+     5992,
+     13691,
+     43.8
+    ]
+   },
+   "held": "no",
+   "claim": "Arm O uncovered share is at least 25 percentage points lower than arm G's (same checkout)"
+  },
+  "Q3": {
+   "value": {
+    "O": [
+     1560,
+     2558,
+     61.0
+    ],
+    "G": [
+     16,
+     5929,
+     0.3
+    ]
+   },
+   "held": "no",
+   "claim": "NOT_GLOBAL stratum (cited repository advisory absent from the global DB): arm O covered share >= 80% AND arm G covered share <= 5%"
+  },
+  "Q4": {
+   "value": {
+    "O": [
+     2127,
+     3400,
+     62.6
+    ],
+    "G": [
+     6,
+     7699,
+     0.1
+    ]
+   },
+   "held": "yes",
+   "claim": "Covered CVEs covered only by an unreviewed advisory: arm O >= 25% AND arm G <= 3%"
+  },
+  "Q5": {
+   "value": [
+    20,
+    20,
+    100.0
+   ],
+   "held": "yes",
+   "claim": ">= 18 of the 20 live lookups agree with the checkout (arm O sample non-empty, arm G sample []); errors excluded, threshold scaled"
+  },
+  "Q6": {
+   "value": {
+    "O": [
+     599,
+     1852,
+     32.3
+    ],
+    "G": [
+     31,
+     7759,
+     0.4
+    ]
+   },
+   "held": "yes",
+   "claim": "Where the cited repository advisory is a live global record: arm O has a second live record for the CVE (DUP) in >= 5% of CVEs, and a higher DUP share than arm G"
+  }
+ },
+ "descriptive": {
+  "nvd_records_by_source_top": {
+   "security-advisories@github.com": 13910,
+   "416baaa9-dc9f-4396-8d5f-8c081fb06d67": 13110,
+   "cna@vuldb.com": 11279,
+   "audit@patchstack.com": 11101,
+   "disclosure@vulncheck.com": 8854,
+   "cve@mitre.org": 8684,
+   "security@wordfence.com": 6704,
+   "secure@microsoft.com": 4207,
+   "secalert_us@oracle.com": 3397,
+   "chrome-cve-admin@google.com": 3143
+  },
+  "arm_sizes": {
+   "O": 4411,
+   "G": 13691
+  },
+  "coverage": {
+   "O": {
+    "UNREVIEWED_ONLY": 2127,
+    "REVIEWED": 1273,
+    "NONE": 1008,
+    "WITHDRAWN_ONLY": 3
+   },
+   "G": {
+    "REVIEWED": 7693,
+    "NONE": 5989,
+    "UNREVIEWED_ONLY": 6,
+    "WITHDRAWN_ONLY": 3
+   }
+  },
+  "ref_global_state": {
+   "O": {
+    "NOT_GLOBAL": 2558,
+    "REVIEWED": 1852,
+    "REVIEWED_WITHDRAWN": 1
+   },
+   "G": {
+    "REVIEWED": 7759,
+    "NOT_GLOBAL": 5929,
+    "REVIEWED_WITHDRAWN": 3
+   }
+  },
+  "ref_holds": {
+   "O": {
+    "(not global)": 2558,
+    "THIS": 1242,
+    "EMPTY": 564,
+    "OTHER": 47
+   },
+   "G": {
+    "THIS": 7655,
+    "(not global)": 5929,
+    "EMPTY": 70,
+    "OTHER": 37
+   }
+  },
+  "arm_O_by_source": {
+   "disclosure@vulncheck.com": {
+    "n": 2758,
+    "uncovered": 132,
+    "unreviewed_only": 1835
+   },
+   "6b3ad84c-e1a6-4bf7-a703-f496b71e49db": {
+    "n": 298,
+    "uncovered": 215,
+    "unreviewed_only": 24
+   },
+   "vulnerabilities@zephyrproject.org": {
+    "n": 165,
+    "uncovered": 164,
+    "unreviewed_only": 1
+   },
+   "cve@mitre.org": {
+    "n": 126,
+    "uncovered": 29,
+    "unreviewed_only": 76
+   },
+   "ff89ba41-3aa1-4d27-914a-91399e9639e5": {
+    "n": 124,
+    "uncovered": 74,
+    "unreviewed_only": 6
+   },
+   "ce714d77-add3-4f53-aff5-83d477b104bb": {
+    "n": 122,
+    "uncovered": 25,
+    "unreviewed_only": 0
+   },
+   "emo@eclipse.org": {
+    "n": 91,
+    "uncovered": 39,
+    "unreviewed_only": 43
+   },
+   "88ee5874-cf24-4952-aea0-31affedb7ff2": {
+    "n": 81,
+    "uncovered": 3,
+    "unreviewed_only": 1
+   },
+   "9119a7d8-5eab-497f-8521-727c672e3725": {
+    "n": 68,
+    "uncovered": 64,
+    "unreviewed_only": 2
+   },
+   "secalert@redhat.com": {
+    "n": 62,
+    "uncovered": 37,
+    "unreviewed_only": 16
+   },
+   "meissner@suse.de": {
+    "n": 58,
+    "uncovered": 26,
+    "unreviewed_only": 0
+   },
+   "cna@vuldb.com": {
+    "n": 55,
+    "uncovered": 2,
+    "unreviewed_only": 45
+   },
+   "security@ubuntu.com": {
+    "n": 53,
+    "uncovered": 28,
+    "unreviewed_only": 0
+   },
+   "9b29abf9-4ab0-4765-b253-1875cd9b441e": {
+    "n": 37,
+    "uncovered": 30,
+    "unreviewed_only": 7
+   },
+   "security@php.net": {
+    "n": 37,
+    "uncovered": 37,
+    "unreviewed_only": 0
+   }
+  },
+  "arm_O_by_year": {
+   "2025": {
+    "n": 292,
+    "uncovered": 112
+   },
+   "2026": {
+    "n": 4119,
+    "uncovered": 899
+   }
+  },
+  "arm_O_unreviewed_lag_days": {
+   "n": 2127,
+   "median": 0,
+   "max": 21,
+   "note": "unreviewed GHSA 'published' minus NVD published, in days"
+  },
+  "top_repos_arm_O_uncovered": {
+   "zephyrproject-rtos/zephyr": 164,
+   "kiteworks/security-advisories": 60,
+   "erlang/otp": 56,
+   "php/php-src": 37,
+   "RsyncProject/rsync": 34,
+   "canonical/lxd": 25,
+   "Cap-go/capgo": 23,
+   "ash-project/ash": 21,
+   "eclipse-threadx/netxduo": 19,
+   "team-alembic/ash_authentication": 18,
+   "NationalSecurityAgency/ghidra": 16,
+   "flatpak/flatpak": 16,
+   "perl5-dbi/dbi": 11,
+   "elixir-mint/mint": 10,
+   "FreeRTOS/FreeRTOS-Plus-TCP": 9
+  }
+ }
+}
