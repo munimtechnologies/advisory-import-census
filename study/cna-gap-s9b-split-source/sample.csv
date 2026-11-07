@@ -1,0 +1,11 @@
+cve,source_ghsa,umbrella_owner,umbrella_repo,page_url,http_status
+CVE-2025-64487,GHSA-x4x3-6c29-946p,outline,outline,https://github.com/outline/outline/security/advisories/GHSA-x4x3-6c29-946p,404
+CVE-2025-68663,GHSA-9hv9-67q3-fjc6,outline,outline,https://github.com/outline/outline/security/advisories/GHSA-9hv9-67q3-fjc6,404
+CVE-2026-25800,GHSA-p2f3-wfhq-fj93,quinn-rs,quinn,https://github.com/quinn-rs/quinn/security/advisories/GHSA-p2f3-wfhq-fj93,404
+CVE-2026-48019,GHSA-fpqx-6722-p65v,laravel,framework,https://github.com/laravel/framework/security/advisories/GHSA-fpqx-6722-p65v,404
+CVE-2026-92284,GHSA-5wr5-c398-ph72,caddyserver,caddy,https://github.com/caddyserver/caddy/security/advisories/GHSA-5wr5-c398-ph72,404
+CVE-2026-92700,GHSA-xvgq-2cgx-86qq,caddyserver,caddy,https://github.com/caddyserver/caddy/security/advisories/GHSA-xvgq-2cgx-86qq,404
+CVE-2026-95844,GHSA-446h-6w49-5x92,moquette-io,moquette,https://github.com/moquette-io/moquette/security/advisories/GHSA-446h-6w49-5x92,404
+CVE-2026-95845,GHSA-f9rr-rg42-xc8x,moquette-io,moquette,https://github.com/moquette-io/moquette/security/advisories/GHSA-f9rr-rg42-xc8x,404
+CVE-2026-95846,GHSA-3rhq-5crp-9w5f,moquette-io,moquette,https://github.com/moquette-io/moquette/security/advisories/GHSA-3rhq-5crp-9w5f,404
+CVE-2026-95847,GHSA-xx3c-pm46-jg78,moquette-io,moquette,https://github.com/moquette-io/moquette/security/advisories/GHSA-xx3c-pm46-jg78,404
