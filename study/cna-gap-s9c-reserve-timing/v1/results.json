@@ -1,0 +1,391 @@
+{
+ "meta": {
+  "input": "https://raw.githubusercontent.com/munimtechnologies/advisory-import-census/main/study/cna-gap-s9a/rows.csv",
+  "input_sha256": "897fb04c44b650d991d61691eec5b70ed1bfef9ea36b5ef8069f2fc2d56f8117",
+  "run_at": "2026-11-06T23:14:03Z"
+ },
+ "gate": {
+  "passed": false,
+  "checks": {
+   "rows": false,
+   "late": true,
+   "late_missing": true,
+   "fetch": true,
+   "known": true
+  }
+ },
+ "predictions": [],
+ "descriptive": {
+  "population": 3685,
+  "fetch": {
+   "OK": 3685
+  },
+  "timing_by_status": {
+   "BEFORE|LISTED": 3272,
+   "AFTER|LISTED": 349,
+   "BEFORE|MISSING": 3,
+   "AFTER|MISSING": 61
+  },
+  "source_mismatch_by_timing_status": {
+   "BEFORE|MISSING": 1
+  },
+  "after_listed_days_reserved_to_modified": {
+   "n": 349,
+   "median": 8.23,
+   "min": 0.08,
+   "max": 200.64
+  },
+  "by_adv_month": {
+   "2026-06": {
+    "BEFORE": [
+     1,
+     622
+    ],
+    "AFTER": [
+     46,
+     95
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-06": {
+    "BEFORE": [
+     1,
+     24
+    ],
+    "AFTER": [
+     0,
+     0
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-05": {
+    "BEFORE": [
+     0,
+     19
+    ],
+    "AFTER": [
+     0,
+     1
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-04": {
+    "BEFORE": [
+     0,
+     24
+    ],
+    "AFTER": [
+     0,
+     2
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2024-08": {
+    "BEFORE": [
+     0,
+     0
+    ],
+    "AFTER": [
+     0,
+     1
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2026-09": {
+    "BEFORE": [
+     0,
+     25
+    ],
+    "AFTER": [
+     0,
+     0
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-02": {
+    "BEFORE": [
+     0,
+     1
+    ],
+    "AFTER": [
+     0,
+     0
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-01": {
+    "BEFORE": [
+     0,
+     0
+    ],
+    "AFTER": [
+     0,
+     1
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2019-09": {
+    "BEFORE": [
+     0,
+     0
+    ],
+    "AFTER": [
+     0,
+     1
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2023-10": {
+    "BEFORE": [
+     0,
+     0
+    ],
+    "AFTER": [
+     0,
+     1
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2023-02": {
+    "BEFORE": [
+     0,
+     0
+    ],
+    "AFTER": [
+     0,
+     1
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-03": {
+    "BEFORE": [
+     0,
+     1
+    ],
+    "AFTER": [
+     0,
+     3
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-08": {
+    "BEFORE": [
+     0,
+     34
+    ],
+    "AFTER": [
+     1,
+     2
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2026-07": {
+    "BEFORE": [
+     0,
+     345
+    ],
+    "AFTER": [
+     11,
+     78
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-11": {
+    "BEFORE": [
+     1,
+     53
+    ],
+    "AFTER": [
+     0,
+     0
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-07": {
+    "BEFORE": [
+     0,
+     24
+    ],
+    "AFTER": [
+     0,
+     2
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-09": {
+    "BEFORE": [
+     0,
+     29
+    ],
+    "AFTER": [
+     0,
+     3
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2026-01": {
+    "BEFORE": [
+     0,
+     80
+    ],
+    "AFTER": [
+     0,
+     6
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-10": {
+    "BEFORE": [
+     0,
+     6
+    ],
+    "AFTER": [
+     0,
+     2
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2026-03": {
+    "BEFORE": [
+     0,
+     478
+    ],
+    "AFTER": [
+     0,
+     18
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2026-05": {
+    "BEFORE": [
+     0,
+     893
+    ],
+    "AFTER": [
+     0,
+     13
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2026-02": {
+    "BEFORE": [
+     0,
+     168
+    ],
+    "AFTER": [
+     1,
+     9
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2025-12": {
+    "BEFORE": [
+     0,
+     40
+    ],
+    "AFTER": [
+     0,
+     5
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2026-04": {
+    "BEFORE": [
+     0,
+     331
+    ],
+    "AFTER": [
+     2,
+     166
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   },
+   "2026-08": {
+    "BEFORE": [
+     0,
+     78
+    ],
+    "AFTER": [
+     0,
+     0
+    ],
+    "UNKNOWN": [
+     0,
+     0
+    ]
+   }
+  }
+ }
+}

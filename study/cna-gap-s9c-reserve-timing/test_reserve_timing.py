@@ -47,6 +47,16 @@ def rows():
     return rt.read_rows_text("\n".join([HEADER] + LINES) + "\n")
 
 
+class TestAmendment(unittest.TestCase):
+    def test_constants(self):
+        # AMENDMENT 1: S9a's published rows.csv has 7,770 rows (v1 read 7,770); the rest of the gate is unchanged.
+        self.assertEqual(rt.EXPECTED_ROWS, 7770)
+        self.assertEqual(rt.EXPECTED_LATE, 3685)
+        self.assertEqual(rt.EXPECTED_LATE_MISSING, 64)
+        self.assertEqual(rt.MIN_FETCH, 0.98)
+        self.assertEqual(len(rt.EXPECTED_SHA256), 64)
+
+
 class TestParse(unittest.TestCase):
     def test_parse_ts(self):
         self.assertEqual(rt.parse_ts("2026-06-24T02:00:46.801Z"), datetime.datetime(2026, 6, 24, 2, 0, 46))

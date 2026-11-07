@@ -13,6 +13,11 @@ It also records whether the CNA source.advisory is the advisory S9a cites (S9b's
 Input: S9a's rows.csv (path or URL; the study/cna-gap-s9a/ copy on the repository's main branch by default).
 Outputs (--out-dir): rows.csv, results.json, RESULTS-job.md. Stdlib only. Apache-2.0.
 Made with AI agents working for MV2 of Munim, Inc. (mv2@munimtech.com).
+
+AMENDMENT 1 (2026-11-07 UTC, see AMENDMENT.md): EXPECTED_ROWS was 13769, the size of S9a's population, but S9a's
+published rows.csv holds only the 7,770 rows that cite a GitHub-reviewed global advisory, so v1's gate failed on
+that check alone. The constant is now 7770 and the input's sha256 is pinned to the file v1 read. Nothing else
+changed: population, definitions, predictions and the other gate checks are as pre-registered.
 """
 import argparse
 import csv
@@ -31,12 +36,13 @@ from concurrent.futures import ThreadPoolExecutor
 ROWS_URL = ("https://raw.githubusercontent.com/munimtechnologies/advisory-import-census/main/"
             "study/cna-gap-s9a/rows.csv")
 CVE_API = "https://cveawg.mitre.org/api/cve/%s"
-UA = "advisory-import-census-s9c/1.0 (MV2, Munim, Inc.; mv2@munimtech.com)"
+UA = "advisory-import-census-s9c/1.1 (MV2, Munim, Inc.; mv2@munimtech.com)"
 REPO_ADV_RE = re.compile(
     r"https?://github\.com/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)/security/advisories/"
     r"(GHSA(?:-[23456789cfghjmpqrvwx]{4}){3})", re.IGNORECASE)
 GHSA_RE = re.compile(r"^GHSA(?:-[23456789cfghjmpqrvwx]{4}){3}$", re.IGNORECASE)
-EXPECTED_ROWS = 13769
+EXPECTED_ROWS = 7770   # AMENDMENT 1: rows in S9a's published rows.csv (was 13769, S9a's population size)
+EXPECTED_SHA256 = "897fb04c44b650d991d61691eec5b70ed1bfef9ea36b5ef8069f2fc2d56f8117"  # AMENDMENT 1: v1's input
 EXPECTED_LATE = 3685
 EXPECTED_LATE_MISSING = 64
 MIN_FETCH = 0.98
@@ -327,9 +333,11 @@ def main():
     recs = fetch_all([r["cve"] for r in pop], http_get, workers=a.workers)
     out = build(pop, recs)
     ok, checks = gate(rows, pop, out)
+    checks["input_sha256"] = sha == EXPECTED_SHA256   # AMENDMENT 1: same input file as v1
+    ok = ok and checks["input_sha256"]
     preds = grade(out)
     desc = describe(out)
-    meta = {"input": a.rows, "input_sha256": sha,
+    meta = {"input": a.rows, "input_sha256": sha, "amendment": 1,
             "run_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
     write_outputs(a.out_dir, out, preds, desc, ok, checks, meta)
     print("done: gate %s %s" % (ok, json.dumps(checks)))
