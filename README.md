@@ -27,6 +27,36 @@ headline claim is checked against the linked public pages. Code is Apache-2.0; t
 > visible, work out which group your app is in, what to fill in when you file the next one),
 > each step tied to the pre-registered result it rests on. All observational.
 
+## "Why is this CVE not in GitHub's Advisory Database?" — agent skill
+
+A published CVE often has no record in GitHub's Advisory Database:
+`GET https://api.github.com/advisories?cve_id=CVE-...` returns `[]`, and Dependabot or a
+GHSA-based scanner stays silent. Later studies in this repository (S8 to S12, under
+[`study/`](study/README.md)) measured why. The agent skill
+[`skills/github-advisory-cve-gap`](skills/github-advisory-cve-gap/SKILL.md) runs those checks
+for one CVE and names the pattern that fits: the advisory exists but lacks the CVE alias
+(`ALIAS_MISSING`), the CVE is tied to a different advisory (`LINKED_TO_OTHER_CVE`), or the
+cited repository advisory was never curated and the timing rule from study S12 says no record
+should be expected (`EXPECTED_GAP`), among others.
+
+```
+# install for a coding agent with the skills CLI (one project, one agent)
+npx skills add munimtechnologies/advisory-import-census --skill github-advisory-cve-gap
+
+# or run the script directly: Python 3.8+, standard library only, no token
+python skills/github-advisory-cve-gap/scripts/cve_gap.py CVE-2026-59194
+python skills/github-advisory-cve-gap/scripts/cve_gap.py CVE-2026-47078 --json
+```
+
+It makes 1 to 9 read-only HTTPS GETs per CVE (api.github.com, cveawg.mitre.org and, only
+when needed, the NVD API). The verdicts are patterns measured in pre-registered studies, not
+statements by GitHub, and the script reads live data, so a record may have changed since a
+study. Offline tests: `python -m unittest -v test_cve_gap_skill`. A wrong verdict is a bug:
+please open an issue with the CVE ID and the script's output.
+
+All studies, their pre-registered predictions and how each was graded are indexed in
+[`study/README.md`](study/README.md).
+
 ## Why this matters
 
 When a maintainer publishes a GitHub **repository security advisory** (a "GRA", at
