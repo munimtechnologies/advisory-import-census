@@ -1,0 +1,205 @@
+{
+ "frame_sha256": "819b43ea612c80725c5aada9055a745346953e5db9e79940624dce550349e323",
+ "frame_sha256_how": "as served",
+ "rows": 18102,
+ "s11_strata": {
+  "OV_COV": 1273,
+  "OV_UNC": 122,
+  "OO_COV": 287,
+  "OO_UNC": 876,
+  "G_UNC": 5913,
+  "G_COV": 16
+ },
+ "pools": {
+  "OO_COV": 211,
+  "OO_UNC": 791
+ },
+ "sampled": {
+  "OO_COV": 211,
+  "OO_UNC": 200
+ },
+ "seed": 20261108,
+ "run_at": "2026-11-08T14:56:46Z",
+ "gate_passed": true,
+ "gate": {
+  "frame_sha256": true,
+  "rows": true,
+  "strata": true,
+  "s11_sample": true,
+  "errors": true,
+  "parse": true,
+  "dates": true,
+  "known": true
+ },
+ "known": [
+  {
+   "ghsa": "GHSA-6g74-8cpq-g2c8",
+   "want": "NO_CVE",
+   "got": "NO_CVE",
+   "want_day": "",
+   "got_time": "2026-05-07T09:59:26Z"
+  },
+  {
+   "ghsa": "GHSA-g9cp-35m2-fjv6",
+   "want": "LISTS_THIS",
+   "got": "LISTS_THIS",
+   "want_day": "",
+   "got_time": "2026-05-07T14:21:04Z"
+  },
+  {
+   "ghsa": "GHSA-hfww-j92m-x8fv",
+   "want": "LISTS_THIS",
+   "got": "LISTS_THIS",
+   "want_day": "",
+   "got_time": "2025-02-03T06:59:59Z"
+  },
+  {
+   "ghsa": "GHSA-p97w-927q-8vxq",
+   "want": "LISTS_THIS",
+   "got": "LISTS_THIS",
+   "want_day": "2026-10-08",
+   "got_time": "2026-10-08T10:19:43Z"
+  },
+  {
+   "ghsa": "GHSA-hvpp-6mp9-frx4",
+   "want": "LISTS_THIS",
+   "got": "LISTS_THIS",
+   "want_day": "2026-03-02",
+   "got_time": "2026-03-02T08:13:31Z"
+  },
+  {
+   "ghsa": "GHSA-9wm4-9m6g-w38x",
+   "want": "LISTS_THIS",
+   "got": "LISTS_THIS",
+   "want_day": "2026-07-09",
+   "got_time": "2026-07-09T09:21:53Z"
+  }
+ ],
+ "cells": {
+  "OO_COV": {
+   "NO_CVE": 74,
+   "LISTS_OTHER": 25,
+   "LT_EARLY": 37,
+   "LT_LATE": 39,
+   "LT_NODATE": 0,
+   "UNPARSED": 0,
+   "GONE": 36,
+   "ERROR": 0
+  },
+  "OO_UNC": {
+   "NO_CVE": 0,
+   "LISTS_OTHER": 0,
+   "LT_EARLY": 200,
+   "LT_LATE": 0,
+   "LT_NODATE": 0,
+   "UNPARSED": 0,
+   "GONE": 0,
+   "ERROR": 0
+  }
+ },
+ "verdicts": {
+  "T1": {
+   "claim": "Lists this CVE and published on or before NVD's day: covered share <= 12%",
+   "value": [
+    44.6,
+    835.6,
+    5.3,
+    237
+   ],
+   "held": "yes"
+  },
+  "T2": {
+   "claim": "Lists this CVE and published after NVD's day: covered share >= 75%",
+   "value": [
+    47.0,
+    47.0,
+    100.0,
+    39
+   ],
+   "held": "yes"
+  },
+  "T3": {
+   "claim": "Says No known CVE: covered share >= 80%",
+   "value": [
+    89.2,
+    89.2,
+    100.0,
+    74
+   ],
+   "held": "yes"
+  },
+  "T4": {
+   "claim": "OO_UNC: <= 5% of dated listing pages were published after NVD's day",
+   "value": [
+    0,
+    200,
+    0.0,
+    200
+   ],
+   "held": "yes"
+  },
+  "T5": {
+   "claim": "OO_COV: >= 40% of dated listing pages were published after NVD's day",
+   "value": [
+    39,
+    76,
+    51.3,
+    76
+   ],
+   "held": "yes"
+  },
+  "T6": {
+   "claim": "The timing rule is right for >= 88% of CVEs (pool-weighted)",
+   "value": [
+    957.4,
+    1002.0,
+    95.5
+   ],
+   "held": "yes"
+  }
+ },
+ "descriptive": {
+  "listing_by_cna_stratum_timing": {
+   "6b3ad84c-e1a6-4bf7-a703-f496b71e49db|OO_UNC|EARLY": 53,
+   "vulnerabilities@zephyrproject.org|OO_UNC|EARLY": 37,
+   "emo@eclipse.org|OO_COV|LATE": 27,
+   "cve@mitre.org|OO_COV|EARLY": 15,
+   "emo@eclipse.org|OO_UNC|EARLY": 12,
+   "ff89ba41-3aa1-4d27-914a-91399e9639e5|OO_UNC|EARLY": 11,
+   "security@php.net|OO_UNC|EARLY": 10,
+   "secalert@redhat.com|OO_UNC|EARLY": 9,
+   "security@ubuntu.com|OO_UNC|EARLY": 8,
+   "9b29abf9-4ab0-4765-b253-1875cd9b441e|OO_UNC|EARLY": 7,
+   "cve@mitre.org|OO_UNC|EARLY": 7,
+   "meissner@suse.de|OO_UNC|EARLY": 7,
+   "6b3ad84c-e1a6-4bf7-a703-f496b71e49db|OO_COV|EARLY": 5,
+   "9119a7d8-5eab-497f-8521-727c672e3725|OO_UNC|EARLY": 5,
+   "cve@mitre.org|OO_COV|LATE": 4,
+   "emo@eclipse.org|OO_COV|EARLY": 4,
+   "secalert@redhat.com|OO_COV|EARLY": 3,
+   "ce714d77-add3-4f53-aff5-83d477b104bb|OO_UNC|EARLY": 3,
+   "security@ni.com|OO_UNC|EARLY": 3,
+   "0f2be0ad-3469-4e56-b38f-4eb96719b425|OO_UNC|EARLY": 3,
+   "secalert@redhat.com|OO_COV|LATE": 2,
+   "ff89ba41-3aa1-4d27-914a-91399e9639e5|OO_COV|EARLY": 2,
+   "655498c3-6ec5-4f0b-aea6-853b334d05a6|OO_UNC|EARLY": 2,
+   "b01ddd03-5ef6-483b-b2c5-acba77f1a554|OO_UNC|EARLY": 2,
+   "product-security@apple.com|OO_UNC|EARLY": 2,
+   "security@vmware.com|OO_UNC|EARLY": 2,
+   "74b3a70d-cca6-4d34-9789-e83b222ae3be|OO_UNC|EARLY": 2,
+   "infosec@edk2.groups.io|OO_COV|LATE": 1,
+   "infosec@edk2.groups.io|OO_COV|EARLY": 1,
+   "secalert_us@oracle.com|OO_COV|LATE": 1,
+   "cna@vuldb.com|OO_COV|EARLY": 1,
+   "vulnerabilities@zephyrproject.org|OO_COV|LATE": 1,
+   "help@fluidattacks.com|OO_COV|EARLY": 1,
+   "02762ae7-200e-4b20-9b2b-a77d5b8fc4cb|OO_COV|EARLY": 1,
+   "cna@vuldb.com|OO_COV|LATE": 1,
+   "09832df1-09c1-45b4-8a85-16c601d30feb|OO_COV|EARLY": 1,
+   "zdi-disclosures@trendmicro.com|OO_COV|EARLY": 1,
+   "9b29abf9-4ab0-4765-b253-1875cd9b441e|OO_COV|EARLY": 1,
+   "cna@sap.com|OO_COV|EARLY": 1,
+   "6b3ad84c-e1a6-4bf7-a703-f496b71e49db|OO_COV|LATE": 1
+  }
+ }
+}
