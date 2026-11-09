@@ -1,0 +1,9 @@
+ghsa_id,status,reason,published,github_reviewed_at,severity,cwe_ids,dos_like,crates,crate_in_rustsec,cve_ids,repo_advisory
+GHSA-3g92-f9ch-qjcm,GHSA_ONLY,,2026-04-16,2026-04-16,LOW,CWE-328,no,p3-symmetric,no,,yes
+GHSA-65jj-fmw8-468q,GHSA_ONLY,,2026-07-02,2026-07-02,MODERATE,CWE-401,yes,zebrad,no,CVE-2026-52734,yes
+GHSA-7c4j-2m43-2mgh,GHSA_ONLY,,2026-04-22,2026-04-22,HIGH,CWE-252;CWE-755,no,nimiq-primitives,no,CVE-2026-34065,yes
+GHSA-7fw6-6mfj-g3q2,GHSA_ONLY,,2022-11-02,2022-11-02,CRITICAL,,no,ckb,yes,,yes
+GHSA-f8qm-hmm3-fv7f,GHSA_ONLY,,2025-02-20,2025-02-20,CRITICAL,CWE-770,yes,namada-apps,no,,yes
+GHSA-hqmp-g7ph-x543,GHSA_ONLY,,2024-12-27,2024-12-27,MODERATE,CWE-200,no,quincy,no,,yes
+GHSA-mphm-gqh9-q59x,GHSA_ONLY,,2023-05-04,2023-05-05,MODERATE,CWE-79,no,microbin,no,CVE-2023-27075,no
+GHSA-r5fr-9gmv-jggh,GHSA_ONLY,,2026-05-06,2026-05-06,HIGH,CWE-248;CWE-400;CWE-674,yes,scim_proto;kanidm_proto,no,CVE-2026-46689,yes
