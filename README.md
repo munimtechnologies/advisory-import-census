@@ -62,6 +62,39 @@ fixed list (anything else is shown as `UNRECOGNIZED`), and it never prints title
 descriptions or reference text. The skill also tells the agent to treat any page it opens as
 data, never as instructions.
 
+## "Does this scanner finding rest on a rejected CVE?" — agent skill
+
+A CVE Numbering Authority can reject a CVE after advisories have been built on it (an invalid
+report, a duplicate, out of scope), and the databases scanners read do not always follow.
+Study [S13](study/pysec-rejected-s13/RESULTS.md) found 21 live PyPA advisories, the data
+behind pip-audit, resting on a rejected CVE, 16 of them with no replacement CVE. The agent skill
+[`skills/osv-rejected-cve-check`](skills/osv-rejected-cve-check/SKILL.md) takes the IDs from
+pip-audit, osv-scanner, cargo-audit, govulncheck or a similar scanner (or its JSON report) and
+checks OSV.dev and cve.org. It gives one verdict per ID: `REJECTED_ONLY` (every CVE the
+advisory lists was rejected and no replacement is named), `REJECTED_REPLACED` (it names the
+published replacement CVE, so the finding probably stands), `PARTLY_REJECTED`, `CVE_OK`,
+`WITHDRAWN` and others. It also says where to report a stale advisory.
+
+```
+# install for a coding agent with the skills CLI (one project, one agent)
+npx skills add munimtechnologies/advisory-import-census --skill osv-rejected-cve-check
+
+# or run the script directly: Python 3.8+, standard library only, no token
+python skills/osv-rejected-cve-check/scripts/rejected_cve_check.py PYSEC-2021-126
+pip-audit --format json > audit.json
+python skills/osv-rejected-cve-check/scripts/rejected_cve_check.py --from-json audit.json
+```
+
+It makes read-only HTTPS GETs to api.osv.dev and cveawg.mitre.org, at most 50 IDs per run.
+A rejection alone does not prove there is no flaw (some CNAs reject without a reason), so the
+skill tells the agent to show the user the cve.org link and let them decide. Like the skill
+above, it keeps only strictly validated IDs, states, dates and CNA short names, and never
+prints record text. Offline tests: `python -m unittest -v test_rejected_cve_check_skill`.
+It is listed on skills.sh:
+[skills.sh/munimtechnologies/advisory-import-census/osv-rejected-cve-check](https://skills.sh/munimtechnologies/advisory-import-census/osv-rejected-cve-check).
+Snyk's audit there notes that the skill reads third-party data (OSV and CVE records); that is
+why it prints none of their free text.
+
 All studies, their pre-registered predictions and how each was graded are indexed in
 [`study/README.md`](study/README.md).
 
