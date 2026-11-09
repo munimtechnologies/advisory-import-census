@@ -54,6 +54,14 @@ statements by GitHub, and the script reads live data, so a record may have chang
 study. Offline tests: `python -m unittest -v test_cve_gap_skill`. A wrong verdict is a bug:
 please open an issue with the CVE ID and the script's output.
 
+The skill is listed on skills.sh:
+[skills.sh/munimtechnologies/advisory-import-census/github-advisory-cve-gap](https://skills.sh/munimtechnologies/advisory-import-census/github-advisory-cve-gap).
+CVE records and advisories are written by outside parties, so since script 0.2.0 it keeps only
+IDs, record states, advisory types and timestamps, each checked against a strict pattern or a
+fixed list (anything else is shown as `UNRECOGNIZED`), and it never prints titles,
+descriptions or reference text. The skill also tells the agent to treat any page it opens as
+data, never as instructions.
+
 All studies, their pre-registered predictions and how each was graded are indexed in
 [`study/README.md`](study/README.md).
 
