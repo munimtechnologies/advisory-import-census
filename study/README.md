@@ -50,10 +50,10 @@ For maintainers, these results are turned into practical steps in
 ## The database series (S1-S16): how the advisory databases link CVEs
 
 A second line of studies looks at the databases themselves: GitHub's Advisory Database, the CVE List,
-OSV and the PyPA and RustSec databases. Each study is pre-registered the same way; most read pinned bulk
+OSV and the PyPA, Go and RustSec databases. Each study is pre-registered the same way; most read pinned bulk
 copies (git commits, CVE List releases) inside a sealed job and then check a seeded sample live by hand.
 "Held" counts the frozen predictions that held. Where a study turns up single-record fixes, they are sent
-to the database one record per pull request, each checked by hand first.
+to the database after a hand check, following each database's own rules.
 
 | # | Study | Question | Result | Held | Where |
 |---|---|---|---|---|---|
@@ -72,9 +72,9 @@ to the database one record per pull request, each checked by hand first.
 | S11 | CVE field | Does a repository advisory that lists its CVE keep that CVE out of GitHub's database? | No: 27.2% are still in (bound was 20%) | 4 of 6 | [`cna-gap-s11-repo-cve-field/`](cna-gap-s11-repo-cve-field/RESULTS.md) |
 | S12 | listing timing | Does listing the CVE on the repository advisory before or after NVD publishes it predict coverage? | Yes: 5.3% covered if listed by NVD's publication day, 100% if later; the rule is right for 95.5% | 6 of 6 | [`cna-gap-s12-listing-timing/`](cna-gap-s12-listing-timing/RESULTS.md) |
 | S13 | PyPA rejected CVEs | How many live PyPA (PYSEC) advisories rest on a CVE its CNA rejected? | 21 of 7,631; 10 are open-webui records whose huntr CVEs were rejected in August 2026, after five siblings had been withdrawn in July. A re-run with the corrected script reproduced 16 withdrawal candidates and 5 replacements | 4 of 6 | [`pysec-rejected-s13/`](pysec-rejected-s13/RESULTS.md) |
-| S14 | Rust GitHub-only | How many GitHub-reviewed Rust advisories have no RustSec advisory, so cargo-audit cannot see them? | 620 of 1,492 (41.6%) published before 2026-10-01, across 703 crates; the share rises from 3.5% (2021) to 73.4% (2026). `openssl` alone has eight 2026 advisories that are not in RustSec. Updates a 2023 count of 92 (rustsec/advisory-db#1711) | 6 of 6 | [`rust-ghsa-only-s14/`](rust-ghsa-only-s14/RESULTS.md) |
-| S15 | rejected CVEs across databases | Do the Go, RustSec, Haskell, R, Julia, Erlang/Elixir and other databases OSV serves keep live records on rejected CVEs, and how do they compare with PyPA? | Pre-registered 2026-11-09; job queued | pending | [`osv-rejected-s15/`](osv-rejected-s15/PREREG.md) |
-| S16 | OSV's own CVE records | Does OSV.dev withdraw its own CVE- records once the CVE is rejected, and did that stop after August 2026? | Pre-registered 2026-11-09; job queued | pending | [`osv-cve-withdrawn-s16/`](osv-cve-withdrawn-s16/PREREG.md) |
+| S14 | Rust GitHub-only | How many GitHub-reviewed Rust advisories have no RustSec advisory, so cargo-audit cannot see them? | 620 of 1,492 (41.6%) published before 2026-10-01, across 703 crates; the share rises from 3.5% (2021) to 73.4% (2026). `openssl` alone had eight 2026 advisories missing from RustSec; the first is now [RUSTSEC-2026-0463](https://rustsec.org/advisories/RUSTSEC-2026-0463.html). Updates a 2023 count of 92 (rustsec/advisory-db#1711) | 6 of 6 | [`rust-ghsa-only-s14/`](rust-ghsa-only-s14/RESULTS.md) |
+| S15 | rejected CVEs across databases | Do the Go, RustSec, Haskell, R, Julia, Erlang/Elixir and other databases OSV serves keep live records on rejected CVEs, and how do they compare with PyPA? | 15 live records outside PyPA rest on a rejected CVE (Go 12, RustSec 3, none elsewhere); as a share of records with a CVE, Go+RustSec 0.30% vs PyPA 0.32%. All 6 hand-checked Go records still live | 5 of 6 | [`osv-rejected-s15/`](osv-rejected-s15/RESULTS.md) |
+| S16 | OSV's own CVE records | Does OSV.dev withdraw its own CVE- records once the CVE is rejected, and did that stop after August 2026? | It stopped earlier: 162 of 162 OSV-known CVEs rejected in 2026 are still live (none withdrawn), against 7 of 8 withdrawn for pre-2026 rejections; about 176 rejected CVEs are served live. Holds across 13 CNAs, with or without other aliases | 4 of 6 (1 inconclusive) | [`osv-cve-withdrawn-s16/`](osv-cve-withdrawn-s16/RESULTS.md) |
 
 ## How to read a study folder
 

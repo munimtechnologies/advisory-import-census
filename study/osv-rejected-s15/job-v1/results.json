@@ -1,0 +1,249 @@
+{
+ "script_version": "0.1.0",
+ "seed": 20261109,
+ "osv_zips": {
+  "Go": {
+   "sha256": "f283a685c89d47740426435b66b93254f865023643eec83a98d85578cf5915ce",
+   "bytes": 12828976,
+   "last_modified": "Sun, 08 Nov 2026 11:02:46 GMT",
+   "records": 9914
+  },
+  "crates.io": {
+   "sha256": "363eb996e96c35b6686d59200f1db7aa65a634e3e039a922702df656b15c7116",
+   "bytes": 3810556,
+   "last_modified": "Mon, 09 Nov 2026 11:18:00 GMT",
+   "records": 3063
+  },
+  "Hackage": {
+   "sha256": "11f5e93f87b7740787a901d363bda609ff0fc5933ffefecff335311c8b0da575",
+   "bytes": 58359,
+   "last_modified": "Wed, 04 Nov 2026 13:02:59 GMT",
+   "records": 36
+  },
+  "GHC": {
+   "sha256": "d5e5a127d05800acd218d99c00d2d100cfe829ec9ba40eab82a39fb679c39937",
+   "bytes": 2759,
+   "last_modified": "Tue, 08 Sep 2026 05:35:38 GMT",
+   "records": 3
+  },
+  "CRAN": {
+   "sha256": "f71c441293f040c6527e0cdaf1cd0196fbd1a23e4ceec1fd47e7f42bd6f3d1c4",
+   "bytes": 11944,
+   "last_modified": "Tue, 08 Sep 2026 05:35:38 GMT",
+   "records": 14
+  },
+  "Julia": {
+   "sha256": "9f9841c2c242237cd793afea75541d61c0405a4559ecfeffe6e6c655262fc47e",
+   "bytes": 2143646,
+   "last_modified": "Fri, 06 Nov 2026 16:02:48 GMT",
+   "records": 1717
+  },
+  "Hex": {
+   "sha256": "e349574664a701aeae870d15f98ece244ed77146f934c635ac9ddda20acb8c77",
+   "bytes": 1126878,
+   "last_modified": "Mon, 09 Nov 2026 15:33:06 GMT",
+   "records": 433
+  },
+  "opam": {
+   "sha256": "7665f9915144df8e8733125021086edc94df215c0df0c83481ba10e5ae413e2d",
+   "bytes": 102464,
+   "last_modified": "Fri, 06 Nov 2026 19:18:11 GMT",
+   "records": 36
+  },
+  "Pub": {
+   "sha256": "e19f6fa83938e3b5e203086a99ea97da4a676cf645521c137f20ca352701e815",
+   "bytes": 25896,
+   "last_modified": "Thu, 15 Oct 2026 20:33:04 GMT",
+   "records": 14
+  },
+  "SwiftURL": {
+   "sha256": "5e1443263829b6e6fbd08c02c41c1cc1b3aba21c5171c19ffca89562bf541dbb",
+   "bytes": 113094,
+   "last_modified": "Tue, 27 Oct 2026 16:48:18 GMT",
+   "records": 64
+  },
+  "PyPI": {
+   "sha256": "540a188dd9fd943e04b2771561d423cd839c86011440d4096e4d3f2b8721cae5",
+   "bytes": 37696551,
+   "last_modified": "Mon, 09 Nov 2026 09:33:07 GMT",
+   "records": 26833
+  }
+ },
+ "cve_release": "cve_2026-11-09_1500Z",
+ "cve_asset": "2026-11-09_all_CVEs_at_midnight.zip.zip",
+ "cve_read_at": "2026-11-09T16:22:30Z",
+ "counts": {
+  "osv_files": 42127,
+  "parse_errors": 0,
+  "source_records": 16319,
+  "go_records": 4808,
+  "rustsec_records": 1410,
+  "pysec_records": 7985,
+  "ghsa_records": 13672,
+  "cve_records": 421272,
+  "source_records_by_prefix": {
+   "PYSEC": 7985,
+   "GO": 4808,
+   "JLSEC": 1717,
+   "RUSTSEC": 1410,
+   "EEF": 310,
+   "HSEC": 39,
+   "OSEC": 36,
+   "RSEC": 14
+  }
+ },
+ "gate_failures": [],
+ "parse_errors": [],
+ "verdicts": {
+  "P1": {
+   "value": 15,
+   "held": "yes",
+   "claim": ">= 5 live source records outside PyPA (not GHSA, MAL, CVE, OSV or PYSEC) hold at least one CVE alias whose CVE record is REJECTED"
+  },
+  "P2": {
+   "value": [
+    12,
+    15,
+    80.0
+   ],
+   "held": "yes",
+   "claim": ">= 50% of those non-PyPA rows are Go vulnerability database (GO-) records"
+  },
+  "P3": {
+   "value": [
+    7,
+    12,
+    58.3
+   ],
+   "held": "no",
+   "claim": ">= 60% of the GO- rows have review_status UNREVIEWED"
+  },
+  "P4": {
+   "value": [
+    11,
+    15,
+    73.3
+   ],
+   "held": "yes",
+   "claim": ">= 50% of the non-PyPA rows that list a GHSA alias have that GHSA live (not withdrawn) in OSV's export"
+  },
+  "P5": {
+   "value": [
+    15,
+    5039,
+    0.298,
+    24,
+    7561,
+    0.317
+   ],
+   "held": "yes",
+   "claim": "The share of live GO- and RUSTSEC- records with a CVE alias that hold a REJECTED CVE is lower than the same share for PYSEC records in the same run"
+  },
+  "P6": {
+   "value": null,
+   "held": "graded by hand after the run",
+   "claim": ">= 75% of the seeded sample of non-PyPA WITHDRAW_CANDIDATE rows are still live with a REJECTED CVE when checked at the source database (graded by hand after the run)"
+  }
+ },
+ "descriptive": {
+  "per_source": {
+   "EEF": {
+    "records": 310,
+    "live": 310,
+    "live_with_cve": 309,
+    "rows": 0
+   },
+   "GO": {
+    "records": 4808,
+    "live": 4771,
+    "live_with_cve": 4446,
+    "rows": 12
+   },
+   "HSEC": {
+    "records": 39,
+    "live": 39,
+    "live_with_cve": 20,
+    "rows": 0
+   },
+   "JLSEC": {
+    "records": 1717,
+    "live": 1713,
+    "live_with_cve": 7,
+    "rows": 0
+   },
+   "OSEC": {
+    "records": 36,
+    "live": 36,
+    "live_with_cve": 24,
+    "rows": 0
+   },
+   "PYSEC": {
+    "records": 7985,
+    "live": 7630,
+    "live_with_cve": 7561,
+    "rows": 24
+   },
+   "RSEC": {
+    "records": 14,
+    "live": 14,
+    "live_with_cve": 0,
+    "rows": 0
+   },
+   "RUSTSEC": {
+    "records": 1410,
+    "live": 1385,
+    "live_with_cve": 593,
+    "rows": 3
+   }
+  },
+  "rows": 39,
+  "rows_by_source": {
+   "PYSEC": 24,
+   "GO": 12,
+   "RUSTSEC": 3
+  },
+  "actions": {
+   "WITHDRAW_CANDIDATE": 21,
+   "DROP_ALIAS": 14,
+   "REPLACE_ALIAS": 4
+  },
+  "reason_classes": {
+   "duplicate": 15,
+   "unspecified": 15,
+   "other": 6,
+   "not_vuln": 3
+  },
+  "rejected_assigners": {
+   "@huntr_ai": 13,
+   "mitre": 8,
+   "GitHub_M": 6,
+   "VulnCheck": 5,
+   "Google": 3,
+   "redhat": 2,
+   "@huntrdev": 1,
+   "VulDB": 1
+  },
+  "ghsa_states": {
+   "live": 28,
+   "withdrawn": 9,
+   "none": 2
+  },
+  "go_review_status": {
+   "UNREVIEWED": 7,
+   "REVIEWED": 5
+  },
+  "rejected_after_publish": {
+   "true": 27,
+   "false": 12
+  },
+  "missing_aliases": 22
+ },
+ "sample": [
+  "GO-2022-1205",
+  "GO-2023-1494",
+  "GO-2026-4505",
+  "GO-2026-4512",
+  "GO-2026-5939",
+  "GO-2026-6575"
+ ]
+}
