@@ -15,6 +15,12 @@ Data (all public, pinned and recorded in results.json):
 
 Outputs (--out-dir): results.json, RESULTS-job.md, rows.csv, pr_candidates.csv, missing.csv,
 grading_sample.csv. Stdlib plus PyYAML. Apache-2.0. Made with AI agents working for MV2 of Munim, Inc.
+
+0.1.1 (2026-11-09, correction found while grading P6 by hand): replacement CVEs are now read from
+the FULL rejection reason and from the CVE record's `replacedBy` field. 0.1.0 searched only the
+first 300 characters of the reason (the display copy), so a reason that names its replacement late
+(CVE-2025-34351 -> CVE-2023-48022) was classed WITHDRAW_CANDIDATE instead of REPLACE_ALIAS.
+The pre-registered definitions, thresholds and seed are unchanged.
 """
 import argparse
 import csv
@@ -29,13 +35,13 @@ import tempfile
 import urllib.request
 import zipfile
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 PYPA_URL = "https://github.com/pypa/advisory-database.git"
 GHDB_URL = "https://github.com/github/advisory-database.git"
 GHDB_SPARSE = ["advisories/github-reviewed"]
 RELEASES_API = "https://api.github.com/repos/CVEProject/cvelistV5/releases/latest"
 ASSET_SUFFIX = "_all_CVEs_at_midnight.zip.zip"
-UA = "advisory-import-census-pysec-rejected/0.1 (MV2, Munim, Inc.; mv2@munimtech.com)"
+UA = "advisory-import-census-pysec-rejected/0.1.1 (MV2, Munim, Inc.; mv2@munimtech.com)"
 SEED = 20261108
 SAMPLE_N = 8
 MIN_ROWS = 5
@@ -43,10 +49,10 @@ MIN_ROWS = 5
 # truncated download cannot be graded. They are floors, not expected values.
 GATE = {"pysec_files": 2000, "pysec_parse_error_rate": 0.01, "cve_records": 200000,
         "reviewed_ghsas": 15000}
-CVE_RE = re.compile(r"^CVE-\d{4}-\d{4,}$")
-CVE_FIND = re.compile(r"CVE-\d{4}-\d{4,}")
+CVE_RE = re.compile(r"^CVE-[0-9]{4}-[0-9]{4,}$")
+CVE_FIND = re.compile(r"CVE-[0-9]{4}-[0-9]{4,}")
 GHSA_RE = re.compile(r"^GHSA(-[0-9a-z]{4}){3}$", re.IGNORECASE)
-CVE_FILE = re.compile(r"(?:^|/)(CVE-\d{4}-\d{4,})\.json$")
+CVE_FILE = re.compile(r"(?:^|/)(CVE-[0-9]{4}-[0-9]{4,})\.json$")
 
 
 def ts(v):
@@ -140,13 +146,19 @@ def parse_cve(obj):
     meta = obj.get("cveMetadata") or {}
     cna = (obj.get("containers") or {}).get("cna") or {}
     rej = " ".join(d.get("value") or "" for d in cna.get("rejectedReasons") or [])
+    cid = meta.get("cveId") or ""
+    replaced = [str(x) for x in cna.get("replacedBy") or [] if CVE_RE.match(str(x))]
+    # 0.1.1: CVE IDs named anywhere in the full reason, plus replacedBy (not the 300-char copy).
+    named = sorted((set(CVE_FIND.findall(rej)) | set(replaced)) - {cid})
     return {
-        "id": meta.get("cveId") or "",
+        "id": cid,
         "state": meta.get("state") or "",
         "assigner": meta.get("assignerShortName") or "",
         "published": ts(meta.get("datePublished")),
         "rejected": ts(meta.get("dateRejected")),
         "reason": squash(rej, 300),
+        "named": named,
+        "replaced_by": sorted(set(replaced)),
     }
 
 
@@ -231,6 +243,13 @@ def ghsa_state(ghsas, reviewed):
     return "not_in_reviewed"
 
 
+def named_cves(rec):
+    """CVE IDs a rejected record points to. Uses the full-reason list when present (0.1.1)."""
+    if "named" in rec:
+        return set(rec["named"])
+    return set(x for x in CVE_FIND.findall(rec.get("reason") or "") if x != rec.get("id"))
+
+
 def analyse(pysec, reviewed, lookup):
     """Rows for live PYSEC records holding a REJECTED CVE alias. lookup(cve) -> record or None."""
     live = [p for p in pysec if not p["withdrawn"]]
@@ -248,7 +267,7 @@ def analyse(pysec, reviewed, lookup):
         published = [c for c in p["cves"] if recs[c] and recs[c]["state"] == "PUBLISHED"]
         named = set()
         for c in rejected:
-            named.update(x for x in CVE_FIND.findall(recs[c]["reason"]) if x != c)
+            named.update(x for x in named_cves(recs[c]) if x != c)
         repl = sorted(c for c in named - set(p["cves"])
                       if lookup(c) is not None and lookup(c)["state"] == "PUBLISHED")
         if published:

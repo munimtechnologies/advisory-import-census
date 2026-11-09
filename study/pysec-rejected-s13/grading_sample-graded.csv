@@ -1,0 +1,9 @@
+pysec,path,rejected,rejected_date,rejected_assigner,reason_class,ghsas,ghsa_state,cve_state_live,withdrawn_on_main,pr_naming_pysec_or_cve,p6_grade,note
+PYSEC-2021-126,vulns/ansible/PYSEC-2021-126.yaml,CVE-2021-3533,2024-01-15,redhat,other,,none,REJECTED,no,none,PR_READY,reason: does not meet the criteria for a security vulnerability; no replacedBy; GitHub has no advisory for this CVE; issue #110 (2022) names the PYSEC ID but is an issue about version ranges; not a PR
+PYSEC-2026-1721,vulns/open-webui/PYSEC-2026-1721.yaml,CVE-2024-7037,2026-08-13,@huntr_ai,unspecified,GHSA-54f4-v6v9-9q82,live,REJECTED,no,none,PR_READY,GitHub advisory still live and still lists the rejected CVE (checked via API)
+PYSEC-2026-1724,vulns/open-webui/PYSEC-2026-1724.yaml,CVE-2024-7806,2026-08-31,@huntr_ai,unspecified,GHSA-85jc-8h5p-8vw8,live,REJECTED,no,none,PR_READY,
+PYSEC-2026-1728,vulns/open-webui/PYSEC-2026-1728.yaml,CVE-2024-12537,2026-08-13,@huntr_ai,unspecified,GHSA-chf7-q7m5-fq92,live,REJECTED,no,none,PR_READY,
+PYSEC-2026-1733,vulns/open-webui/PYSEC-2026-1733.yaml,CVE-2024-12534,2026-08-13,@huntr_ai,unspecified,GHSA-g3mx-83mp-3rwc,live,REJECTED,no,none,PR_READY,
+PYSEC-2026-1735,vulns/open-webui/PYSEC-2026-1735.yaml,CVE-2024-7046,2026-08-13,@huntr_ai,unspecified,GHSA-gv26-qw3h-8qvp,live,REJECTED,no,none,PR_READY,
+PYSEC-2026-1742,vulns/open-webui/PYSEC-2026-1742.yaml,CVE-2024-7036,2026-08-13,@huntr_ai,unspecified,GHSA-wcwp-9rcp-jvfg,live,REJECTED,no,none,PR_READY,
+PYSEC-2026-518,vulns/ray/PYSEC-2026-518.yaml,CVE-2025-34351,2025-12-02,VulnCheck,not_vuln,GHSA-gx77-xgc2-4888,live,REJECTED,no,none,PR_READY_BUT_MISCLASSIFIED,"passes the three P6 checks, but the full rejection reason and the record's replacedBy name CVE-2023-48022 (PUBLISHED, tagged disputed); under the PREREG definition this row is REPLACE_ALIAS; script 0.1.0 searched only the first 300 characters; not sent"

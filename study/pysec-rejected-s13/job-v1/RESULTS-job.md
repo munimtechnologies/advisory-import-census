@@ -1,0 +1,16 @@
+# PyPA rejected-CVE census S13: job output
+
+pypa/advisory-database commit 8e3fe64f4612dd6037f5381f8e0004d38bebc56b (2026-11-05T19:48:55Z); github/advisory-database commit 0847e81e34d87d1b50efe58b86a780d05e6cd051 (2026-11-09T00:37:44Z); CVE List release cve_2026-11-09_0100Z (2026-11-09_all_CVEs_at_midnight.zip.zip), read 2026-11-09T02:20:49Z. Script 0.1.0.
+
+Gate: PASSED; counts {"pysec_files": 7903, "pysec_parse_errors": 0, "cve_records": 421272, "reviewed_ghsas": 37571}
+
+| Prediction | Claim | Value [k, n, %] | Held |
+|---|---|---|---|
+| P1 | >= 10 live PYSEC records hold at least one CVE alias whose CVE record is REJECTED | 21 | yes |
+| P2 | >= 50% of those records are WITHDRAW_CANDIDATE (no PUBLISHED CVE alias and no PUBLISHED replacement CVE named in the rejection reason) | [17, 21, 81.0] | yes |
+| P3 | >= 40% of those records that list a GHSA alias have a GHSA alias that GitHub's Advisory Database has withdrawn | [3, 19, 15.8] | no |
+| P4 | >= 70% of those records were not modified after their CVE was rejected | [15, 21, 71.4] | yes |
+| P5 | >= 80% of those records: every rejected CVE was rejected after the PYSEC record was published | [16, 21, 76.2] | no |
+| P6 | >= 75% of the seeded sample of WITHDRAW_CANDIDATE records are still PR-ready when checked live (graded by hand after the run) | null | graded by hand after the run |
+
+Descriptive: {"pysec_records": 7903, "pysec_withdrawn": 272, "pysec_live": 7631, "live_with_cve": 7562, "alias_states": {"MISSING": 13, "PUBLISHED": 7528, "REJECTED": 21}, "rows": 21, "actions": {"WITHDRAW_CANDIDATE": 17, "REPLACE_ALIAS": 4}, "reason_classes": {"unspecified": 14, "duplicate": 4, "not_vuln": 2, "other": 1}, "rejected_assigners": {"@huntr_ai": 13, "mitre": 4, "VulnCheck": 2, "GitHub_M": 1, "redhat": 1}, "ghsa_states": {"live": 16, "withdrawn": 3, "none": 2}, "rows_by_pysec_year": {"2021": 1, "2022": 2, "2024": 1, "2026": 17}, "missing_aliases": 13}

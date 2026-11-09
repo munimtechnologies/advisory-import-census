@@ -1,0 +1,9 @@
+pysec,path,rejected,rejected_date,rejected_assigner,reason_class,ghsas,ghsa_state,reason,grade
+PYSEC-2021-126,vulns/ansible/PYSEC-2021-126.yaml,CVE-2021-3533,2024-01-15,redhat,other,,none,This vulnerability does not meet the criteria for a security vulnerability,
+PYSEC-2026-1721,vulns/open-webui/PYSEC-2026-1721.yaml,CVE-2024-7037,2026-08-13,@huntr_ai,unspecified,GHSA-54f4-v6v9-9q82,live,This CVE ID has been rejected or withdrawn by its CVE Numbering Authority.,
+PYSEC-2026-1724,vulns/open-webui/PYSEC-2026-1724.yaml,CVE-2024-7806,2026-08-31,@huntr_ai,unspecified,GHSA-85jc-8h5p-8vw8,live,This CVE ID has been rejected or withdrawn by its CVE Numbering Authority.,
+PYSEC-2026-1728,vulns/open-webui/PYSEC-2026-1728.yaml,CVE-2024-12537,2026-08-13,@huntr_ai,unspecified,GHSA-chf7-q7m5-fq92,live,This CVE ID has been rejected or withdrawn by its CVE Numbering Authority.,
+PYSEC-2026-1733,vulns/open-webui/PYSEC-2026-1733.yaml,CVE-2024-12534,2026-08-13,@huntr_ai,unspecified,GHSA-g3mx-83mp-3rwc,live,This CVE ID has been rejected or withdrawn by its CVE Numbering Authority.,
+PYSEC-2026-1735,vulns/open-webui/PYSEC-2026-1735.yaml,CVE-2024-7046,2026-08-13,@huntr_ai,unspecified,GHSA-gv26-qw3h-8qvp,live,This CVE ID has been rejected or withdrawn by its CVE Numbering Authority.,
+PYSEC-2026-1742,vulns/open-webui/PYSEC-2026-1742.yaml,CVE-2024-7036,2026-08-13,@huntr_ai,unspecified,GHSA-wcwp-9rcp-jvfg,live,This CVE ID has been rejected or withdrawn by its CVE Numbering Authority.,
+PYSEC-2026-518,vulns/ray/PYSEC-2026-518.yaml,CVE-2025-34351,2025-12-02,VulnCheck,not_vuln,GHSA-gx77-xgc2-4888,live,"This CVE ID has been rejected or withdrawn by its CVE Numbering Authority. At the request of the MITRE TL-Root and following the CVE Program’s Dispute Policy, it has been determined that this assignment did not identify a valid vulnerability based on the vendor's product security model. Additionally",

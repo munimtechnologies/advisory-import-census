@@ -47,6 +47,19 @@ CVES = {
 REVIEWED = {"GHSA-2222-3333-4444": {"withdrawn": True, "cves": []},
             "GHSA-5555-6666-7777": {"withdrawn": False, "cves": []}}
 
+# A rejected record shaped like CVE-2025-34351: its replacement is named after character 300.
+LONG_REASON = ("This CVE ID has been rejected or withdrawn by its CVE Numbering Authority. " + "x " * 150 +
+               "Additionally, this assignment conflicts with an existing CVE (CVE-2023-48022).")
+
+
+def rejected_obj(cid, reason, replaced_by=None):
+    cna = {"rejectedReasons": [{"lang": "en", "value": reason}]}
+    if replaced_by is not None:
+        cna["replacedBy"] = replaced_by
+    return {"cveMetadata": {"cveId": cid, "state": "REJECTED", "assignerShortName": "VulnCheck",
+                            "dateRejected": "2025-12-02T22:04:26.772Z"},
+            "containers": {"cna": cna}}
+
 
 class FakeYaml:
     """Tiny stand-in so the loader test does not depend on PyYAML internals."""
@@ -97,6 +110,45 @@ class TestHelpers(unittest.TestCase):
         self.assertEqual(m.ghsa_state(["GHSA-9999-9999-9999"], REVIEWED), "not_in_reviewed")
 
 
+class TestReplacementFix(unittest.TestCase):
+    """0.1.1: replacements are read from the full reason and from replacedBy."""
+
+    def test_long_reason_names_replacement_after_300_chars(self):
+        rec = m.parse_cve(rejected_obj("CVE-2025-34351", LONG_REASON))
+        self.assertEqual(len(rec["reason"]), 300)
+        self.assertNotIn("CVE-2023-48022", rec["reason"])  # the display copy is cut
+        self.assertEqual(rec["named"], ["CVE-2023-48022"])  # the full text is searched
+        self.assertEqual(rec["replaced_by"], [])
+        self.assertEqual(rec["rejected"], "2025-12-02T22:04:26")
+
+    def test_replaced_by_field(self):
+        rec = m.parse_cve(rejected_obj("CVE-2025-34351", "This CVE ID has been rejected or withdrawn by its "
+                                       "CVE Numbering Authority.", ["CVE-2023-48022", "not-a-cve"]))
+        self.assertEqual(rec["named"], ["CVE-2023-48022"])
+        self.assertEqual(rec["replaced_by"], ["CVE-2023-48022"])
+        self_only = m.parse_cve(rejected_obj("CVE-2025-34351", "Rejected.", ["CVE-2025-34351"]))
+        self.assertEqual(self_only["named"], [])
+
+    def test_analyse_uses_full_reason(self):
+        rec = m.parse_cve(rejected_obj("CVE-2025-34351", LONG_REASON))
+        table = {"CVE-2025-34351": rec, "CVE-2023-48022": cve("CVE-2023-48022", "PUBLISHED")}
+        res = m.analyse([pysec("PYSEC-2026-518", ["CVE-2025-34351"])], {}, table.get)
+        self.assertEqual(len(res["rows"]), 1)
+        self.assertEqual(res["rows"][0]["action"], "REPLACE_ALIAS")
+        self.assertEqual(res["rows"][0]["replacement"], "CVE-2023-48022")
+        # The 0.1.0 shape (no "named" key, reason cut at 300 chars) reproduces the published mistake.
+        legacy = {k: v for k, v in rec.items() if k not in ("named", "replaced_by")}
+        table_old = {"CVE-2025-34351": legacy, "CVE-2023-48022": cve("CVE-2023-48022", "PUBLISHED")}
+        res_old = m.analyse([pysec("PYSEC-2026-518", ["CVE-2025-34351"])], {}, table_old.get)
+        self.assertEqual(res_old["rows"][0]["action"], "WITHDRAW_CANDIDATE")
+
+    def test_replacement_must_be_published(self):
+        rec = m.parse_cve(rejected_obj("CVE-2025-34351", LONG_REASON))
+        table = {"CVE-2025-34351": rec, "CVE-2023-48022": cve("CVE-2023-48022", "REJECTED", "2026-01-01T00:00:00")}
+        res = m.analyse([pysec("PYSEC-2026-518", ["CVE-2025-34351"])], {}, table.get)
+        self.assertEqual(res["rows"][0]["action"], "WITHDRAW_CANDIDATE")
+
+
 class TestLoaders(unittest.TestCase):
     def test_load_pysec_counts_errors(self):
         with tempfile.TemporaryDirectory() as d:
@@ -112,7 +164,10 @@ class TestLoaders(unittest.TestCase):
             self.assertEqual(recs[0]["path"], "vulns/a/PYSEC-2026-1.yaml")
 
     def test_load_pysec_real_yaml(self):
-        import yaml
+        try:
+            import yaml
+        except ImportError:
+            self.skipTest("PyYAML not installed")
         with tempfile.TemporaryDirectory() as d:
             os.makedirs(os.path.join(d, "vulns", "examplepkg"))
             with open(os.path.join(d, "vulns", "examplepkg", "PYSEC-2026-0001.yaml"), "w", encoding="utf-8") as f:
@@ -153,6 +208,7 @@ class TestLoaders(unittest.TestCase):
             rec = cl.get("CVE-2025-0001")
             self.assertEqual(rec["state"], "REJECTED")
             self.assertEqual(rec["rejected"], "2026-03-01T00:00:00")
+            self.assertEqual(rec["named"], ["CVE-2025-0003"])
             self.assertIsNone(cl.get("CVE-2025-9999"))
             cl.close()
 
