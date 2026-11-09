@@ -41,8 +41,17 @@ definition the row is `REPLACE_ALIAS`, not `WITHDRAW_CANDIDATE`. P2 moves from 1
 holds. P6 holds whether or not this row counts.
 
 `pysec_rejected.py` 0.1.1 reads the full reason and `replacedBy`, and adds tests that reproduce the 0.1.0
-mistake. Re-run job `pysec-rejected-s13-v2` uses fresh data and is queued only to confirm the correction
-mechanically; the grades above come from the pinned v1 output plus this one hand correction.
+mistake. The grades above come from the pinned v1 output plus this one hand correction.
+
+### Re-run with the corrected script (job v2, 2026-11-09)
+
+Job `pysec-rejected-s13-v2` ran script 0.1.1 on fresh inputs: the same pypa/advisory-database commit
+`8e3fe64` (no newer commit existed), github/advisory-database commit `8fa5ec7` (2026-11-09T03:38:55Z) and
+CVE List release `cve_2026-11-09_0300Z`. Its unit tests passed and its gate passed. It reproduces the
+corrected grades exactly: the same 21 rows, **16 `WITHDRAW_CANDIDATE` and 5 `REPLACE_ALIAS`**, with
+PYSEC-2026-518 (ray) now `REPLACE_ALIAS` to CVE-2023-48022 mechanically rather than by hand. P1, P3, P4
+and P5 have the same values as v1. Its output is published as produced under [`job-v2/`](job-v2/); the
+grades are not re-graded from it.
 
 ## What the census shows
 
@@ -75,12 +84,16 @@ mechanically; the grades above come from the pinned v1 output plus this one hand
 
 ## What happens next
 
-As pre-registered: one pull request per UTC day, one file each, adding `withdrawn` and bumping `modified`
+As pre-registered: one pull request at a time, one file each, adding `withdrawn` and bumping `modified`
 to the same timestamp in the format of #354. Each is checked live again just before it is sent. Each PR
-body cites the CVE record, says the check was made with AI agents, and offers to stop. The first is
-PYSEC-2021-126 (ansible): Red Hat rejected CVE-2021-3533 on 2024-01-15 because it "does not meet the
-criteria for a security vulnerability". The record has no `replacedBy`, GitHub has no advisory for the
-CVE, and OSV still serves the record for every ansible release before 3.0.0.
+body cites the CVE record, says the check was made with AI agents, and offers to stop. The first,
+for PYSEC-2021-126 (ansible; Red Hat rejected CVE-2021-3533 on 2024-01-15 because it "does not meet the
+criteria for a security vulnerability"), was opened on 2026-11-09 as
+[pypa/advisory-database#424](https://github.com/pypa/advisory-database/pull/424). The next one waits
+until a maintainer has looked at it.
+
+A follow-up study, [S15](../osv-rejected-s15/PREREG.md), asks the same question of the other source
+databases OSV serves (Go, RustSec, Haskell, R, Julia, Erlang/Elixir and others).
 
 ## Limits
 
