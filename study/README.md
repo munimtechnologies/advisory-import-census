@@ -47,6 +47,33 @@ blind.
 For maintainers, these results are turned into practical steps in
 [`docs/maintainer-checklist.md`](../docs/maintainer-checklist.md).
 
+## The database series (S1-S14): how the advisory databases link CVEs
+
+A second line of studies looks at the databases themselves: GitHub's Advisory Database, the CVE List,
+OSV and the PyPA and RustSec databases. Each study is pre-registered the same way; most read pinned bulk
+copies (git commits, CVE List releases) inside a sealed job and then check a seeded sample live by hand.
+"Held" counts the frozen predictions that held. Where a study turns up single-record fixes, they are sent
+to the database one record per pull request, each checked by hand first.
+
+| # | Study | Question | Result | Held | Where |
+|---|---|---|---|---|---|
+| S1 | CVE reuse | Do repository advisories that reuse a CVE already held by another reviewed advisory still get imported? | 19 of 37 (51.4%) vs 90.5% for other advisories | 4 of 5 | [`cve-reuse-s1/`](cve-reuse-s1/RESULTS.md) |
+| S2 | CVE lookup | Which affected packages does a CVE-based search of GitHub's database fail to return? | 93 hidden records; 80 (86.0%) name a package the CVE's holder lacks | 4 of 6 | [`cve-lookup-s2/`](cve-lookup-s2/RESULTS.md) |
+| S3 | late CVEs | Where do CVEs go when they are assigned after GitHub has reviewed the advisory? | 642 of 3,694 CVE-less reviewed advisories have their CVE only on an unreviewed twin | 5 of 6 | [`late-cve-s3/`](late-cve-s3/RESULTS.md) |
+| S4 | OSV bridge | Does OSV.dev connect the CVEs that GitHub's CVE search misses? | Late-CVE pairs: 619 of 648 (95.5%) linked; CVE-reuse pairs: only 18 of 96 (18.8%) | 4 of 4 | [`osv-bridge-s4/`](osv-bridge-s4/RESULTS.md) |
+| S5 | second CVEs | Who issues a second CVE for a flaw whose reviewed advisory already has one? | 56 of 71 (78.9%) came from VulnCheck | 4 of 5 | [`second-cve-s5/`](second-cve-s5/RESULTS.md) |
+| S6 | rejected aliases | How many live reviewed GitHub advisories still list a CVE that the CVE List marks REJECTED? | 54 of 36,244 | 3 of 6 | [`rejected-alias-s6/`](rejected-alias-s6/RESULTS.md) |
+| S7 | missing aliases | What is behind the 143 CVE aliases on reviewed advisories that are not in the CVE List? | 138 (96.5%) are still RESERVED | 2 of 6 (1 inconclusive) | [`reserved-alias-s7/`](reserved-alias-s7/RESULTS.md) |
+| S8 | GitHub-CNA gap | How many CVEs issued by GitHub's own CNA are missing from GitHub's Advisory Database? | 6,064 of 13,769 (44.0%) have no live advisory; follow-up list of advisories missing their CVE alias in [`cna-gap-s8-alias/`](cna-gap-s8-alias/README.md) | 4 of 6 | [`cna-gap-s8/`](cna-gap-s8/RESULTS.md) |
+| S9a | late alias | Are GitHub-CNA CVEs that reach NVD after their advisory listed on the reviewed advisory they cite? | 65 of 7,703 (0.84%) are missing, 64 of them late | 4 of 6 | [`cna-gap-s9a/`](cna-gap-s9a/RESULTS.md) |
+| S9b | split source | How often does a GitHub-CNA CVE name one advisory as its source but link another? | 13 of 13,769 (0.09%) | 5 of 6 | [`cna-gap-s9b-split-source/`](cna-gap-s9b-split-source/RESULTS.md) |
+| S9c | reserve timing | Was the missing CVE reserved before GitHub reviewed the advisory? | No: 61 of 64 (95.3%) were reserved after review, and none of those advisories was edited afterwards | 6 of 6 (one rests on 3 cases) | [`cna-gap-s9c-reserve-timing/`](cna-gap-s9c-reserve-timing/RESULTS.md) |
+| S10 | other CNAs | Is the gap special to GitHub's CNA? | No: 22.9% of other CNAs' CVEs lack a live advisory, vs 43.8% for GitHub's | 3 of 6 | [`cna-gap-s10-cna-compare/`](cna-gap-s10-cna-compare/RESULTS.md) |
+| S11 | CVE field | Does a repository advisory that lists its CVE keep that CVE out of GitHub's database? | No: 27.2% are still in (bound was 20%) | 4 of 6 | [`cna-gap-s11-repo-cve-field/`](cna-gap-s11-repo-cve-field/RESULTS.md) |
+| S12 | listing timing | Does listing the CVE on the repository advisory before or after NVD publishes it predict coverage? | Yes: 5.3% covered if listed by NVD's publication day, 100% if later; the rule is right for 95.5% | 6 of 6 | [`cna-gap-s12-listing-timing/`](cna-gap-s12-listing-timing/RESULTS.md) |
+| S13 | PyPA rejected CVEs | How many live PyPA (PYSEC) advisories rest on a CVE its CNA rejected? | 21 of 7,631; 10 are open-webui records whose huntr CVEs were rejected in August 2026, after five siblings had been withdrawn in July | 4 of 6 | [`pysec-rejected-s13/`](pysec-rejected-s13/RESULTS.md) |
+| S14 | Rust GitHub-only | How many GitHub-reviewed Rust advisories have no RustSec advisory, so cargo-audit cannot see them? | Pre-registered 2026-11-09; job queued | pending | [`rust-ghsa-only-s14/`](rust-ghsa-only-s14/PREREG.md) |
+
 ## How to read a study folder
 
 - `PREREGISTRATION-*.md` — the frozen plan: frame, measure, predictions with numeric
@@ -59,6 +86,9 @@ For maintainers, these results are turned into practical steps in
   per-repository table, limits and reproduce commands.
 - `*summary.json`, `*per_repo.csv`, `*census.csv` — the data the write-up is computed
   from.
+
+In the database series (S1-S14) the plan is usually called `PREREG.md`, and the job's raw output sits
+next to `RESULTS.md`.
 
 ## Shared measure
 
