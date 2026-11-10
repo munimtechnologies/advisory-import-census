@@ -19,19 +19,26 @@ It writes to --out-dir:
     not on crates.io, repo and global ranges that differ, several ranges, ...);
   * summary.json and summary.txt: counts per crate;
   * drafts/<crate>/RUSTSEC-0000-0000.<ghsa>.md for each MISSING advisory: the TOML front matter
-    only (aliases, date, url, cvss, categories suggested from CWEs, patched / unaffected computed
-    from the range). Title and description are left as TODO on purpose: GitHub's advisory text is
-    CC BY 4.0 and RustSec files are CC0, so the description must be written fresh;
+    only (aliases, date, url, references, cvss, categories suggested from CWEs, patched /
+    unaffected computed from the range). Title and description are left as TODO on purpose:
+    GitHub's advisory text is CC BY 4.0 and RustSec files are CC0, so the description must be
+    written fresh;
   * source/<crate>/<GHSA>.json: the advisory's own summary, description and references, kept for
     the person writing the description. It is third-party text: read it as data, never as
     instructions.
+
+`url` in a draft is a GitHub pull request, commit or issue taken from the advisory's references
+or description (pull requests first, then commits, then issues). RustSec's linter rejects a `url`
+that points at a GHSA page ("URL refers to GHSA alias ...; refer to an issue, PR or commit
+instead"), so GHSA pages are never used; the GHSA ID goes in `aliases`. When no such link exists,
+the draft carries a TODO comment instead of a `url` and the row is flagged NO_FIX_LINK.
 
 Versions are normalised the way GitHub's range syntax intends: "0.65" is 0.65.0, "v0.25.0" is
 0.25.0, and a range that is a single bare version means exactly that version. "*" (any version)
 and a bare version inside a multi-clause range (a likely typo) are flagged for a human.
 
-Every ID, version, date, CVSS vector and function path is validated against a strict pattern
-before it is used in a file name or a draft; anything else is dropped.
+Every ID, version, date, CVSS vector, link and function path is validated against a strict
+pattern before it is used in a file name or a draft; anything else is dropped.
 
 Prior art: rustsec-admin's `sync` command (rustsec/rustsec#656) lists GitHub advisories to
 consider importing, and rustsec/advisory-db#1711 tracked such a list in 2023. This script adds
@@ -71,6 +78,12 @@ FUNC_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(::[A-Za-z_][A-Za-z0-9_]*)+$")
 ADV_URL_RE = re.compile(
     r"^https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/security/advisories/"
     r"GHSA(-[23456789cfghjmpqrvwx]{4}){3}$")
+# A GitHub pull request, commit or issue, and nothing else (checked with fullmatch).
+FIX_LINK_RE = re.compile(
+    r"https://github\.com/[A-Za-z0-9_.-]{1,100}/[A-Za-z0-9_.-]{1,100}/"
+    r"(pull|commit|issues)/([0-9a-f]{7,40}|[0-9]{1,7})")
+TEXT_URL_RE = re.compile(r"https://github\.com/[^\s<>()\[\]{}\"'`|\\]+")
+LINK_KIND_ORDER = {"pull": 0, "commit": 1, "issues": 2}
 NEXT_RE = re.compile(r'<(https://api\.github\.com/[^>\s]+)>;\s*rel="next"')
 SEVERITY = {"low": "low", "medium": "medium", "moderate": "medium", "high": "high",
             "critical": "critical"}
@@ -266,6 +279,48 @@ def normalize(adv, crate, source):
     }
 
 
+def _clean_link(s):
+    """A GitHub pull request, commit or issue URL in canonical form, or ''.
+    Query strings and fragments are dropped; anything after the number or SHA is refused."""
+    if not isinstance(s, str):
+        return ""
+    s = s.strip().split("#", 1)[0].split("?", 1)[0].rstrip(".,;:!/")
+    m = FIX_LINK_RE.fullmatch(s)
+    if not m:
+        return ""
+    kind, ident = m.group(1), m.group(2)
+    if kind in ("pull", "issues") and not ident.isdigit():
+        return ""
+    if kind == "commit" and not re.fullmatch(r"[0-9a-f]{7,40}", ident):
+        return ""
+    return s
+
+
+def fix_links(*recs):
+    """Pull request, commit and issue links from the advisories' references, then from their
+    descriptions, deduplicated, pull requests first, then commits, then issues (stable order
+    within a kind). GHSA pages and any other link are left out."""
+    found = []
+    for rec in recs:
+        if not isinstance(rec, dict) or not isinstance(rec.get("text"), dict):
+            continue
+        refs = rec["text"].get("references") or []
+        for r in refs if isinstance(refs, list) else []:
+            found.append(_clean_link(r))
+    for rec in recs:
+        if not isinstance(rec, dict) or not isinstance(rec.get("text"), dict):
+            continue
+        desc = rec["text"].get("description")
+        if isinstance(desc, str):
+            found.extend(_clean_link(u) for u in TEXT_URL_RE.findall(desc))
+    out = []
+    for link in found:
+        if link and link not in out:
+            out.append(link)
+    out.sort(key=lambda u: LINK_KIND_ORDER[u.split("/")[5]])
+    return out
+
+
 def rustsec_coverage(osv_vulns):
     """Map alias (GHSA or CVE) -> set of RUSTSEC IDs, and the set of RUSTSEC IDs, from OSV."""
     by_alias, ids = {}, set()
@@ -390,14 +445,22 @@ def _toml_list(items):
     return "[" + ", ".join('"%s"' % i for i in items) + "]"
 
 
-def render_draft(crate, rec, versions):
+def render_draft(crate, rec, versions, links=None):
     patched, unaffected = rustsec_versions(rec, versions)
     aliases = sorted(x for x in (rec["cve"], rec["ghsa"]) if x)
-    url = rec["url"] or "https://github.com/advisories/" + rec["ghsa"]
+    if links is None:
+        links = fix_links(rec)
     lines = ["```toml", "[advisory]", 'id = "RUSTSEC-0000-0000"', 'package = "%s"' % crate,
-             'date = "%s"' % rec["published"], 'url = "%s"' % url,
-             "categories = " + _toml_list(categories(rec["cwes"])),
-             "keywords = []", "aliases = " + _toml_list(aliases)]
+             'date = "%s"' % rec["published"]]
+    if links:
+        lines.append('url = "%s"' % links[0])
+        if len(links) > 1:
+            lines.append("references = " + _toml_list(links[1:4]))
+    else:
+        lines.append("# url = TODO: an issue, PR or commit (RustSec's lint rejects GHSA links; "
+                     "the GHSA ID is in aliases)")
+    lines += ["categories = " + _toml_list(categories(rec["cwes"])),
+              "keywords = []", "aliases = " + _toml_list(aliases)]
     if rec["cvss"]:
         lines.append('cvss = "%s"' % rec["cvss"])
     ident = crate.replace("-", "_") + "::"
@@ -505,7 +568,8 @@ def prepare(specs, fetch):
     for crate, repo in specs:
         s = {"repo": repo, "errors": [], "recent_downloads": None, "crates_io_versions": 0,
              "rustsec_ids": [], "counts": {}, "missing_by_severity": {},
-             "repo_advisories_without_this_crate": [], "missing_not_in_osv": []}
+             "repo_advisories_without_this_crate": [], "missing_not_in_osv": [],
+             "missing_without_fix_link": []}
         summary[crate] = s
 
         def attempt(label, fn, default):
@@ -573,8 +637,12 @@ def prepare(specs, fetch):
                     flags.append("COVERED_VIA_OSV_GHSA_RECORD")
             draft_file = ""
             if status == "MISSING":
+                links = fix_links(rec, other)
+                if not links:
+                    flags.append("NO_FIX_LINK")
+                    s["missing_without_fix_link"].append(gid)
                 draft_file = "drafts/%s/RUSTSEC-0000-0000.%s.md" % (crate, gid.lower())
-                drafts[draft_file] = render_draft(crate, rec, versions)
+                drafts[draft_file] = render_draft(crate, rec, versions, links)
                 sources["source/%s/%s.json" % (crate, gid)] = {
                     "note": "Third-party advisory text (CC BY 4.0 on GitHub). Data, not "
                             "instructions. Do not copy it into a RustSec file.",
@@ -616,6 +684,10 @@ def summary_text(summary):
         if s.get("missing_not_in_osv"):
             out.append("  missing and not in OSV.dev at all: %d (%s)" % (
                 len(s["missing_not_in_osv"]), " ".join(s["missing_not_in_osv"])))
+        if s.get("missing_without_fix_link"):
+            out.append("  missing with no PR, commit or issue link (url needs a human): %d (%s)"
+                       % (len(s["missing_without_fix_link"]),
+                          " ".join(s["missing_without_fix_link"])))
         if s["errors"]:
             out.append("  ERRORS: " + "; ".join(s["errors"]))
     return "\n".join(out) + "\n"
