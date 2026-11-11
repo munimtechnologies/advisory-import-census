@@ -1,0 +1,9 @@
+repo,ghsa_id,status,published,severity,cve,rustsec_id,ghsa_reviewed,osv,ecosystems,packages
+boxlite-ai/boxlite,GHSA-gcv3-45r8-25hc,NEITHER,2026-10-10,HIGH,no,,,NOT_IN_OSV,go;npm;pip;rust,@boxlite-ai/boxlite;boxlite;boxlite-cli;github.com/boxlite-ai/boxlite/sdks/go
+fulgur-rs/fulgur,GHSA-m58v-wpjx-9fc8,NEITHER,2026-07-12,MODERATE,no,,,NOT_IN_OSV,rust,fulgur;fulgur-cli
+hickory-dns/hickory-dns,GHSA-6h5c-jjg5-wj59,NEITHER,2026-09-03,HIGH,no,,,NOT_IN_OSV,rust,hickory-recursor;hickory-resolver
+jdx/mise,GHSA-9mm4-fgvc-x7rp,NEITHER,2026-07-07,MODERATE,yes,,,NOT_IN_OSV,rust,mise
+nimiq/core-rs-albatross,GHSA-mhp7-gmqr-h56w,NEITHER,2026-08-11,HIGH,no,,,NOT_IN_OSV,rust,nimiq-primitives
+nimiq/core-rs-albatross,GHSA-w5f8-87h2-m573,NEITHER,2026-04-02,LOW,no,,,NOT_IN_OSV,rust,nimiq-network-libp2p
+uutils/coreutils,GHSA-54x6-c4c8-44fr,NEITHER,2026-09-17,MODERATE,no,,,NOT_IN_OSV,rust,coreutils
+uutils/coreutils,GHSA-g2fc-grr3-r5qg,NEITHER,2026-07-29,LOW,yes,,,NOT_IN_OSV,rust,uu_split

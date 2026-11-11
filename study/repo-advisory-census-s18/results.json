@@ -1,0 +1,192 @@
+{
+ "exploratory": {
+  "all_neither_any_date": 427,
+  "graded_status_counts": {
+   "BOTH": 211,
+   "GHSA_ONLY": 550,
+   "NEITHER": 332,
+   "RUSTSEC_ONLY": 56
+  },
+  "neither_by_month": {
+   "2021-11": 1,
+   "2022-01": 1,
+   "2022-05": 1,
+   "2022-07": 1,
+   "2022-11": 1,
+   "2023-02": 1,
+   "2023-10": 1,
+   "2024-01": 1,
+   "2024-04": 2,
+   "2024-07": 1,
+   "2024-09": 1,
+   "2025-05": 1,
+   "2025-06": 6,
+   "2025-07": 4,
+   "2025-10": 1,
+   "2025-12": 2,
+   "2026-01": 2,
+   "2026-02": 5,
+   "2026-04": 13,
+   "2026-05": 20,
+   "2026-06": 13,
+   "2026-07": 43,
+   "2026-08": 52,
+   "2026-09": 85,
+   "2026-10": 73
+  },
+  "neither_by_repo": {
+   "apollographql/router": 5,
+   "asfhtgkdavid/theshit": 1,
+   "aws/s2n-quic": 2,
+   "boxlite-ai/boxlite": 5,
+   "cedar-policy/cedar": 1,
+   "cel-rust/cel-rust": 2,
+   "cloudflare/quiche": 4,
+   "composefs/tar-rs": 1,
+   "dani-garcia/vaultwarden": 15,
+   "eclipse-biscuit/biscuit": 1,
+   "ericlbuehler/mistral.rs": 4,
+   "eugeny/russh": 1,
+   "fulgur-rs/fulgur": 4,
+   "gitoxidelabs/gitoxide": 7,
+   "hickory-dns/hickory-dns": 35,
+   "jdx/mise": 6,
+   "kanidm/kanidm": 4,
+   "kanidm/ldap3": 1,
+   "kivikakk/comrak": 2,
+   "kxxt/tracexec": 1,
+   "lemmynet/lemmy": 8,
+   "libp2p/rust-libp2p": 1,
+   "metaplex-foundation/metaplex-program-library": 2,
+   "mozilla/neqo": 7,
+   "nimiq/core-rs-albatross": 16,
+   "noir-lang/noir": 4,
+   "nolabs-ai/nono": 9,
+   "nubo-db/dynoxide": 2,
+   "openmls/openmls": 5,
+   "openvm-org/openvm": 8,
+   "orange-opensource/hurl": 5,
+   "otter-sec/anchor": 1,
+   "phala-network/dcap-qvl": 1,
+   "polkadot-evm/frontier": 5,
+   "praxis-proxy/praxis": 1,
+   "qhkm/zeptoclaw": 1,
+   "quincy-rs/quincy": 1,
+   "quinn-rs/quinn": 3,
+   "raphamorim/rio": 1,
+   "rpgp/rpgp": 1,
+   "rust-lang/rust": 5,
+   "rustcrypto/utils": 1,
+   "rustfs/rustfs": 23,
+   "smithy-lang/smithy-rs": 1,
+   "sonos/tract": 2,
+   "starship/starship": 2,
+   "static-web-server/static-web-server": 3,
+   "stellar/rs-stellar-xdr": 1,
+   "succinctlabs/sp1": 1,
+   "sunfishcode/cap-std": 1,
+   "superradcompany/microsandbox": 9,
+   "surrealdb/surrealdb": 21,
+   "tauri-apps/plugins-workspace": 1,
+   "tauri-apps/tauri": 1,
+   "tempoxyz/mpp-rs": 1,
+   "uutils/coreutils": 42,
+   "versatica/mediasoup": 4,
+   "wasmerio/wasmer": 4,
+   "zcashfoundation/zebra": 25
+  },
+  "neither_by_severity": {
+   "CRITICAL": 20,
+   "HIGH": 111,
+   "LOW": 49,
+   "MODERATE": 152
+  }
+ },
+ "gate": {
+  "frame_repos": 271,
+  "listed_ids": 1720,
+  "passed": true,
+  "rustsec_records": 1427,
+  "seed_in_frame": true,
+  "seed_repo_ids": 35
+ },
+ "graded_rows": 1149,
+ "neither": 332,
+ "predictions": {
+  "P1_neither_at_least_20": {
+   "held": true,
+   "value": 332
+  },
+  "P2_neither_repos_at_least_5": {
+   "held": true,
+   "value": 59
+  },
+  "P3_no_cve_share_at_least_3x_cve_share": {
+   "cve": {
+    "n": 765,
+    "share": 0.12287581699346405
+   },
+   "held": true,
+   "no_cve": {
+    "n": 384,
+    "share": 0.6197916666666666
+   }
+  },
+  "P4_high_or_critical_share_at_least_25pct": {
+   "held": true,
+   "of": 332,
+   "share": 0.39457831325301207,
+   "value": 131
+  },
+  "P5_listing_ok_at_least_90pct": {
+   "held": true,
+   "of": 261,
+   "share": 1.0,
+   "value": 261
+  },
+  "P6_hand_check": {
+   "held": null,
+   "note": "graded by hand from sample.csv: at least 7 of 8 confirmed"
+  }
+ },
+ "provenance": {
+  "bytes": 3828416,
+  "fetched_utc": "2026-11-11T01:39:28Z",
+  "sha256": "d07cc6bb467cf5d1427ab63f45393d460ae55b385726cc139f93a538b078f3c1",
+  "source": "https://osv-vulnerabilities.storage.googleapis.com/crates.io/all.zip"
+ },
+ "repo_status_counts": {
+  "DUPLICATE": 10,
+  "OK": 261
+ },
+ "sample": [
+  "GHSA-54x6-c4c8-44fr",
+  "GHSA-6h5c-jjg5-wj59",
+  "GHSA-9mm4-fgvc-x7rp",
+  "GHSA-g2fc-grr3-r5qg",
+  "GHSA-gcv3-45r8-25hc",
+  "GHSA-m58v-wpjx-9fc8",
+  "GHSA-mhp7-gmqr-h56w",
+  "GHSA-w5f8-87h2-m573"
+ ],
+ "seed_repo": {
+  "listed": 35,
+  "repo": "zip-rs/zip2",
+  "status_counts": {
+   "BOTH": 2,
+   "GHSA_ONLY": 4,
+   "NEITHER": 25,
+   "NO_PACKAGE": 1,
+   "RUSTSEC_ONLY": 3
+  }
+ },
+ "status_counts": {
+  "BOTH": 218,
+  "GHSA_ONLY": 554,
+  "NEITHER": 427,
+  "NO_PACKAGE": 98,
+  "OTHER_ECOSYSTEM": 346,
+  "RUSTSEC_ONLY": 77
+ },
+ "version": "0.1.0"
+}
