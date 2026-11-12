@@ -1,6 +1,6 @@
 # Rust advisory-gap audit: what we check, and what it has found
 
-*MV2, Munim, Inc. · mv2@munimtech.com · page licence CC BY 4.0 · first published 2026-11-12, updated 2026-11-12 (about 11:45 UTC)*
+*MV2, Munim, Inc. · mv2@munimtech.com · page licence CC BY 4.0 · first published 2026-11-12, updated 2026-11-12 (about 17:00 UTC)*
 
 Many Rust maintainers publish security advisories on their GitHub repository. Their users' scanners don't
 read those advisories directly:
@@ -24,16 +24,25 @@ pull requests. It was carried out by AI agents working for MV2 of Munim, Inc., a
 | rustix | 1 (unsound xattr functions) | #3543 | merged 2026-11-11: RUSTSEC-2026-0486 |
 | hickory-proto | 5 | #3546 | merged 2026-11-11: RUSTSEC-2026-0487 to -0491 |
 | russh | 6 high | #3538 | merged 2026-11-12: RUSTSEC-2026-0492 to -0496, and RUSTSEC-2024-0450 (an advisory dated 2024) |
-| hickory-net (+ hickory-proto) | 4 high DNSSEC (+2) | #3548 | merged 2026-11-12, with CVE aliases; RustSec IDs not yet assigned |
+| hickory-net (+ hickory-proto) | 4 high DNSSEC (+2) | #3548 | merged 2026-11-12: RUSTSEC-2026-0506 to -0509 (+ -0504, -0505) |
 | hickory-proto (CVE aliases) | CVE IDs for RUSTSEC-2026-0487 to -0491 | #3557 | merged 2026-11-12 |
-| hickory-resolver (+ hickory-recursor) | 4 high (+2) | #3550 | approved, with CVE aliases added in review |
+| hickory-resolver (+ hickory-recursor) | 4 high (+2) | #3550 | merged 2026-11-12: RUSTSEC-2026-0513 to -0516 (+ -0521, -0522) |
+| hickory-net (+ hickory-proto) | 4 moderate (+2) | #3559 | merged 2026-11-12: RUSTSEC-2026-0517 to -0520 (+ -0511, -0512) |
 
-Total merged so far: 27 RustSec advisories, plus CVE aliases added to 5 existing ones. The hickory-dns import was
-agreed with its maintainers first (hickory-dns/hickory-dns#4168), and the RustSec maintainer asked for the CVE
-backfill.
+Total merged so far: 39 RustSec advisories, plus CVE aliases added to 5 existing ones. Every merged hickory entry
+carries its CVE. The hickory-dns import was agreed with its maintainers first (hickory-dns/hickory-dns#4168), and the
+RustSec maintainer asked for the CVE backfill.
 
-Per-crate notes with fix commits and version checks are in [`docs/notes/`](notes/). The hickory CVE map is in
-[`docs/notes/hickory-cve-map-2026-11-12.md`](notes/hickory-cve-map-2026-11-12.md).
+Per-crate notes with fix commits and version checks are in [`docs/notes/`](notes/). The hickory CVE map, with the
+RustSec ID of every merged entry, is in [`docs/notes/hickory-cve-map-2026-11-12.md`](notes/hickory-cve-map-2026-11-12.md).
+
+## When the maintainers import their own advisories
+
+Sometimes asking works better than filing. On 2026-11-12 we pointed out in GitoxideLabs/gitoxide#3194 that none of
+gitoxide's 21 advisories from 2026 was in RustSec. Its maintainer decided to do the import himself and opened
+rustsec/advisory-db#3561 the same day (a draft: 66 entries across 35 crates for 26 GHSAs). He also said it "is now a
+monthly process". That covers far more than we would have filed, and it will keep up with future releases. When a
+project has many missing advisories, we ask first.
 
 ## What we check for each crate
 
@@ -56,9 +65,11 @@ Per-crate notes with fix commits and version checks are in [`docs/notes/`](notes
 ## Kinds of error we have found in published advisory metadata
 
 - **Pre-releases left out.** A range like `< 0.8.2` plus `0.9.0` misses `0.9.0-rc.1` to `rc.4`, which still
-  contained the bug (openmls GHSA-gc79). The same happened with tauri's 3.0 alphas.
+  contained the bug (openmls GHSA-gc79). The same happened with tauri's 3.0 alphas, and probably with the
+  hickory-net 0.26.0 betas for GHSA-v44v (question open in rustsec/advisory-db#3559).
 - **Off by one release.** "Affected `< 0.14.1`, patched `0.14.2`" when the fix landed after the 0.14.1 tag
-  (cel GHSA-rjfc). The same pattern appears in cel GHSA-grff.
+  (cel GHSA-rjfc). The same pattern appears in cel GHSA-grff and in libp2p-gossipsub GHSA-g3g5 and GHSA-vrx6
+  ([libp2p note](notes/libp2p-advisories-2026-11-12.md): seven high-severity 2026 advisories, none in RustSec).
 - **No patched version, although a fix had been released** (a rustix advisory).
 - **Inconsistent ranges across crates** after a code move (hickory GHSA-2vgh), and a lower bound that predates
   the vulnerable code (hickory-resolver `0.26.0-alpha.1`).
