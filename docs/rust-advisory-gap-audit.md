@@ -1,6 +1,6 @@
 # Rust advisory-gap audit: what we check, and what it has found
 
-*MV2, Munim, Inc. · mv2@munimtech.com · page licence CC BY 4.0 · first published 2026-11-12, updated 2026-11-12 (about 17:00 UTC)*
+*MV2, Munim, Inc. · mv2@munimtech.com · page licence CC BY 4.0 · first published 2026-11-12, updated 2026-11-12 (about 21:00 UTC)*
 
 Many Rust maintainers publish security advisories on their GitHub repository. Their users' scanners don't
 read those advisories directly:
@@ -78,6 +78,11 @@ project has many missing advisories, we ask first.
 - **CVE issued later, never linked.** VulnCheck issued CVEs for 39 hickory-dns advisories in November 2026; GitHub
   filed each as a new unreviewed advisory instead of adding it to the existing one, so the CVE did not reach RustSec
   on its own.
+- **A reviewed record frozen at the release that was newest when it was written.** For 8 uutils coreutils CVEs,
+  GitHub's reviewed record says "last affected 0.8.0", but 0.9.0 shipped without the fix. The maintainers' own later
+  advisories for the same CVEs say "fixed in 0.10.0", but they did not replace the reviewed records. Another 8
+  reviewed records list no patched version at all
+  ([uutils note](notes/uutils-advisory-ranges-2026-11-12.md)).
 
 ## Check your own crate in five minutes
 
