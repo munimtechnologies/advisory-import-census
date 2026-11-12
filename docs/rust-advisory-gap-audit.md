@@ -1,6 +1,6 @@
 # Rust advisory-gap audit: what we check, and what it has found
 
-*MV2, Munim, Inc. · mv2@munimtech.com · page licence CC BY 4.0 · first published 2026-11-12*
+*MV2, Munim, Inc. · mv2@munimtech.com · page licence CC BY 4.0 · first published 2026-11-12, updated 2026-11-12 (about 11:45 UTC)*
 
 Many Rust maintainers publish security advisories on their GitHub repository. Their users' scanners don't
 read those advisories directly:
@@ -23,14 +23,17 @@ pull requests. It was carried out by AI agents working for MV2 of Munim, Inc., a
 | cap-primitives | 1 critical (sandbox escape) | #3542 | merged 2026-11-11: RUSTSEC-2026-0482 |
 | rustix | 1 (unsound xattr functions) | #3543 | merged 2026-11-11: RUSTSEC-2026-0486 |
 | hickory-proto | 5 | #3546 | merged 2026-11-11: RUSTSEC-2026-0487 to -0491 |
-| russh | 6 high | #3538 | approved by the crate's maintainer, awaiting merge |
-| hickory-net (+ hickory-proto) | 4 high DNSSEC (+2) | #3548 | approved by a RustSec maintainer, awaiting merge |
-| hickory-resolver (+ hickory-recursor) | 4 high (+2) | #3550 | in review |
+| russh | 6 high | #3538 | merged 2026-11-12: RUSTSEC-2026-0492 to -0496, and RUSTSEC-2024-0450 (an advisory dated 2024) |
+| hickory-net (+ hickory-proto) | 4 high DNSSEC (+2) | #3548 | merged 2026-11-12, with CVE aliases; RustSec IDs not yet assigned |
+| hickory-proto (CVE aliases) | CVE IDs for RUSTSEC-2026-0487 to -0491 | #3557 | merged 2026-11-12 |
+| hickory-resolver (+ hickory-recursor) | 4 high (+2) | #3550 | approved, with CVE aliases added in review |
 
-Total merged so far: 15 RustSec advisories. The hickory-dns import was agreed with its maintainers
-first (hickory-dns/hickory-dns#4168).
+Total merged so far: 27 RustSec advisories, plus CVE aliases added to 5 existing ones. The hickory-dns import was
+agreed with its maintainers first (hickory-dns/hickory-dns#4168), and the RustSec maintainer asked for the CVE
+backfill.
 
-Per-crate notes with fix commits and version checks are in [`docs/notes/`](notes/).
+Per-crate notes with fix commits and version checks are in [`docs/notes/`](notes/). The hickory CVE map is in
+[`docs/notes/hickory-cve-map-2026-11-12.md`](notes/hickory-cve-map-2026-11-12.md).
 
 ## What we check for each crate
 
@@ -45,7 +48,10 @@ Per-crate notes with fix commits and version checks are in [`docs/notes/`](notes
    open the source of the boundary releases on docs.rs.
 4. **Which crate.** When code moves between crates (for example from hickory-proto to hickory-net), we check each
    crate separately, including crates with no fixed release (`patched = []` with an `unaffected` range).
-5. **Fresh text.** RustSec descriptions are rewritten from the fix commits, so they can be CC0.
+5. **CVE IDs.** A CVE can be issued weeks after the repository advisory, by a different numbering authority. RustSec's
+   automatic ID sync only picks it up when GitHub has reviewed the advisory, so we check OSV's CVE record for the GHSA
+   right before filing and add the CVE by hand.
+6. **Fresh text.** RustSec descriptions are rewritten from the fix commits, so they can be CC0.
 
 ## Kinds of error we have found in published advisory metadata
 
@@ -58,6 +64,9 @@ Per-crate notes with fix commits and version checks are in [`docs/notes/`](notes
   the vulnerable code (hickory-resolver `0.26.0-alpha.1`).
 - **A database fix that only reached downstream users.** A critical cap-std sandbox escape was in RustSec only
   as a Wasmtime advisory, so direct cap-std users got no warning until RUSTSEC-2026-0482.
+- **CVE issued later, never linked.** VulnCheck issued CVEs for 39 hickory-dns advisories in November 2026; GitHub
+  filed each as a new unreviewed advisory instead of adding it to the existing one, so the CVE did not reach RustSec
+  on its own.
 
 ## Check your own crate in five minutes
 
