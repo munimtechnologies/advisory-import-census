@@ -1,0 +1,82 @@
+# Rust advisory-gap audit: what we check, and what it has found
+
+*MV2, Munim, Inc. · mv2@munimtech.com · page licence CC BY 4.0 · first published 2026-11-12*
+
+Many Rust maintainers publish security advisories on their GitHub repository. Their users' scanners don't
+read those advisories directly:
+
+| Scanner | Reads |
+|---|---|
+| `cargo audit`, `cargo deny` | RustSec (rustsec/advisory-db) |
+| Dependabot | GitHub's **reviewed** advisories only |
+| `osv-scanner`, OSV-based tools | OSV, which imports RustSec and GitHub-reviewed |
+
+An advisory that only exists as an unreviewed repository advisory is often invisible to all three. This audit
+looks for those gaps crate by crate and, with the maintainers' consent where we ask, closes them with RustSec
+pull requests. It was carried out by AI agents working for MV2 of Munim, Inc., and every pull request says so.
+
+## Results so far (RustSec pull requests from munimv2)
+
+| Crate | Advisories | Pull request | Outcome |
+|---|---|---|---|
+| openssl | 1 + 7 (2026) | rustsec/advisory-db#3531, #3533 | merged 2026-11-09 / 11-10: RUSTSEC-2026-0463, -0473 to -0479 |
+| cap-primitives | 1 critical (sandbox escape) | #3542 | merged 2026-11-11: RUSTSEC-2026-0482 |
+| rustix | 1 (unsound xattr functions) | #3543 | merged 2026-11-11: RUSTSEC-2026-0486 |
+| hickory-proto | 5 | #3546 | merged 2026-11-11: RUSTSEC-2026-0487 to -0491 |
+| russh | 6 high | #3538 | approved by the crate's maintainer, awaiting merge |
+| hickory-net (+ hickory-proto) | 4 high DNSSEC (+2) | #3548 | approved by a RustSec maintainer, awaiting merge |
+| hickory-resolver (+ hickory-recursor) | 4 high (+2) | #3550 | in review |
+
+Total merged so far: 15 RustSec advisories. The hickory-dns import was agreed with its maintainers
+first (hickory-dns/hickory-dns#4168).
+
+Per-crate notes with fix commits and version checks are in [`docs/notes/`](notes/).
+
+## What we check for each crate
+
+1. **Coverage.** Every advisory on the repository's Security tab, compared with RustSec
+   (`rustsec.org/packages/<crate>.html`), GitHub's reviewed database (`github.com/advisories/<GHSA>`: 404 means
+   unreviewed) and OSV (`api.osv.dev/v1/vulns/<id>`). We also look for a CVE duplicate already in RustSec under
+   another ID before calling anything missing.
+2. **Fix commit.** Repository advisories rarely link one. We find it by comparing release tags and reading the
+   diff, including GitHub's "Merge commit from fork" commits for privately developed fixes. RustSec wants the
+   fix commit, PR or issue as the `url`.
+3. **Version ranges against the code, not the form.** We list crates.io releases by date around each fix and
+   open the source of the boundary releases on docs.rs.
+4. **Which crate.** When code moves between crates (for example from hickory-proto to hickory-net), we check each
+   crate separately, including crates with no fixed release (`patched = []` with an `unaffected` range).
+5. **Fresh text.** RustSec descriptions are rewritten from the fix commits, so they can be CC0.
+
+## Kinds of error we have found in published advisory metadata
+
+- **Pre-releases left out.** A range like `< 0.8.2` plus `0.9.0` misses `0.9.0-rc.1` to `rc.4`, which still
+  contained the bug (openmls GHSA-gc79). The same happened with tauri's 3.0 alphas.
+- **Off by one release.** "Affected `< 0.14.1`, patched `0.14.2`" when the fix landed after the 0.14.1 tag
+  (cel GHSA-rjfc). The same pattern appears in cel GHSA-grff.
+- **No patched version, although a fix had been released** (a rustix advisory).
+- **Inconsistent ranges across crates** after a code move (hickory GHSA-2vgh), and a lower bound that predates
+  the vulnerable code (hickory-resolver `0.26.0-alpha.1`).
+- **A database fix that only reached downstream users.** A critical cap-std sandbox escape was in RustSec only
+  as a Wasmtime advisory, so direct cap-std users got no warning until RUSTSEC-2026-0482.
+
+## Check your own crate in five minutes
+
+1. Open `https://github.com/<owner>/<repo>/security/advisories` and list the GHSA IDs.
+2. For each one: `https://github.com/advisories/<GHSA>` (404 = Dependabot won't report it) and
+   `https://rustsec.org/packages/<crate>.html` (missing = cargo-audit won't report it).
+3. For each fix, check that the first release with the fix matches the "patched" field. Then open the release
+   just before it on docs.rs and confirm the bug is still there, so you know the range is right.
+4. To add missing advisories to RustSec, open a pull request on rustsec/advisory-db with one file per advisory
+   under `crates/<crate>/`. Name each file `RUSTSEC-0000-0000.<slug>.md` and set its `url` to the fix commit.
+   The [RustSec contributing guide](https://github.com/rustsec/advisory-db/blob/main/CONTRIBUTING.md) has the
+   format.
+
+## Want us to look at your crate?
+
+If you maintain a Rust crate or organisation and want this check done, open an issue in this repository or
+email mv2@munimtech.com. For open-source crates it is free. You get a short public note like the ones in
+[`docs/notes/`](notes/), and RustSec pull requests only if you want them. We don't contact maintainers in bulk.
+The work is done by AI agents working for MV2 of Munim, Inc., and every result is checked against the source
+before anything is filed.
+
+Licence: this page is CC BY 4.0. The repository's code is Apache-2.0.
