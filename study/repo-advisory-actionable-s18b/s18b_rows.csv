@@ -1,0 +1,333 @@
+repo,ghsa_id,published,severity,s18_cve,cve_id,status,covered_by,covered_same_crate,rust_packages,crates_found,repo_match,max_recent_downloads,ranges
+composefs/tar-rs,GHSA-747h-hw98-c42x,2026-05-18,LOW,no,,ACTIONABLE,,,tar,tar,yes,77886170,tar <= 0.4.44 -> none
+nolabs-ai/nono,GHSA-6542-g6qc-gj95,2026-09-16,MODERATE,no,,ACTIONABLE,,,nono-cli,nono-cli,yes,918,nono-cli <= 0.76.0 -> 0.78.0
+nolabs-ai/nono,GHSA-7cwr-ghvv-24jf,2026-09-16,MODERATE,no,,ACTIONABLE,,,nono,nono,yes,559662,nono <= 0.71.0 -> 0.78.0
+nolabs-ai/nono,GHSA-222m-44fg-jx8g,2026-09-16,MODERATE,no,,ACTIONABLE,,,nono,nono,yes,559662,nono <= 0.71.0 -> 0.78.0
+nolabs-ai/nono,GHSA-8r33-hr9m-69wh,2026-09-16,HIGH,no,,NO_CRATE,,,`nono-proxy` component of `nono`,,,,`nono-proxy` component of `nono` <= 0.72.0 -> 0.73.0 | `nono-proxy` component of `nono` >=0.73.0 -> Not yet
+nolabs-ai/nono,GHSA-gcpc-cqvp-h5c8,2026-08-19,LOW,no,,ACTIONABLE,,,nono,nono,yes,559662,nono <=0.73.0 -> 0.74.0
+nolabs-ai/nono,GHSA-6hww-cch7-pfrh,2026-08-20,MODERATE,no,,ACTIONABLE,,,nono,nono,yes,559662,nono <=0.73.0 -> 0.74.0
+nolabs-ai/nono,GHSA-7q3j-vfmx-gc9g,2026-08-20,MODERATE,no,,ACTIONABLE,,,nono;nono-proxy,nono;nono-proxy,yes,559662,nono <=0.73.0 -> 0.74.0 | nono-proxy <=0.73.0 -> 0.74.0
+nolabs-ai/nono,GHSA-q7m6-rr8w-vjff,2026-09-30,MODERATE,no,,NO_CRATE,,,,,,,
+nolabs-ai/nono,GHSA-vhq2-h2q7-8mmc,2026-08-20,HIGH,no,,ACTIONABLE,,,nono,nono,yes,559662,nono <=0.73.0 -> 0.74.0
+apollographql/router,GHSA-6p7q-4gq4-4vf7,2026-07-21,MODERATE,yes,CVE-2026-102283,ACTIONABLE,,,apollo-router;apollo-federation,apollo-router;apollo-federation,yes,62648,apollo-router 2.16.0 -> >=2.16.1 | apollo-federation 2.16.0 -> >=2.16.1
+apollographql/router,GHSA-8j6q-96xg-96rr,2026-07-21,MODERATE,yes,CVE-2026-102286,ACTIONABLE,,,apollo-router,apollo-router,yes,19512,"apollo-router >= 2.12.0, <2.16.1 -> 2.16.1"
+apollographql/router,GHSA-69r6-7hv4-h9f2,2026-07-21,MODERATE,yes,CVE-2026-102284,ACTIONABLE,,,apollo-router,apollo-router,yes,19512,"apollo-router >= 2.11.0, < 2.16.1 -> 2.16.1 | apollo-router < 2.10.5 -> 2.10.5"
+apollographql/router,GHSA-m5q4-q9rr-m3vr,2026-07-21,HIGH,yes,CVE-2026-102285,ACTIONABLE,,,apollo-router,apollo-router,yes,19512,"apollo-router >= 2.11.0, < 2.16.1 -> 2.16.1 | apollo-router >= 2.0.0, < 2.10.5 -> 2.10.5"
+apollographql/router,GHSA-gr6h-4wpf-xp52,2026-07-21,HIGH,yes,CVE-2026-102287,ACTIONABLE,,,apollo-router,apollo-router,yes,19512,"apollo-router >= 2.11.0, < 2.16.1 ->  >= 2.16.1 | apollo-router >= 1.8.0, < 2.10.5 ->  >= 2.10.5, < 2.11.0"
+asfhtgkdavid/theshit,GHSA-ggq4-hxgw-346r,2026-08-22,HIGH,no,,ACTIONABLE,,,theshit,theshit,yes,26,theshit < 0.2.2 -> 0.2.2
+aws/s2n-quic,GHSA-5rw2-6x5m-v22x,2026-09-22,HIGH,yes,CVE-2026-94450,ACTIONABLE,,,s2n-quic,s2n-quic,yes,199794,s2n-quic <= v1.88.0 -> 1.89.0
+aws/s2n-quic,GHSA-gj4j-vp5f-86cf,2022-05-05,MODERATE,no,,ACTIONABLE,,,s2n-quic,s2n-quic,yes,199794,s2n-quic < v1.1.1 -> v1.1.1
+eclipse-biscuit/biscuit,GHSA-rgqv-mwc3-c78m,2024-07-31,LOW,yes,CVE-2024-42350,CVE_COVERED,GHSA-p9w4-585h-g3c7,yes,biscuit-auth,biscuit-auth,no,2096374,biscuit-auth 4 -> 5.0.0
+boxlite-ai/boxlite,GHSA-3vqm-q287-vj2j,2026-10-10,CRITICAL,no,,ACTIONABLE,,,boxlite-cli,boxlite-cli,yes,184,"boxlite-cli >= 0.7.0, <= 0.10.5 -> none"
+boxlite-ai/boxlite,GHSA-vgfc-2cjj-9qwc,2026-10-10,HIGH,no,,ACTIONABLE,,,boxlite;boxlite-cli,boxlite;boxlite-cli,yes,4776,boxlite < 0.10.1 -> 0.10.1 | boxlite-cli < 0.10.1 -> 0.10.1
+boxlite-ai/boxlite,GHSA-7pxx-6hq6-x3jj,2026-10-10,CRITICAL,no,,ACTIONABLE,,,boxlite;boxlite-cli,boxlite;boxlite-cli,yes,4776,boxlite < 0.10.1 -> 0.10.1 | boxlite-cli < 0.10.1 -> 0.10.1
+boxlite-ai/boxlite,GHSA-gcv3-45r8-25hc,2026-10-10,HIGH,no,,ACTIONABLE,,,boxlite;boxlite-cli,boxlite;boxlite-cli,yes,4776,"boxlite >= 0.3.2, < 0.10.0 -> 0.10.0 | boxlite-cli >= 0.3.2, < 0.10.0 -> 0.10.0"
+boxlite-ai/boxlite,GHSA-c7v3-78jq-x45m,2026-08-26,HIGH,no,,ACTIONABLE,,,boxlite;boxlite-cli,boxlite;boxlite-cli,yes,4776,boxlite < 0.10.0 -> 0.10.0 | boxlite-cli < 0.10.0 -> 0.10.0
+gitoxidelabs/gitoxide,GHSA-xw69-xv93-5fjv,2026-10-22,MODERATE,no,,ACTIONABLE,,,gix-fs,gix-fs,yes,14982039,gix-fs <= 0.24.0 -> >= 0.24.1
+gitoxidelabs/gitoxide,GHSA-989c-xj77-266r,2026-10-22,MODERATE,no,,ACTIONABLE,,,gix-commitgraph;gitoxide,gix-commitgraph;gitoxide,yes,14212637,gix-commitgraph <= 0.41.0 -> >= 0.42.0 | gitoxide <= 0.60.0 -> >= 0.61.0
+gitoxidelabs/gitoxide,GHSA-pmpw-wwcm-r8rc,2026-09-25,MODERATE,no,,ACTIONABLE,,,gix-mailmap,gix-mailmap,yes,1618153,gix-mailmap <= 0.34.1 -> >= 0.35.0
+gitoxidelabs/gitoxide,GHSA-6p9q-f2xg-6pr5,2026-09-25,HIGH,no,,ACTIONABLE,,,gix-fs,gix-fs,yes,14982039,gix-fs <= 0.22.1 -> >= 0.23.0
+gitoxidelabs/gitoxide,GHSA-jrcm-326h-gpp8,2026-08-03,HIGH,no,,ACTIONABLE,,,gix-url;gix-transport,gix-url;gix-transport,yes,14366270,gix-url <= 0.32.0 -> >= 0.37.1 | gix-transport <= 0.49.0 -> >= 0.58.1
+gitoxidelabs/gitoxide,GHSA-pmm9-4h7q-24c8,2026-08-02,MODERATE,no,,ACTIONABLE,,,gix-worktree-state;gix-worktree;gix-features;gix,gix-worktree-state;gix-worktree;gix-features;gix,yes,14997807,gix-worktree-state <= 0.32.0 -> >= 0.33.0 | gix-worktree <= 0.54.0 -> >= 0.55.0 | gix-features <= 0.48.1 -> >= 0.49.0 | gix <= 0.85.0 -> >= 0.86.0
+gitoxidelabs/gitoxide,GHSA-6wr8-3w4h-j9wj,2026-07-15,LOW,no,,ACTIONABLE,,,gix-credentials,gix-credentials,yes,8300577,gix-credentials <= 0.38.1 -> >= 0.38.2
+sunfishcode/cap-std,GHSA-hp8f-xmx4-4qrg,2026-08-20,CRITICAL,no,,NOW_KNOWN,,,cap-primitives;cap-std,cap-primitives;cap-std,no,18075508,"cap-primitives <= 4.0.2 -> 4.0.3, 3.4.6 | cap-std <= 4.0.2 -> 4.0.3, 3.4.6"
+cedar-policy/cedar,GHSA-m84h-6f26-p3p7,2026-10-22,HIGH,no,,ACTIONABLE,,,cedar-policy,cedar-policy,yes,4154019,"cedar-policy >= 4.3, < 4.13 -> >= 4.13"
+cel-rust/cel-rust,GHSA-grff-fjh9-2rc7,2026-08-16,HIGH,no,,ACTIONABLE,,,cel,cel,yes,5105092,cel <0.14.2 -> 0.14.3
+cel-rust/cel-rust,GHSA-rjfc-c5r6-rqj7,2026-08-12,HIGH,no,,ACTIONABLE,,,cel,cel,yes,5105092,cel <0.14.1 -> 0.14.2
+cloudflare/quiche,GHSA-4q5x-gp38-rfp4,2026-07-14,HIGH,yes,CVE-2026-12707,ACTIONABLE,,,quiche,quiche,yes,626516,quiche >= 0.15.0 -> 0.29.3
+cloudflare/quiche,GHSA-4fgf-9xrr-88gf,2026-07-14,HIGH,yes,CVE-2026-12523,ACTIONABLE,,,quiche,quiche,yes,626516,quiche >= 0.1.0 -> 0.29.3
+cloudflare/quiche,GHSA-2v9p-3p3h-w56j,2025-06-17,MODERATE,yes,CVE-2025-4820,NO_CRATE,,,cloudflare-quiche,,,,cloudflare-quiche < 0.24.4 -> 0.24.4
+cloudflare/quiche,GHSA-6m38-4r9r-5c4m,2025-06-17,HIGH,yes,CVE-2025-4821,NO_CRATE,,,cloudflare-quiche,,,,cloudflare-quiche < 0.24.4 -> 0.24.4
+dani-garcia/vaultwarden,GHSA-wc45-m6pv-rrf9,2026-10-03,MODERATE,no,,ACTIONABLE,,,vaultwarden,vaultwarden,yes,43,"vaultwarden >1.36.0, < 1.37.0 -> 1.37.0"
+dani-garcia/vaultwarden,GHSA-jq2g-h4xr-4mcr,2026-10-03,MODERATE,no,,ACTIONABLE,,,vaultwarden,vaultwarden,yes,43,vaultwarden ≤ 1.36.0 -> 1.37.0
+dani-garcia/vaultwarden,GHSA-96f7-78q5-j345,2026-10-03,MODERATE,no,,ACTIONABLE,,,vaultwarden,vaultwarden,yes,43,vaultwarden <= 1.36.0 -> 1.37.0
+dani-garcia/vaultwarden,GHSA-f3qw-qg77-hmm4,2026-10-03,MODERATE,no,,ACTIONABLE,,,vaultwarden,vaultwarden,yes,43,vaultwarden ≤ 1.36.0  -> 1.37.0
+dani-garcia/vaultwarden,GHSA-vh5m-fc9v-m84g,2026-10-03,MODERATE,no,,ACTIONABLE,,,vaultwarden,vaultwarden,yes,43,vaultwarden <=1.36.0 -> 1.37.0
+dani-garcia/vaultwarden,GHSA-xwf8-pjh7-h589,2026-10-03,MODERATE,no,,ACTIONABLE,,,vaultwarden,vaultwarden,yes,43,vaultwarden <= 1.36.0 -> 1.37.0
+dani-garcia/vaultwarden,GHSA-rxhg-2pw9-vf25,2026-10-03,MODERATE,no,,ACTIONABLE,,,vaultwarden,vaultwarden,yes,43,vaultwarden <= 1.36.0 -> 1.37.0
+dani-garcia/vaultwarden,GHSA-88qc-6ch9-mc3j,2026-10-03,MODERATE,no,,ACTIONABLE,,,vaultwarden,vaultwarden,yes,43,vaultwarden <= 1.36.0 -> 1.37.0
+dani-garcia/vaultwarden,GHSA-455c-vgg9-jxw8,2026-10-03,MODERATE,no,,ACTIONABLE,,,vaultwarden,vaultwarden,yes,43,vaultwarden < 1.37.0 -> 1.37.0
+dani-garcia/vaultwarden,GHSA-rqf8-2568-r7mc,2026-10-03,MODERATE,no,,ACTIONABLE,,,vaultwarden,vaultwarden,yes,43,vaultwarden <= 1.36.0 -> 1.37.0
+dani-garcia/vaultwarden,GHSA-hw4g-2v3f-74x5,2026-10-03,MODERATE,yes,CVE-2026-116678,ACTIONABLE,,,vaultwarden,vaultwarden,yes,43,vaultwarden <= 1.36.0 -> 1.37.0
+dani-garcia/vaultwarden,GHSA-937x-3j8m-7w7p,2026-04-25,HIGH,yes,CVE-2026-43913,ACTIONABLE,,,vaultwarden,vaultwarden,yes,43,vaultwarden <=1.35.4 -> 1.35.5
+dani-garcia/vaultwarden,GHSA-569v-845w-g82p,2026-04-25,HIGH,yes,CVE-2026-43912,ACTIONABLE,,,vaultwarden,vaultwarden,yes,43,vaultwarden <=1.35.4 -> 1.35.5
+dani-garcia/vaultwarden,GHSA-6j4w-g4jh-xjfx,2026-04-25,MODERATE,yes,CVE-2026-43911,ACTIONABLE,,,Vaultwarden,vaultwarden,yes,43,Vaultwarden <= 1.35.4 -> 1.35.5
+dani-garcia/vaultwarden,GHSA-x7g7-cgx5-jhx2,2026-04-25,MODERATE,yes,CVE-2026-31835,ACTIONABLE,,,vaultwarden,vaultwarden,yes,43,vaultwarden <= 1.35.4 -> 1.35.5
+ericlbuehler/mistral.rs,GHSA-34w8-j94f-8c5w,2026-10-18,MODERATE,no,,ACTIONABLE,,,mistralrs-core,mistralrs-core,yes,96034,mistralrs-core < 0.9.3 -> >=0.9.5
+ericlbuehler/mistral.rs,GHSA-9qj9-hhpg-c7xj,2026-09-24,HIGH,no,,ACTIONABLE,,,mistralrs,mistralrs,yes,93833,mistralrs <=0.9.3 -> 0.9.4
+ericlbuehler/mistral.rs,GHSA-9cr8-7h5q-xx94,2026-09-24,HIGH,no,,ACTIONABLE,,,mistralrs,mistralrs,yes,93833,mistralrs <= 0.9.3 -> 0.9.4
+ericlbuehler/mistral.rs,GHSA-376v-h85w-v85v,2026-09-24,CRITICAL,no,,ACTIONABLE,,,mistralrs,mistralrs,yes,93833,mistralrs <= 0.9.3 -> 0.9.4
+eugeny/russh,GHSA-3hm4-p7h4-rvwp,2026-10-25,HIGH,no,,ACTIONABLE,,,russh,russh,no,4585962,russh <0.65 -> 0.65
+fulgur-rs/fulgur,GHSA-m58v-wpjx-9fc8,2026-07-12,MODERATE,no,,ACTIONABLE,,,fulgur;fulgur-cli,fulgur;fulgur-cli,yes,5988,"fulgur >= 0.5.13, < 0.30.0 -> 0.30.0 | fulgur-cli >= 0.5.13, < 0.30.0 -> 0.30.0"
+fulgur-rs/fulgur,GHSA-v8x5-rchq-jr47,2026-07-07,HIGH,yes,CVE-2026-68540,ACTIONABLE,,,fulgur,fulgur,yes,5988,"fulgur >= 0.6.0, < 0.33.0 -> 0.33.0"
+fulgur-rs/fulgur,GHSA-vw2v-g4x7-xcqg,2026-07-05,HIGH,yes,CVE-2026-68539,ACTIONABLE,,,fulgur,fulgur,yes,5988,"fulgur >= 0.4.4, < 0.29.0 -> 0.29.0"
+fulgur-rs/fulgur,GHSA-395p-pj7r-jm42,2026-07-04,HIGH,yes,CVE-2026-68538,ACTIONABLE,,,fulgur,fulgur,yes,5988,"fulgur >= 0.15.0, < 0.27.0 -> 0.27.0"
+hickory-dns/hickory-dns,GHSA-67wc-6jq8-ghrc,2026-09-03,MODERATE,no,,NOW_KNOWN,,,hickory-proto,hickory-proto,yes,34518840,hickory-proto >= 0.18 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-x962-5xwx-fr8x,2026-09-03,LOW,no,,NOW_KNOWN,,,hickory-proto,hickory-proto,yes,34518840,hickory-proto 0.26.0 .. 0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-hx8c-fjhc-hmf5,2026-09-03,HIGH,no,,NOW_KNOWN,,,hickory-proto,hickory-proto,yes,34518840,hickory-proto v0.20.1 .. v0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-wgfr-mphw-j5g4,2026-09-03,HIGH,no,,NOW_KNOWN,,,hickory-proto,hickory-proto,yes,34518840,hickory-proto v0.20.1 .. v0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-4rph-pmrw-mwpw,2026-09-03,HIGH,no,,NOW_KNOWN,,,hickory-proto,hickory-proto,yes,34518840,hickory-proto 0.24.0 .. 0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-g5xf-qv55-wv37,2026-09-03,MODERATE,no,,ACTIONABLE,,,hickory-dns,hickory-dns,yes,1702,hickory-dns < 0.26.2 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-2f4m-fq7w-mrgx,2026-09-03,MODERATE,no,,ACTIONABLE,,,hickory-dns,hickory-dns,yes,1702,"hickory-dns >=0.24.0, <=0.26.1 -> none"
+hickory-dns/hickory-dns,GHSA-5r56-v84h-c3w5,2026-09-03,MODERATE,no,,ACTIONABLE,,,hickory-server,hickory-server,yes,3285002,hickory-server >= 0.24.0 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-3w89-7rx5-hpwx,2026-09-03,LOW,no,,ACTIONABLE,,,hickory-net;hickory-proto,hickory-net;hickory-proto,yes,34518840,hickory-net 0.26.0 .. 0.26.1 -> 0.26.2 | hickory-proto 0.25.0 .. 0.25.2 -> none
+hickory-dns/hickory-dns,GHSA-vrv5-968r-5ggm,2026-09-03,LOW,no,,ACTIONABLE,,,hickory-net;hickory-proto,hickory-net;hickory-proto,yes,34518840,hickory-net 0.26.0-beta.1 .. 0.26.1 -> 0.26.2 | hickory-proto <= 0.26.0-alpha.1 -> none
+hickory-dns/hickory-dns,GHSA-p2jv-r3m3-7wf4,2026-09-03,HIGH,no,,ACTIONABLE,,,hickory-net;hickory-proto,hickory-net;hickory-proto,yes,34518840,hickory-net 0.26.0-beta.1 .. 0.26.1 -> 0.26.2 | hickory-proto <= 0.26.0-alpha.1 -> none
+hickory-dns/hickory-dns,GHSA-929p-gjf6-5hqj,2026-09-03,MODERATE,no,,ACTIONABLE,,,hickory-proto;hickory-net,hickory-proto;hickory-net,yes,34518840,hickory-proto <= 0.26.0-alpha.1 -> none | hickory-net 0.26.0-beta.1 .. 0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-8hq4-5836-w6q4,2026-09-03,MODERATE,no,,ACTIONABLE,,,hickory-server,hickory-server,yes,3285002,hickory-server v0.25.0 .. v0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-vcjp-57rr-mpfw,2026-09-03,MODERATE,no,,ACTIONABLE,,,hickory-recursor;hickory-resolver,hickory-recursor;hickory-resolver,yes,32680088,hickory-recursor v0.25.0 .. v0.25.2 -> none | hickory-resolver v0.26.0 .. v0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-v44v-c8m4-gc43,2026-09-03,MODERATE,no,,ACTIONABLE,,,hickory-net,hickory-net,yes,19340477,hickory-net 0.26.0 .. 0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-cx5j-p54p-q756,2026-09-03,HIGH,no,,ACTIONABLE,,,hickory-recursor;hickory-resolver,hickory-recursor;hickory-resolver,yes,32680088,hickory-recursor 0.25.0-alpha.3 .. 0.25.2 -> none | hickory-resolver 0.26.0-alpha.1+ -> 0.26.2
+hickory-dns/hickory-dns,GHSA-qw83-5pm2-ggp5,2026-09-03,HIGH,no,,ACTIONABLE,,,hickory-net,hickory-net,yes,19340477,hickory-net v0.26.0 .. v0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-9px7-7m25-f6q2,2026-09-03,MODERATE,no,,ACTIONABLE,,,hickory-recursor;hickory-resolver,hickory-recursor;hickory-resolver,yes,32680088,hickory-recursor * -> none | hickory-resolver v0.26.0 .. v0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-g8wg-4mwh-fjfv,2026-09-03,MODERATE,no,,ACTIONABLE,,,hickory-server,hickory-server,yes,3285002,hickory-server <= 0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-57pw-897j-v4j6,2026-09-03,MODERATE,no,,ACTIONABLE,,,hickory-net;hickory-proto,hickory-net;hickory-proto,yes,34518840,hickory-net 0.26.0-beta.1 .. 0.26.1 -> 0.26.2 | hickory-proto <= 0.26.0-alpha.1 -> none
+hickory-dns/hickory-dns,GHSA-7php-9j59-g3ch,2026-09-03,MODERATE,no,,ACTIONABLE,,,hickory-net;hickory-proto,hickory-net;hickory-proto,yes,34518840,hickory-net 0.26.0-beta.1 .. 0.26.1 -> 0.26.2 | hickory-proto <= 0.26.0-alpha.1 -> none
+hickory-dns/hickory-dns,GHSA-rx82-4p2j-j5cv,2026-09-03,MODERATE,no,,ACTIONABLE,,,hickory-net,hickory-net,yes,19340477,hickory-net v0.26.0-beta.1 .. v0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-j2rc-wxwh-62g9,2026-09-03,LOW,no,,ACTIONABLE,,,hickory-net;hickory-proto,hickory-net;hickory-proto,yes,34518840,hickory-net v0.26.0-beta.1 .. v0.26.1 -> 0.26.2 | hickory-proto v0.24.0 .. v0.26.0-alpha.1 -> none
+hickory-dns/hickory-dns,GHSA-86vr-jm6c-7cpg,2026-09-03,MODERATE,no,,ACTIONABLE,,,hickory-proto;hickory-net,hickory-proto;hickory-net,yes,34518840,hickory-proto <= 0.26.0-alpha.1 -> none | hickory-net 0.26.0-beta.1 .. 0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-624w-vvww-xvpw,2026-09-03,MODERATE,no,,ACTIONABLE,,,hickory-proto;hickory-net,hickory-proto;hickory-net,yes,34518840,hickory-proto 0.25 .. 0.26.0-alpha.1 -> none | hickory-net 0.26.0-beta.1 .. 0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-3r6v-f3jh-vvqm,2026-09-03,MODERATE,no,,ACTIONABLE,,,hickory-proto;hickory-net,hickory-proto;hickory-net,yes,34518840,hickory-proto <= 0.26.0-alpha.1 -> none | hickory-net 0.26.0-beta.1 .. 0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-xv7c-h5g9-x25x,2026-09-03,LOW,no,,ACTIONABLE,,,hickory-proto;hickory-net,hickory-proto;hickory-net,yes,34518840,hickory-proto v0.25.0-alpha.1 ... 0.26.0-alpha.1 -> none | hickory-net 0.26.0-beta.1 ... 0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-29q9-p769-j8gq,2026-09-03,LOW,no,,ACTIONABLE,,,hickory-recursor;hickory-resolver;hickory-net,hickory-recursor;hickory-resolver;hickory-net,yes,32680088,hickory-recursor 0.25.0 .. 0.26.0-alpha.1 -> none | hickory-resolver 0.26.0-alpha.1 .. 0.26.1 -> 0.26.2 | hickory-net 0.26.0-beta.1 .. 0.26.1  -> 0.26.2
+hickory-dns/hickory-dns,GHSA-wjgj-fvg9-65w9,2026-09-03,LOW,no,,ACTIONABLE,,,hickory-proto;hickory-net,hickory-proto;hickory-net,yes,34518840,hickory-proto < v0.26.0-beta.1 -> none | hickory-net v0.26.0-beta.1 .. 0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-3jvh-8vj5-65rq,2026-09-03,MODERATE,no,,ACTIONABLE,,,hickory-proto;hickory-net,hickory-proto;hickory-net,yes,34518840,hickory-proto 0.25.0-alpha.3 .. 0.25.2 -> none | hickory-net 0.26.0-alpha.1 .. 0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-588m-chg6-8jqj,2026-09-03,HIGH,no,,ACTIONABLE,,,hickory-net;hickory-proto,hickory-net;hickory-proto,yes,34518840,hickory-net v0.26.0-beta.1 .. v0.26.1 -> 0.26.2 | hickory-proto v0.25.0 .. v0.26.0-alpha.1 -> none
+hickory-dns/hickory-dns,GHSA-2hxp-x833-73f7,2026-09-03,MODERATE,no,,ACTIONABLE,,,hickory-recursor;hickory-resolver,hickory-recursor;hickory-resolver,yes,32680088,hickory-recursor * -> none | hickory-resolver v0.26.0-beta.1 .. v0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-4jwp-xjwm-333g,2026-09-03,MODERATE,no,,ACTIONABLE,,,hickory-recursor;hickory-resolver;hickory-proto;hickory-server,hickory-recursor;hickory-resolver;hickory-proto;hickory-server,yes,34518840,hickory-recursor 0.25.0-alpha.3 .. 0.26.0-alpha.1 -> none | hickory-resolver 0.26.0 .. 0.26.1 -> 0.26.2 | hickory-proto 0.26.0 .. 0.26.1 -> 0.26.2 | hickory-server 0.25.0-alpha.1 .. 0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-2vgh-3wfw-qj7c,2026-09-03,HIGH,no,,ACTIONABLE,,,hickory-proto;hickory-net,hickory-proto;hickory-net,yes,34518840,hickory-proto 0.1 .. 0.25.0-alpha.3 -> none | hickory-net v0.26.0-beta.1 .. 0.26.1 -> 0.26.2
+hickory-dns/hickory-dns,GHSA-6h5c-jjg5-wj59,2026-09-03,HIGH,no,,ACTIONABLE,,,hickory-recursor;hickory-resolver,hickory-recursor;hickory-resolver,yes,32680088,hickory-recursor 0.25.0-alpha.3 .. 0.25.2 -> none | hickory-resolver 0.26.0-alpha.1 .. 0.26.1 -> 0.26.2
+jdx/mise,GHSA-r9rm-ppfv-c993,2026-10-02,HIGH,no,,ACTIONABLE,,,mise;mise-sigstore,mise;mise-sigstore,yes,7564,mise >= 2025.9.13 -> 2026.10.0 | mise-sigstore >= 0.1.0 -> none
+jdx/mise,GHSA-fh4m-2w73-96r9,2026-10-17,HIGH,no,,ACTIONABLE,,,mise,mise,yes,7564,mise <= 2026.9.18 -> 2026.10.0
+jdx/mise,GHSA-wcqh-j26q-g44x,2026-10-02,MODERATE,no,,ACTIONABLE,,,mise,mise,yes,7564,mise <= 2026.9.18 -> 2026.10.0
+jdx/mise,GHSA-333c-h2jr-xv83,2026-09-30,MODERATE,no,,ACTIONABLE,,,mise,mise,yes,7564,mise <= 2026.9.17 -> 2026.9.18
+jdx/mise,GHSA-w8pw-h853-frw2,2026-08-20,MODERATE,no,,ACTIONABLE,,,mise,mise,yes,7564,mise <= 2026.8.7 -> 2026.8.9
+jdx/mise,GHSA-9mm4-fgvc-x7rp,2026-07-07,MODERATE,yes,CVE-2026-71477,ACTIONABLE,,,mise,mise,yes,7564,mise <2026.7.1 -> 2026.7.1
+kanidm/kanidm,GHSA-qcrp-p3rq-pffr,2026-06-23,HIGH,no,,ACTIONABLE,,,kanidm,kanidm,yes,53,kanidm <= 1.10.3 -> none
+kanidm/kanidm,GHSA-hh34-7jqq-3f73,2026-06-23,LOW,no,,ACTIONABLE,,,kanidm,kanidm,yes,53,kanidm 1.10.3 -> none
+kanidm/kanidm,GHSA-x8cg-3c8h-gw55,2026-05-27,LOW,no,,NO_CRATE,,,,,,,
+kanidm/kanidm,GHSA-xxwr-vvr3-2g9f,2026-05-14,CRITICAL,no,,ACTIONABLE,,,kanidm,kanidm,yes,53,"kanidm < 1.9.3, 1.10.1 -> >= 1.9.4, >= 1.10.2"
+kanidm/ldap3,GHSA-rvwg-w95p-xhwp,2026-08-14,MODERATE,no,,ACTIONABLE,,,ldap3_proto,ldap3_proto,yes,91745,ldap3_proto <= 0.8.0 -> > 0.8.1
+kivikakk/comrak,GHSA-j7hq-qg5v-47jq,2026-10-25,HIGH,no,,ACTIONABLE,,,comrak,comrak,yes,3461562,comrak <= 0.57.0 -> 0.58.0
+kivikakk/comrak,GHSA-xg9p-p4jc-c46g,2026-09-06,HIGH,no,,ACTIONABLE,,,comrak,comrak,yes,3461562,comrak <= 0.54.0 -> 0.55.0
+kxxt/tracexec,GHSA-w87c-4v5g-m5wc,2026-08-29,LOW,no,,ACTIONABLE,,,tracexec,tracexec,yes,59,tracexec <= 0.17.0 -> 1.0.0-alpha.1
+lemmynet/lemmy,GHSA-rg2m-4j8v-7888,2026-10-26,MODERATE,no,,ACTIONABLE,,,lemmy_server,lemmy_server,yes,102,lemmy_server <= 0.19.20 -> 0.19.21
+lemmynet/lemmy,GHSA-4c95-m7m2-c354,2026-10-26,MODERATE,no,,ACTIONABLE,,,lemmy_server,lemmy_server,yes,102,lemmy_server <= 0.19.20 -> 0.19.21
+lemmynet/lemmy,GHSA-5qxq-g3f3-57p5,2026-05-19,LOW,no,,NO_CRATE,,,,,,,
+lemmynet/lemmy,GHSA-9wj2-3cv5-cqrx,2026-05-18,LOW,no,,NO_CRATE,,,,,,,
+lemmynet/lemmy,GHSA-gwfj-h8r7-792v,2026-06-09,LOW,yes,CVE-2026-54742,NO_CRATE,,,,,,,
+lemmynet/lemmy,GHSA-c482-7gjx-pp36,2026-04-13,LOW,no,,NO_CRATE,,,lemmy,,,,lemmy 0.19.16 -> none
+lemmynet/lemmy,GHSA-373q-r73m-8mrg,2025-06-19,MODERATE,no,,ACTIONABLE,,,lemmy_server,lemmy_server,yes,102,"lemmy_server >=0.19.0, <0.19.12 -> 0.19.12"
+lemmynet/lemmy,GHSA-7xwp-jqhc-v6vw,2025-06-19,MODERATE,no,,ACTIONABLE,,,lemmy_server,lemmy_server,yes,102,"lemmy_server >=0.19.4, <0.19.12 -> 0.19.12"
+libp2p/rust-libp2p,GHSA-g3g5-x568-qvqx,2026-09-05,HIGH,yes,CVE-2026-95859,ACTIONABLE,,,libp2p-gossipsub,libp2p-gossipsub,yes,1381946,libp2p-gossipsub < 0.49.4 -> 0.49.5
+quincy-rs/quincy,GHSA-cq89-cr77-8gxv,2026-09-03,MODERATE,no,,ACTIONABLE,,,quincy-server,quincy-server,yes,81,quincy-server <3.0.3 -> >=3.0.3
+metaplex-foundation/metaplex-program-library,GHSA-5233-j5mj-qxww,2023-02-08,HIGH,no,,ACTIONABLE,,,token-metadata,token-metadata,no,74,token-metadata >1.7.0 -> 1.8.4
+metaplex-foundation/metaplex-program-library,GHSA-jv3q-5mhf-94xw,2022-11-29,LOW,no,,NO_CRATE,,,test,,,,"test 1.1.6 > * -> 1.1.7, 1.3.0"
+mozilla/neqo,GHSA-mfv9-vpqc-fc57,2026-02-23,LOW,no,,NO_CRATE,,,neqo-bin,,,,neqo-bin <=0.22.2 -> none
+mozilla/neqo,GHSA-95mj-575f-47cq,2025-12-16,LOW,no,,NO_CRATE,,,neqo-crypto,,,,neqo-crypto <=0.20.0 -> >=0.21.0
+mozilla/neqo,GHSA-mj42-367w-cf98,2025-12-16,LOW,no,,NO_CRATE,,,neqo-qpack,,,,neqo-qpack <=0.20.0 -> none
+mozilla/neqo,GHSA-56c6-rfrf-rh4r,2025-07-10,HIGH,no,,NO_CRATE,,,neqo,,,,neqo <=0.14.0 -> >0.14.0
+mozilla/neqo,GHSA-jfv6-x22w-grhf,2025-06-26,LOW,yes,CVE-2025-6703,NO_CRATE,,,neqo,,,,neqo <=0.13.2 -> 0.13.3
+mozilla/neqo,GHSA-hvhj-4r52-8568,2024-04-17,MODERATE,no,,NO_CRATE,,,neqo-transport,,,,neqo-transport <=0.7.4 -> 0.7.5
+mozilla/neqo,GHSA-5m9j-vr32-g7j5,2024-01-31,MODERATE,no,,NO_CRATE,,,neqo-transport,,,,neqo-transport <=0.6.8 -> 0.6.9
+nimiq/core-rs-albatross,GHSA-mhp7-gmqr-h56w,2026-08-11,HIGH,no,,ACTIONABLE,,,nimiq-primitives,nimiq-primitives,yes,1316,nimiq-primitives <v1.5.0 -> v1.5.0
+nimiq/core-rs-albatross,GHSA-6wq5-5w43-xfc2,2026-08-11,MODERATE,no,,ACTIONABLE,,,nimiq-consensus,nimiq-consensus,yes,415,nimiq-consensus <=v1.2.2 -> v1.5.0
+nimiq/core-rs-albatross,GHSA-c45m-6x25-3cjq,2026-05-15,MODERATE,yes,CVE-2026-40094,ACTIONABLE,,,nimiq-network-libp2p,nimiq-network-libp2p,yes,221,nimiq-network-libp2p <=1.3.0 -> v1.4.0
+nimiq/core-rs-albatross,GHSA-ccqv-2c9q-mqw5,2026-05-15,HIGH,yes,CVE-2026-46541,NO_CRATE,,,network-libp2p,,,,network-libp2p <=v1.3.0 -> v1.4.0
+nimiq/core-rs-albatross,GHSA-m3pg-qc2q-mg8c,2026-05-15,MODERATE,yes,CVE-2026-46540,NO_CRATE,,,light-blockchain,,,,light-blockchain <=v1.3.0 -> v1.4.0
+nimiq/core-rs-albatross,GHSA-g39c-jcgg-qwvr,2026-05-15,MODERATE,yes,CVE-2026-44505,NO_CRATE,,,network-libp2p,,,,network-libp2p <=v1.3.0 -> v1.4.0
+nimiq/core-rs-albatross,GHSA-xr78-2jhh-9wf9,2026-04-02,MODERATE,yes,CVE-2026-35468,ACTIONABLE,,,consensus,consensus,no,82,consensus <=v1.2.2 -> v1.3.0
+nimiq/core-rs-albatross,GHSA-gr83-j5f8-p2r5,2026-04-02,MODERATE,yes,CVE-2026-34061,ACTIONABLE,,,nimiq-blockchain,nimiq-blockchain,yes,669,nimiq-blockchain <=v1.2.2 -> v1.3.0
+nimiq/core-rs-albatross,GHSA-w5f8-87h2-m573,2026-04-02,LOW,no,,ACTIONABLE,,,nimiq-network-libp2p,nimiq-network-libp2p,yes,221,nimiq-network-libp2p <=v1.2.2 -> v1.3.0
+nimiq/core-rs-albatross,GHSA-5rm9-893q-vmhm,2026-04-02,HIGH,yes,CVE-2026-33184,ACTIONABLE,,,nimiq-network-libp2p,nimiq-network-libp2p,yes,221,nimiq-network-libp2p <=v1.2.2 -> v1.3.0
+nimiq/core-rs-albatross,GHSA-gh7r-qh4p-q4fr,2026-04-22,MODERATE,yes,CVE-2026-34062,NO_CRATE,,,network-libp2p,,,,network-libp2p <=v1.2.2 -> v1.3.0
+nimiq/core-rs-albatross,GHSA-74hp-mhfx-m45h,2026-04-22,HIGH,yes,CVE-2026-34063,NO_CRATE,,,network-libp2p,,,,network-libp2p <=v1.2.2 -> v1.3.0
+nimiq/core-rs-albatross,GHSA-hj3g-hh5f-63mp,2026-04-22,LOW,no,,ACTIONABLE,,,nimiq-network-libp2p,nimiq-network-libp2p,yes,221,nimiq-network-libp2p <=v1.2.2 -> v1.3.0
+nimiq/core-rs-albatross,GHSA-g99c-h7j7-rfhv,2026-04-11,HIGH,yes,CVE-2026-32605,ACTIONABLE,,,nimiq-validator,nimiq-validator,yes,121,nimiq-validator <=v1.2.2 -> v1.3.0
+nimiq/core-rs-albatross,GHSA-7wh6-rmxx-ww47,2026-02-27,HIGH,yes,CVE-2026-28402,ACTIONABLE,,,nimiq-blockchain,nimiq-blockchain,yes,669,nimiq-blockchain <v1.2.2 -> v1.2.2
+nimiq/core-rs-albatross,GHSA-3v6r-9cr8-q433,2025-05-10,HIGH,yes,CVE-2025-47270,ACTIONABLE,,,nimiq-network-libp2p,nimiq-network-libp2p,yes,221,nimiq-network-libp2p <v1.1.0 -> >=v1.1.0
+noir-lang/noir,GHSA-3fmx-gqpv-c758,2026-02-09,MODERATE,no,,ACTIONABLE,,,noir,noir,no,19,noir 87ab9215 -> none
+noir-lang/noir,GHSA-h8h7-5532-qm79,2026-01-15,MODERATE,no,,ACTIONABLE,,,noir,noir,no,19,noir 87ab9215 -> none
+noir-lang/noir,GHSA-jf3m-p678-f68m,2026-01-15,MODERATE,no,,ACTIONABLE,,,noir,noir,no,19,noir 87ab9215 -> none
+noir-lang/noir,GHSA-vx9w-r3qr-jh3v,2026-02-19,MODERATE,no,,ACTIONABLE,,,noir,noir,no,19,noir 87ab9215 -> none
+nubo-db/dynoxide,GHSA-3rv6-mrj3-vf9j,2026-10-10,LOW,no,,ACTIONABLE,,,dynoxide-rs,dynoxide-rs,yes,1150,"dynoxide-rs >= 0.10.0, < 3.0.0 -> 3.0.0"
+nubo-db/dynoxide,GHSA-gwhp-7jch-7xj6,2026-10-10,HIGH,no,,ACTIONABLE,,,dynoxide-rs,dynoxide-rs,yes,1150,"dynoxide-rs >= 0.9.10, < 3.0.0 -> 3.0.0"
+openmls/openmls,GHSA-94v4-rg25-x625,2026-10-22,MODERATE,no,,ACTIONABLE,,,openmls,openmls,yes,748337,"openmls >= 0.5.0, < 0.8.3 -> 0.8.3 | openmls >= 0.9.0, < 0.9.2 -> 0.9.2"
+openmls/openmls,GHSA-p276-g3f3-wwgh,2026-10-22,LOW,no,,ACTIONABLE,,,openmls,openmls,yes,748337,"openmls >= 0.9.0, < 0.9.2 -> 0.9.2 | openmls  < 0.8.3 ->  0.8.3"
+openmls/openmls,GHSA-gc79-23g3-8g52,2026-10-08,HIGH,no,,ACTIONABLE,,,openmls,openmls,yes,748337,openmls < 0.8.2 -> 0.8.2 | openmls 0.9.0 -> 0.9.1
+openmls/openmls,GHSA-w62v-gv48-63rh,2026-08-25,MODERATE,no,,ACTIONABLE,,,openmls,openmls,yes,748337,openmls < 0.9.0 -> 0.9.0
+openmls/openmls,GHSA-rrmv-c79f-cf5r,2026-08-25,MODERATE,no,,ACTIONABLE,,,openmls,openmls,yes,748337,openmls < 0.9.0 -> 0.9.0
+openvm-org/openvm,GHSA-w82q-w67c-67wv,2026-06-26,MODERATE,yes,CVE-2026-62335,ACTIONABLE,,,openvm-sdk,openvm-sdk,no,190,openvm-sdk < 1.7.0 -> none
+openvm-org/openvm,GHSA-j29p-wr24-hp4f,2026-06-26,CRITICAL,yes,CVE-2026-62334,ACTIONABLE,,,openvm-sdk,openvm-sdk,no,190,openvm-sdk < 1.7.0 -> none
+openvm-org/openvm,GHSA-396x-v8w4-9x82,2026-06-26,CRITICAL,yes,CVE-2026-62333,ACTIONABLE,,,openvm;openvm-sdk;openvm-circuit,openvm;openvm-sdk;openvm-circuit,no,1934,openvm < 1.7.0 -> none | openvm-sdk < 1.7.0 -> none | openvm-circuit < 1.7.0 -> none
+openvm-org/openvm,GHSA-76mq-v757-53gr,2026-05-15,CRITICAL,yes,CVE-2026-46669,ACTIONABLE,,,openvm-pairing,openvm-pairing,no,46,openvm-pairing < 1.6.0 -> 1.6.0
+openvm-org/openvm,GHSA-9jfx-4f4f-497j,2026-05-15,HIGH,no,,ACTIONABLE,,,openvm;openvm-keccak256;openvm-sha256,openvm;openvm-keccak256,no,1934,openvm < 1.6.0 -> 1.6.0 | openvm-keccak256 < 1.6.0 -> 1.6.0 | openvm-sha256 < 1.6.0 -> 1.6.0
+openvm-org/openvm,GHSA-j9m2-fxc5-fr82,2026-05-15,CRITICAL,no,,ACTIONABLE,,,openvm;openvm-sdk;openvm-native-recursion,openvm;openvm-sdk;openvm-native-recursion,no,1934,openvm < 1.6.0 -> 1.6.0 | openvm-sdk < 1.6.0 -> 1.6.0 | openvm-native-recursion < 1.6.0 -> 1.6.0
+openvm-org/openvm,GHSA-fh29-29h9-qm9h,2026-05-15,CRITICAL,no,,ACTIONABLE,,,openvm;openvm-sdk;openvm-circuit,openvm;openvm-sdk;openvm-circuit,no,1934,openvm < 1.6.0 -> 1.6.0 | openvm-sdk < 1.6.0 -> 1.6.0 | openvm-circuit < 1.6.0 -> 1.6.0
+openvm-org/openvm,GHSA-4w7p-8f9q-f4g2,2025-06-03,HIGH,no,,ACTIONABLE,,,openvm,openvm,no,1934,openvm < 1.2.0 -> 1.2.0
+orange-opensource/hurl,GHSA-3357-xfx4-g2wm,2026-09-25,MODERATE,no,,ACTIONABLE,,,hurl,hurl,yes,11446,hurl >= 6.1.0 -> 8.1.0
+orange-opensource/hurl,GHSA-r6qp-p8c3-3x64,2026-10-16,MODERATE,no,,ACTIONABLE,,,hurl,hurl,yes,11446,hurl <=8.0.1 -> none
+orange-opensource/hurl,GHSA-r4v8-53wq-5hp2,2026-10-07,HIGH,no,,ACTIONABLE,,,hurl,hurl,yes,11446,hurl <=8.0.1 -> 8.1.0
+orange-opensource/hurl,GHSA-pc59-r9f8-hc89,2026-09-11,HIGH,no,,ACTIONABLE,,,hurl,hurl,yes,11446,hurl <=8.0.1 -> 8.1.0
+orange-opensource/hurl,GHSA-rhpr-p3gr-f4c9,2026-08-26,MODERATE,no,,ACTIONABLE,,,hurl,hurl,yes,11446,hurl <=8.0.1 -> 8.1.0
+otter-sec/anchor,GHSA-6px8-6mw3-4hx4,2026-07-13,LOW,no,,ACTIONABLE,,,anchor-lang,anchor-lang,yes,1662526,anchor-lang >= 0.31.0 -> none
+polkadot-evm/frontier,GHSA-fr62-ppwc-mc2h,2025-07-28,LOW,yes,CVE-2025-54429,ACTIONABLE,,,Frontier,frontier,no,29,Frontier < commit 0822030 -> >= commit 0822030
+polkadot-evm/frontier,GHSA-r6rj-gmqh-cv94,2025-07-28,MODERATE,yes,CVE-2025-54427,ACTIONABLE,,,Frontier,frontier,no,29,Frontier < commit a754b3d -> >= commit a754b3d
+polkadot-evm/frontier,GHSA-v4q3-23rh-w5mw,2025-07-28,CRITICAL,yes,CVE-2025-54426,ACTIONABLE,,,Frontier,frontier,no,29,Frontier < commit 36f70d1 -> >= commit 36f70d1
+polkadot-evm/frontier,GHSA-gc88-2gvv-gp3v,2023-10-13,HIGH,yes,CVE-2023-45130,ACTIONABLE,,,Frontier,frontier,no,29,Frontier < commit aea528198b3b226e0d20cce878551fd4c0e3d5d0 -> >= commit aea528198b3b226e0d20cce878551fd4c0e3d5d0
+polkadot-evm/frontier,GHSA-hc8w-mx86-9fcj,2022-07-06,HIGH,yes,CVE-2022-31111,ACTIONABLE,,,Frontier,frontier,no,29,Frontier <= commit f6fff7f3c33e0b4a8ed72acb4fc7888fbeb8e7fc -> commit fed5e0a9577c10bea021721e8c2c5c378e16bf66
+phala-network/dcap-qvl,GHSA-6q6c-vvf9-fj3w,2026-07-22,LOW,no,,ACTIONABLE,,,dcap-qvl,dcap-qvl,yes,349959,"dcap-qvl >= 0.3.9, < 0.4.1 -> >= 0.4.1"
+praxis-proxy/praxis,GHSA-vpj2-9rh8-8jfc,2026-07-31,LOW,no,,ACTIONABLE,,,praxis-proxy-filter,praxis-proxy-filter,yes,94603,praxis-proxy-filter = 0.5.1 -> 0.5.2
+qhkm/zeptoclaw,GHSA-j8q9-r9pq-2hh9,2026-02-23,HIGH,yes,CVE-2026-27698,ACTIONABLE,,,zeptoclaw,zeptoclaw,yes,61,zeptoclaw <= 0.5.0 -> 0.5.1
+quinn-rs/quinn,GHSA-53rm-773f-4q8c,2026-09-30,HIGH,no,,ACTIONABLE,,,quinn-proto,quinn-proto,yes,155634215,"quinn-proto >= 0.11.0, <= 0.11.18 -> 0.11.19"
+quinn-rs/quinn,GHSA-wppq-2f6r-wfvm,2026-09-30,HIGH,no,,ACTIONABLE,,,quinn-proto,quinn-proto,yes,155634215,"quinn-proto >= 0.11.0, <= 0.11.18 -> >= 0.11.19"
+quinn-rs/quinn,GHSA-6pp4-4cxf-xf88,2026-09-30,HIGH,no,,ACTIONABLE,,,quinn-udp,quinn-udp,yes,154149892,"quinn-udp < 0.5.16, >= 0.6.0 < 0.6.3 -> >= 0.5.16, >= 0.6.3"
+raphamorim/rio,GHSA-gq4q-677j-pw73,2026-08-04,HIGH,no,,ACTIONABLE,,,rioterm,rioterm,yes,1945,"rioterm >= 0.2.24, < 0.5.10 -> 0.5.10"
+rpgp/rpgp,GHSA-9rq6-pw5r-326p,2026-06-29,LOW,no,,ACTIONABLE,,,pgp,pgp,yes,2138267,pgp <= 0.20.0 -> none
+rust-lang/rust,GHSA-rv9c-3mvf-cw9h,2025-10-01,MODERATE,yes,CVE-2025-11233,NO_CRATE,,,std,,,,"std >= 1.87.0, < 1.89.0 -> 1.89.0"
+rust-lang/rust,GHSA-2xg3-7mm6-98jj,2024-09-04,LOW,yes,CVE-2024-43402,NO_CRATE,,,std,,,,std < 1.81.0 -> 1.81.0
+rust-lang/rust,GHSA-q455-m56c-85mh,2024-04-09,CRITICAL,yes,CVE-2024-24576,NO_CRATE,,,std,,,,std < 1.77.2 -> 1.77.2
+rust-lang/rust,GHSA-r9cc-f5pr-p3j2,2022-01-20,HIGH,yes,CVE-2022-21658,NO_CRATE,,,std,,,,std <= 1.58.0 -> 1.58.1
+rust-lang/rust,GHSA-rcv6-wg5m-24v6,2021-11-01,MODERATE,yes,CVE-2021-42574,NO_CRATE,,,rustc,,,,rustc <= 1.56.0 -> 1.56.1
+rustcrypto/utils,GHSA-3832-prh6-8cpm,2026-10-23,MODERATE,no,,ACTIONABLE,,,inout,inout,yes,133551399,inout 0.2.3 -> 0.2.4
+rustfs/rustfs,GHSA-q23w-fp7p-472v,2026-10-18,MODERATE,no,,ACTIONABLE,,,rustfs,rustfs,yes,972,rustfs <= 1.0.1 -> 1.0.2
+rustfs/rustfs,GHSA-28w4-rp2p-636w,2026-10-18,HIGH,no,,ACTIONABLE,,,rustfs,rustfs,yes,972,rustfs = 1.0.0 -> 1.0.2
+rustfs/rustfs,GHSA-gjph-xcgw-4p7w,2026-10-18,MODERATE,no,,ACTIONABLE,,,rustfs,rustfs,yes,972,rustfs <= 1.0.1 -> 1.0.2
+rustfs/rustfs,GHSA-g7fq-6xjm-mxf4,2026-10-18,MODERATE,no,,ACTIONABLE,,,rustfs,rustfs,yes,972,rustfs <= 1.0.1 -> 1.0.2
+rustfs/rustfs,GHSA-rhg6-jrf2-29c4,2026-10-18,HIGH,no,,ACTIONABLE,,,rustfs,rustfs,yes,972,rustfs <= 1.0.1 -> 1.0.2
+rustfs/rustfs,GHSA-xm99-m3gq-83g8,2026-10-18,HIGH,no,,ACTIONABLE,,,rustfs,rustfs,yes,972,rustfs < 1.0.0 -> 1.0.0
+rustfs/rustfs,GHSA-j548-9grx-fh4f,2026-08-09,HIGH,yes,CVE-2026-73288,ACTIONABLE,,,rustfs,rustfs,yes,972,rustfs <= 1.0.0-beta.12 -> 1.0.0-rc.1
+rustfs/rustfs,GHSA-x298-9x87-fvjq,2026-08-09,MODERATE,yes,CVE-2026-73290,ACTIONABLE,,,rustfs,rustfs,yes,972,rustfs <= 1.0.0-beta.11 -> 1.0.0-beta.12
+rustfs/rustfs,GHSA-6r96-hmgc-726c,2026-08-09,HIGH,yes,CVE-2026-73286,ACTIONABLE,,,rustfs,rustfs,yes,972,rustfs <= 1.0.0-beta.11 -> 1.0.0-beta.12
+rustfs/rustfs,GHSA-v9cp-qfw9-9pfp,2026-08-09,HIGH,yes,CVE-2026-73289,ACTIONABLE,,,rustfs,rustfs,yes,972,rustfs <= 1.0.0-beta.11 -> 1.0.0-beta.12
+rustfs/rustfs,GHSA-5w8r-p896-6vq2,2026-08-09,HIGH,yes,CVE-2026-73285,ACTIONABLE,,,rustfs,rustfs,yes,972,"rustfs >= 1.0.0-alpha.64, <= 1.0.0-beta.12 -> 1.0.0-rc.1"
+rustfs/rustfs,GHSA-7gcx-wg4x-q9x6,2026-06-26,CRITICAL,yes,CVE-2026-62378,ACTIONABLE,,,rustfs,rustfs,yes,972,"rustfs >= 1.0.0-alpha.86, <= 1.0.0-beta.8 -> >= 1.0.0-beta.9"
+rustfs/rustfs,GHSA-g3vq-vv42-f647,2026-08-09,MODERATE,yes,CVE-2026-73287,ACTIONABLE,,,rustfs,rustfs,yes,972,rustfs <= 1.0.0-beta.11 -> 1.0.0-beta.12
+rustfs/rustfs,GHSA-796f-j7xp-hwf4,2026-06-11,HIGH,yes,CVE-2026-55188,ACTIONABLE,,,rustfs,rustfs,yes,972,"rustfs >= 1.0.0-alpha.1, <= 1.0.0-beta.8 -> >= 1.0.0-beta.9"
+rustfs/rustfs,GHSA-3g29-xff2-92vp,2026-06-11,HIGH,yes,CVE-2026-55189,ACTIONABLE,,,rustfs,rustfs,yes,972,"rustfs >= 1.0.0-alpha.1, <= 1.0.0-beta.8 -> >= 1.0.0-beta.9"
+rustfs/rustfs,GHSA-f5cv-v44x-2xgf,2026-06-25,MODERATE,yes,CVE-2026-55838,ACTIONABLE,,,rustfs,rustfs,yes,972,"rustfs >= 1.0.0-alpha.1, <= 1.0.0-beta.8 -> >= 1.0.0-beta.9"
+rustfs/rustfs,GHSA-f4vq-9ffr-m8m3,2026-06-01,HIGH,yes,CVE-2026-49991,ACTIONABLE,,,rustfs,rustfs,yes,972,"rustfs >= 1.0.0-alpha.1, <= 1.0.0-beta.8 -> >= 1.0.0-beta.9"
+rustfs/rustfs,GHSA-r5qv-rc46-hv8q,2026-05-09,HIGH,yes,CVE-2026-45039,ACTIONABLE,,,rustfs,rustfs,yes,972,"rustfs >= 1.0.0-alpha.1, <= 1.0.0-beta.1 -> >= 1.0.0-beta.2"
+rustfs/rustfs,GHSA-923g-jp7v-f97f,2026-05-09,HIGH,yes,CVE-2026-45041,ACTIONABLE,,,rustfs,rustfs,yes,972,"rustfs >= 1.0.0-alpha.1, <= 1.0.0-beta.1 -> >= 1.0.0-beta.2"
+rustfs/rustfs,GHSA-8cm2-h255-v749,2026-05-09,LOW,yes,CVE-2026-45040,ACTIONABLE,,,rustfs,rustfs,yes,972,rustfs <= 1.0.0-beta.1 -> >= 1.0.0-beta.2
+rustfs/rustfs,GHSA-wfxj-ph3v-7mjf,2026-05-09,HIGH,yes,CVE-2026-45042,ACTIONABLE,,,rustfs,rustfs,yes,972,"rustfs >= 1.0.0-alpha.1, <= 1.0.0-beta.8 -> >= 1.0.0-beta.9"
+rustfs/rustfs,GHSA-566f-q62r-wcr8,2026-05-09,CRITICAL,yes,CVE-2026-45043,ACTIONABLE,,,rustfs,rustfs,yes,972,"rustfs >= 1.0.0-alpha.1, <= 1.0.0-beta.8 -> >= 1.0.0-beta.9"
+rustfs/rustfs,GHSA-8784-9m7f-c6p6,2026-05-09,MODERATE,yes,CVE-2026-45044,ACTIONABLE,,,rustfs,rustfs,yes,972,"rustfs >= 1.0.0-alpha.1, <= 1.0.0-beta.8 -> >= 1.0.0-beta.9"
+smithy-lang/smithy-rs,GHSA-4f2p-7j38-4xrg,2026-07-21,HIGH,yes,CVE-2026-15957,NO_CRATE,,,,,,,
+sonos/tract,GHSA-7q44-75hx-2x3h,2026-10-16,MODERATE,no,,ACTIONABLE,,,tract-onnx,tract-onnx,yes,1603154,"tract-onnx >= 0.21.17, <= 0.21.18 -> 0.21.19 | tract-onnx >= 0.22.3, <= 0.22.4 -> 0.22.5 | tract-onnx >= 0.23.2, <= 0.23.8 -> 0.23.9"
+sonos/tract,GHSA-6ffw-f7m6-gpxj,2026-10-09,MODERATE,no,,ACTIONABLE,,,tract-nnef,tract-nnef,yes,1710478,"tract-nnef >= 0.12.2, < 0.21.18 -> 0.21.18 | tract-nnef >= 0.22.0, < 0.22.4 -> 0.22.4 | tract-nnef >= 0.23.0, < 0.23.7 -> 0.23.7"
+starship/starship,GHSA-679r-jwc5-r5m3,2026-10-17,MODERATE,no,,ACTIONABLE,,,starship,starship,yes,29562,"starship >= 1.1.0, <= 1.26.0 -> 1.27.0"
+starship/starship,GHSA-x486-6jjc-phfp,2026-10-17,MODERATE,no,,ACTIONABLE,,,starship,starship,yes,29562,starship <=1.26.0 -> 1.27.0
+static-web-server/static-web-server,GHSA-966j-8jgr-656v,2026-10-19,MODERATE,no,,ACTIONABLE,,,static-web-server,static-web-server,yes,2789,static-web-server = 3.0.0-beta.1 -> 3.0.0-beta.2
+static-web-server/static-web-server,GHSA-2fch-9x9r-mxmv,2026-10-19,HIGH,no,,ACTIONABLE,,,static-web-server,static-web-server,yes,2789,static-web-server <= 3.0.0-beta.1 -> 3.0.0-beta.2
+static-web-server/static-web-server,GHSA-67fg-g42f-773c,2026-10-19,MODERATE,no,,ACTIONABLE,,,static-web-server,static-web-server,yes,2789,static-web-server = 3.0.0-beta.1 -> 3.0.0-beta.2
+stellar/rs-stellar-xdr,GHSA-3xhm-p452-9wjh,2026-09-29,MODERATE,no,,ACTIONABLE,,,stellar-xdr,stellar-xdr,yes,1387856,stellar-xdr < 28.0.1 -> 28.0.1
+succinctlabs/sp1,GHSA-p7v2-jjv3-8p8f,2026-10-11,HIGH,no,,ACTIONABLE,,,sp1_prover;sp1_hypercube;sp1_sdk,sp1-prover;sp1-hypercube;sp1-sdk,yes,319382,"sp1_prover >= 6.0.0, <= 6.8.0 -> 6.8.1 | sp1_hypercube >= 6.0.0, <= 6.8.0 -> 6.8.1 | sp1_sdk >= 6.0.0, <= 6.8.0 -> 6.8.1"
+superradcompany/microsandbox,GHSA-mcw9-9rf6-p4rm,2026-10-09,HIGH,no,,ACTIONABLE,,,microsandbox,microsandbox,yes,33234,"microsandbox >= 0.3.0, < 0.7.6 -> 0.7.6"
+superradcompany/microsandbox,GHSA-3mpp-52gc-935r,2026-09-28,HIGH,no,,ACTIONABLE,,,microsandbox,microsandbox,yes,33234,microsandbox <0.6.18 -> 0.6.18
+superradcompany/microsandbox,GHSA-rh2c-vm8j-5gg6,2026-10-19,CRITICAL,no,,ACTIONABLE,,,microsandbox,microsandbox,yes,33234,microsandbox <= 0.6.16 -> none
+superradcompany/microsandbox,GHSA-cg9x-2vfm-3j58,2026-10-05,HIGH,no,,ACTIONABLE,,,microsandbox;microsandbox-cli;microsandbox-network,microsandbox;microsandbox-cli;microsandbox-network,yes,33234,"microsandbox >= 0.3.13, < 0.7.5 -> 0.7.5 | microsandbox-cli >= 0.3.13, < 0.7.5 -> 0.7.5 | microsandbox-network >= 0.3.13, < 0.7.5 -> 0.7.5"
+superradcompany/microsandbox,GHSA-gj24-29j2-3x78,2026-10-09,MODERATE,no,,ACTIONABLE,,,microsandbox,microsandbox,yes,33234,"microsandbox >= 0.5.3, < 0.6.9 -> 0.6.9"
+superradcompany/microsandbox,GHSA-4vq3-cjpp-v7fg,2026-09-09,HIGH,yes,CVE-2026-103034,ACTIONABLE,,,microsandbox-cli,microsandbox-cli,yes,14482,"microsandbox-cli >= 0.5.3, < 0.6.7 -> 0.6.7"
+superradcompany/microsandbox,GHSA-v693-3rfr-6q3q,2026-10-19,CRITICAL,no,,ACTIONABLE,,,microsandbox-network;microsandbox;microsandbox-cli,microsandbox-network;microsandbox;microsandbox-cli,yes,33234,"microsandbox-network >= 0.4.0, < 0.6.3 -> 0.6.3 | microsandbox >= 0.4.0, < 0.6.3 -> 0.6.3 | microsandbox-cli >= 0.4.0, < 0.6.3 -> 0.6.3"
+superradcompany/microsandbox,GHSA-89j4-256r-3pcq,2026-10-09,HIGH,yes,CVE-2026-61669,ACTIONABLE,,,microsandbox,microsandbox,yes,33234,"microsandbox >= 0.4.4, < 0.5.8 -> 0.5.8"
+superradcompany/microsandbox,GHSA-xgg5-hjwq-2gw8,2026-10-09,MODERATE,no,,ACTIONABLE,,,microsandbox,microsandbox,yes,33234,microsandbox < 0.5.0 -> 0.5.1
+surrealdb/surrealdb,GHSA-p296-7pr4-87rr,2026-10-19,HIGH,no,,ACTIONABLE,,,surrealdb,surrealdb,yes,592845,surrealdb < 3.3.1 -> 3.3.1
+surrealdb/surrealdb,GHSA-3vw5-j55x-486h,2026-09-28,MODERATE,no,,ACTIONABLE,,,surrealdb,surrealdb,yes,592845,"surrealdb >= 3.0.0, < 3.3.0 -> 3.3.0"
+surrealdb/surrealdb,GHSA-w5v9-jc5f-5rmc,2026-09-28,CRITICAL,no,,ACTIONABLE,,,surrealdb,surrealdb,yes,592845,surrealdb < 3.3.0 -> 3.3.0
+surrealdb/surrealdb,GHSA-vx2p-7hhm-wv62,2026-09-28,CRITICAL,no,,ACTIONABLE,,,surrealdb,surrealdb,yes,592845,surrealdb < 3.3.0 -> 3.3.0
+surrealdb/surrealdb,GHSA-x6mm-9295-rvph,2026-10-19,MODERATE,no,,ACTIONABLE,,,surrealdb,surrealdb,yes,592845,"surrealdb >= 3.1.0, < 3.3.0 -> 3.3.0"
+surrealdb/surrealdb,GHSA-2jj6-v2fq-rwpp,2026-09-28,MODERATE,no,,ACTIONABLE,,,surrealdb,surrealdb,yes,592845,"surrealdb >= 3.0.0, < 3.3.0 -> 3.3.0"
+surrealdb/surrealdb,GHSA-pm6c-q8rh-92m8,2026-09-28,MODERATE,no,,ACTIONABLE,,,surrealdb,surrealdb,yes,592845,surrealdb < 3.3.0 -> 3.3.0
+surrealdb/surrealdb,GHSA-jm88-9wvx-6h4q,2026-09-28,MODERATE,no,,ACTIONABLE,,,surrealdb,surrealdb,yes,592845,surrealdb < 3.3.0 -> 3.3.0
+surrealdb/surrealdb,GHSA-84w9-87hm-mxqx,2026-09-28,MODERATE,no,,ACTIONABLE,,,surrealdb,surrealdb,yes,592845,surrealdb < 3.3.0 -> 3.3.0
+surrealdb/surrealdb,GHSA-jj89-wvrw-c4gp,2026-09-28,MODERATE,no,,ACTIONABLE,,,surrealdb;surrealism-runtime,surrealdb;surrealism-runtime,yes,592845,"surrealdb >= 3.1.0, < 3.3.0 -> 3.3.0 | surrealism-runtime >= 0.3.0, < 0.6.0 -> 0.6.0"
+surrealdb/surrealdb,GHSA-4w65-7h3j-p29h,2026-09-28,MODERATE,no,,ACTIONABLE,,,surrealdb,surrealdb,yes,592845,"surrealdb >= 3.1.0, < 3.3.0 -> 3.3.0"
+surrealdb/surrealdb,GHSA-h2c3-549c-gjpr,2026-09-28,HIGH,no,,ACTIONABLE,,,surrealdb,surrealdb,yes,592845,surrealdb < 3.3.0 -> 3.3.0
+surrealdb/surrealdb,GHSA-2jc3-58q7-mm2j,2026-09-28,MODERATE,no,,ACTIONABLE,,,surrealdb,surrealdb,yes,592845,"surrealdb >= 3.0.0, < 3.3.0 -> 3.3.0"
+surrealdb/surrealdb,GHSA-pgh9-49q4-hqcx,2026-10-19,HIGH,no,,ACTIONABLE,,,surrealdb,surrealdb,yes,592845,"surrealdb >= 3.1.0, < 3.3.0 -> 3.3.0"
+surrealdb/surrealdb,GHSA-c9wc-jcr5-8974,2026-10-19,HIGH,no,,ACTIONABLE,,,surrealdb,surrealdb,yes,592845,"surrealdb >= 3.2.0, < 3.3.0 -> 3.3.0"
+surrealdb/surrealdb,GHSA-mhv5-88p6-w4c3,2026-10-19,MODERATE,no,,ACTIONABLE,,,surrealdb,surrealdb,yes,592845,"surrealdb >= 3.1.0, < 3.3.0 -> 3.3.0"
+surrealdb/surrealdb,GHSA-h3mp-7wcg-p6vj,2026-10-19,MODERATE,no,,ACTIONABLE,,,surrealdb,surrealdb,yes,592845,"surrealdb >= 3.1.0, < 3.3.0 -> 3.3.0"
+surrealdb/surrealdb,GHSA-rpmq-gq3f-h6jg,2026-10-19,MODERATE,no,,ACTIONABLE,,,surrealdb,surrealdb,yes,592845,surrealdb < 3.3.0 -> 3.3.0
+surrealdb/surrealdb,GHSA-2v9j-645m-pcrq,2026-09-28,CRITICAL,no,,ACTIONABLE,,,surrealdb,surrealdb,yes,592845,surrealdb < 3.3.0 -> 3.3.0
+surrealdb/surrealdb,GHSA-jwr6-6444-28xv,2026-07-02,MODERATE,no,,ACTIONABLE,,,surrealdb,surrealdb,yes,592845,surrealdb < 3.1.6 -> 3.1.6
+surrealdb/surrealdb,GHSA-5x4x-2946-qr67,2026-07-02,MODERATE,no,,ACTIONABLE,,,surrealdb,surrealdb,yes,592845,surrealdb < 3.2.0 -> 3.2.0
+tauri-apps/plugins-workspace,GHSA-9g54-6x48-9vpw,2026-08-31,LOW,no,,ACTIONABLE,,,tauri-plugin-fs,tauri-plugin-fs,yes,10910735,"tauri-plugin-fs >= 2.0.0, < 2.5.2 -> >= 2.5.2"
+tauri-apps/tauri,GHSA-w28w-mhc8-qvjv,2026-09-26,HIGH,no,,ACTIONABLE,,,tauri,tauri,yes,18177409,"tauri >= 2.0.0, <= 2.11.5 -> >= 2.11.6"
+tempoxyz/mpp-rs,GHSA-8xhq-x7vw-8rcw,2026-08-27,MODERATE,no,,ACTIONABLE,,,mpp,mpp,yes,69769,mpp <= 0.11.0 -> >= 0.12.0
+uutils/coreutils,GHSA-54x6-c4c8-44fr,2026-09-17,MODERATE,no,,ACTIONABLE,,,coreutils,coreutils,yes,34885,coreutils <= 0.11.0 -> 0.12.0
+uutils/coreutils,GHSA-939x-8rj3-7p25,2026-09-05,HIGH,no,,ACTIONABLE,,,uu_stdbuf,uu_stdbuf,yes,30833,uu_stdbuf <= 0.10.0 -> 0.11.0
+uutils/coreutils,GHSA-8r5f-98ww-c4c5,2026-09-05,HIGH,no,,ACTIONABLE,,,uu_cp,uu_cp,yes,294314,uu_cp <= 0.10.0 -> 0.11.0
+uutils/coreutils,GHSA-pqxf-vf75-qfxj,2026-09-05,HIGH,no,,ACTIONABLE,,,coreutils,coreutils,yes,34885,coreutils <= 0.10.0 -> 0.11.0
+uutils/coreutils,GHSA-x2p7-fq8x-g67j,2026-08-07,LOW,no,,ACTIONABLE,,,uu_install,uu_install,yes,31575,uu_install <= 0.9.0 -> 0.10.0
+uutils/coreutils,GHSA-mcrj-cqrc-m6rh,2026-08-07,LOW,no,,ACTIONABLE,,,uu_mv,uu_mv,yes,253043,uu_mv <= 0.9.0 -> 0.10.0
+uutils/coreutils,GHSA-cgg3-923w-v53m,2026-09-16,MODERATE,no,,ACTIONABLE,,,uu_install,uu_install,yes,31575,"uu_install >= 0.0.18, <= 0.9.0 -> none"
+uutils/coreutils,GHSA-9gw8-m5cj-3cr6,2026-09-05,HIGH,no,,ACTIONABLE,,,uu_rm,uu_rm,yes,62462,uu_rm <= 0.10.0 -> 0.11.0
+uutils/coreutils,GHSA-3jmh-xh36-pj6v,2026-08-07,LOW,no,,NO_CRATE,,,,,,,
+uutils/coreutils,GHSA-6c4j-6pgg-xgg8,2026-09-13,LOW,no,,ACTIONABLE,,,coreutils,coreutils,yes,34885,coreutils <= 0.9.0 -> 0.10.0
+uutils/coreutils,GHSA-g68m-fmg3-7f8c,2026-08-07,LOW,no,,ACTIONABLE,,,uu_head,uu_head,yes,69888,uu_head <= 0.9.0 -> 0.10.0
+uutils/coreutils,GHSA-pp2g-c3j7-j725,2026-09-09,MODERATE,no,,ACTIONABLE,,,uu_mv,uu_mv,yes,253043,uu_mv <= 0.9.0 -> 0.10.0
+uutils/coreutils,GHSA-h85f-wcqc-8jf9,2026-08-08,MODERATE,no,,ACTIONABLE,,,uu_cp,uu_cp,yes,294314,uu_cp <= 0.9.0 -> 0.10.0
+uutils/coreutils,GHSA-26g5-58c8-6f52,2026-08-07,LOW,no,,ACTIONABLE,,,uucore,uucore,yes,755607,uucore <= 0.9.0 -> 0.10.0
+uutils/coreutils,GHSA-f68w-hxxw-phq8,2026-08-07,HIGH,no,,ACTIONABLE,,,uu_stdbuf,uu_stdbuf,yes,30833,uu_stdbuf <= 0.9.0 -> 0.10.0
+uutils/coreutils,GHSA-2745-m2g5-p3mw,2026-08-07,HIGH,no,,ACTIONABLE,,,uu_chmod,uu_chmod,yes,33470,uu_chmod <= 0.9.0 -> 0.10.0
+uutils/coreutils,GHSA-32xv-mj27-3qgj,2026-08-07,MODERATE,no,,ACTIONABLE,,,uu_rm,uu_rm,yes,62462,uu_rm <= 0.9.0 -> 0.10.0
+uutils/coreutils,GHSA-jvc6-vj8m-5q6h,2026-08-07,MODERATE,no,,ACTIONABLE,,,uu_chmod,uu_chmod,yes,33470,uu_chmod <= 0.9.0 -> 0.10.0
+uutils/coreutils,GHSA-wf57-9jfx-969p,2026-08-07,MODERATE,no,,ACTIONABLE,,,uucore,uucore,yes,755607,uucore <= 0.9.0 -> 0.10.0
+uutils/coreutils,GHSA-jmwj-5qc8-4m9q,2026-07-29,MODERATE,yes,CVE-2026-35380,CVE_COVERED,GHSA-m2pg-c7m6-77pj,no,uu_cut,uu_cut,yes,62726,uu_cut < 0.8.0 -> 0.8.0
+uutils/coreutils,GHSA-g7j6-92cc-7hpv,2026-07-29,MODERATE,yes,CVE-2026-35379,CVE_COVERED,GHSA-fhr3-xh3q-69w6,no,uu_tr,uu_tr,yes,62451,uu_tr < 0.8.0 -> 0.8.0
+uutils/coreutils,GHSA-r75p-7cjg-whxv,2026-07-29,MODERATE,yes,CVE-2026-35378,CVE_COVERED,GHSA-5pv5-xh52-hvrp,no,uu_expr,uu_expr,yes,53128,uu_expr < 0.8.0 -> 0.8.0
+uutils/coreutils,GHSA-xhrc-7f76-vh96,2026-08-07,MODERATE,yes,CVE-2026-35377,CVE_COVERED,GHSA-5v4g-vw9x-h534,no,uu_env,uu_env,yes,53667,uu_env <= 0.9.0 -> 0.10.0
+uutils/coreutils,GHSA-9rv8-9hvg-92mq,2026-08-07,HIGH,yes,CVE-2026-35376,CVE_COVERED,GHSA-6g8r-74qp-6859,no,uu_chcon,uu_chcon,yes,434,uu_chcon <= 0.9.0 -> 0.10.0
+uutils/coreutils,GHSA-g2fc-grr3-r5qg,2026-07-29,LOW,yes,CVE-2026-35375,CVE_COVERED,GHSA-vx9m-xjwf-8cqm,no,uu_split,uu_split,yes,54630,uu_split < 0.8.0 -> 0.8.0
+uutils/coreutils,GHSA-fjjq-8hw5-cf9f,2026-08-07,MODERATE,yes,CVE-2026-35374,CVE_COVERED,GHSA-4wrp-79m8-9m9p,no,uu_split,uu_split,yes,54630,uu_split <= 0.9.0 -> 0.10.0
+uutils/coreutils,GHSA-rfg5-2j48-mvp7,2026-07-29,LOW,yes,CVE-2026-35372,CVE_COVERED,GHSA-wq63-vh5h-pr5p,no,uu_ln,uu_ln,yes,55202,uu_ln < 0.8.0 -> 0.8.0
+uutils/coreutils,GHSA-5gmx-24pj-xhwv,2026-07-29,MODERATE,yes,CVE-2026-35367,CVE_COVERED,GHSA-5hgf-628x-mcqf,no,uu_nohup,uu_nohup,yes,31504,uu_nohup < 0.9.0 -> 0.9.0
+uutils/coreutils,GHSA-h73r-2j9w-ch42,2026-08-07,MODERATE,yes,CVE-2026-35360,CVE_COVERED,GHSA-q6m9-xj2w-xmrc,no,uu_touch,uu_touch,yes,217828,uu_touch <= 0.9.0 -> 0.10.0
+uutils/coreutils,GHSA-p9fh-vm43-9xxc,2026-07-29,MODERATE,yes,CVE-2026-35354,CVE_COVERED,GHSA-x4mc-mqm7-gg39,no,uu_mv,uu_mv,yes,253043,uu_mv < 0.9.0 -> 0.9.0
+uutils/coreutils,GHSA-p29p-xpv8-mh7g,2026-07-29,LOW,yes,CVE-2026-35351,CVE_COVERED,GHSA-957r-r8gc-vv3h,no,uu_mv,uu_mv,yes,253043,uu_mv < 0.9.0 -> 0.9.0
+uutils/coreutils,GHSA-72j7-93r5-ffww,2026-07-29,LOW,yes,CVE-2026-35350,CVE_COVERED,GHSA-x2wv-9p67-mh9w,no,uu_cp,uu_cp,yes,294314,uu_cp < 0.9.0 -> 0.9.0
+uutils/coreutils,GHSA-3g43-hjqw-w47c,2026-08-07,MODERATE,yes,CVE-2026-35348,CVE_COVERED,GHSA-f2jv-wjjc-2c94,no,uu_sort,uu_sort,yes,69789,uu_sort <= 0.9.0 -> 0.10.0
+uutils/coreutils,GHSA-rp9r-9vpg-388g,2026-07-29,HIGH,yes,CVE-2026-35368,CVE_COVERED,GHSA-mh5c-xrmh-m794,no,uu_chroot,uu_chroot,yes,31141,uu_chroot < 0.9.0 -> 0.9.0
+uutils/coreutils,GHSA-9hgw-vp67-j8hq,2026-09-13,MODERATE,yes,CVE-2026-35364,CVE_COVERED,GHSA-m976-87wm-48fm,no,uu_mv,uu_mv,yes,253043,uu_mv < 0.9.0 -> 0.9.0
+uutils/coreutils,GHSA-g9rr-phfh-gvwv,2026-07-29,MODERATE,yes,CVE-2026-35359,CVE_COVERED,GHSA-hpfw-mqm3-33jh,no,uu_cp,uu_cp,yes,294314,uu_cp < 0.9.0 -> 0.9.0
+uutils/coreutils,GHSA-x5mh-6m7p-gjcf,2026-07-29,MODERATE,yes,CVE-2026-35357,CVE_COVERED,GHSA-2m8x-mvfx-gwgj,no,uu_cp,uu_cp,yes,294314,uu_cp < 0.9.0 -> 0.9.0
+uutils/coreutils,GHSA-p5v9-q37h-pj8c,2026-08-07,HIGH,yes,CVE-2026-35352,CVE_COVERED,GHSA-9gh9-hwpr-rvqq,no,uu_mkfifo,uu_mkfifo,yes,31184,uu_mkfifo <= 0.9.0 -> 0.10.0
+uutils/coreutils,GHSA-jrrj-v55h-3j8j,2026-08-07,MODERATE,yes,CVE-2026-35345,CVE_COVERED,GHSA-xf75-659h-cgg5,no,uu_tail,uu_tail,yes,62227,uu_tail <= 0.9.0 -> 0.10.0
+uutils/coreutils,GHSA-j978-x793-ffjf,2026-08-07,LOW,yes,CVE-2026-35344,CVE_COVERED,GHSA-wh8p-h9hw-x2mc,no,uu_dd,uu_dd,yes,54344,uu_dd <= 0.9.0 -> 0.10.0
+uutils/coreutils,GHSA-jqr3-q5m4-j7wx,2026-07-31,MODERATE,no,,ACTIONABLE,,,uu_rm,uu_rm,yes,62462,uu_rm < 0.6.0 -> 0.6.0
+uutils/coreutils,GHSA-2x2h-fw32-rq7v,2026-05-30,HIGH,yes,CVE-2026-35340,ACTIONABLE,,,uu_chown,uu_chown,yes,31310,uu_chown < 0.6.0 -> 0.6.0
+versatica/mediasoup,GHSA-rq7g-r9qr-rwpq,2026-09-16,HIGH,no,,ACTIONABLE,,,mediasoup,mediasoup,yes,367294,"mediasoup >= 0.22.0, <= 0.28.0 -> 0.28.1"
+versatica/mediasoup,GHSA-jhm4-v227-4375,2026-07-24,HIGH,yes,CVE-2026-102838,ACTIONABLE,,,mediasoup,mediasoup,yes,367294,mediasoup <= 0.23.0 -> 0.24.0
+versatica/mediasoup,GHSA-p9cq-fqxc-987w,2026-07-24,HIGH,yes,CVE-2026-102840,ACTIONABLE,,,mediasoup,mediasoup,yes,367294,"mediasoup >= 0.22.0, <= 0.23.0 -> 0.24.0"
+versatica/mediasoup,GHSA-xvjj-6cm4-ppgq,2026-07-24,LOW,no,,ACTIONABLE,,,mediasoup,mediasoup,yes,367294,"mediasoup >=  0.22.5, <= 0.23.0 -> 0.24.0"
+wasmerio/wasmer,GHSA-hqgf-rvm3-gq5h,2026-10-08,MODERATE,no,,ACTIONABLE,,,wasmer-wasix,wasmer-wasix,yes,321663,wasmer-wasix <7.2.0 -> >=7.2.0
+wasmerio/wasmer,GHSA-5cmw-jh9h-wm3r,2026-10-08,MODERATE,no,,ACTIONABLE,,,wasmer-wasix,wasmer-wasix,yes,321663,wasmer-wasix <7.2.0 -> >=7.2.0
+wasmerio/wasmer,GHSA-xprp-5pr8-379j,2026-10-08,MODERATE,no,,ACTIONABLE,,,wasmer-wasix,wasmer-wasix,yes,321663,wasmer-wasix <7.2.0 -> >=7.2.0
+wasmerio/wasmer,GHSA-p7h3-r7cm-8wrm,2026-10-08,MODERATE,no,,ACTIONABLE,,,wasmer-wasix,wasmer-wasix,yes,321663,wasmer-wasix <7.2.0 -> >=7.2.0
+zcashfoundation/zebra,GHSA-7jp4-mq53-4cvq,2026-10-22,HIGH,no,,ACTIONABLE,,,zebrad,zebrad,yes,746,"zebrad >= 6.4.0, < 7.0.0 -> 7.0.0"
+zcashfoundation/zebra,GHSA-jq45-ghw5-v37x,2026-10-22,HIGH,no,,ACTIONABLE,,,zebrad;zebra-consensus,zebrad;zebra-consensus,yes,14696,"zebrad >= 2.3.0, < 7.0.0 -> 7.0.0 | zebra-consensus >= 1.0.0-beta.46, < 18.0.0 -> 18.0.0"
+zcashfoundation/zebra,GHSA-5h3r-fpmj-483w,2026-10-22,MODERATE,no,,ACTIONABLE,,,zebrad,zebrad,yes,746,"zebrad >= 4.5.0, < 7.0.0 -> 7.0.0"
+zcashfoundation/zebra,GHSA-6v36-c42v-v98p,2026-10-22,MODERATE,no,,ACTIONABLE,,,zebrad,zebrad,yes,746,zebrad < 7.0.0 -> 7.0.0
+zcashfoundation/zebra,GHSA-h5rr-8pqv-grp9,2026-09-25,HIGH,no,,ACTIONABLE,,,zebrad,zebrad,yes,746,"zebrad >= 6.4.0, < 6.4.2 -> 6.4.2"
+zcashfoundation/zebra,GHSA-2w9f-9wx8-f5c8,2026-10-22,HIGH,no,,ACTIONABLE,,,zebrad,zebrad,yes,746,zebrad < 7.0.0 -> 7.0.0
+zcashfoundation/zebra,GHSA-j4cw-58mj-7w6v,2026-10-22,HIGH,no,,ACTIONABLE,,,zebrad,zebrad,yes,746,zebrad < 7.0.0 -> 7.0.0
+zcashfoundation/zebra,GHSA-9hq5-pfgc-cx5h,2026-10-22,HIGH,no,,ACTIONABLE,,,zebrad,zebrad,yes,746,zebrad < 7.0.0 -> 7.0.0
+zcashfoundation/zebra,GHSA-jhpp-8h75-7pv5,2026-09-28,MODERATE,no,,ACTIONABLE,,,zebrad,zebrad,yes,746,zebrad <=6.3.0 -> 6.4.2
+zcashfoundation/zebra,GHSA-3c94-hf7p-g5mf,2026-09-28,MODERATE,no,,ACTIONABLE,,,zebrad,zebrad,yes,746,zebrad <=6.3.0 -> 6.4.2
+zcashfoundation/zebra,GHSA-4f6v-mj46-gxg3,2026-09-28,LOW,no,,ACTIONABLE,,,zebrad,zebrad,yes,746,zebrad >=6.3.0 -> 6.4.2
+zcashfoundation/zebra,GHSA-qhr3-cvch-5fh2,2026-08-11,MODERATE,no,,ACTIONABLE,,,zebrad,zebrad,yes,746,zebrad v4.5.0 to v6.2.3 -> 6.3.0
+zcashfoundation/zebra,GHSA-8hh2-hrf2-cqf4,2026-08-11,MODERATE,no,,ACTIONABLE,,,zebrad,zebrad,yes,746,zebrad <=6.2.3 -> 6.3.0
+zcashfoundation/zebra,GHSA-x93j-mj2f-q338,2026-07-22,MODERATE,no,,ACTIONABLE,,,zebrad,zebrad,yes,746,zebrad <6.2.1 -> 6.2.1
+zcashfoundation/zebra,GHSA-g95h-hw6g-pvgv,2026-08-11,HIGH,no,,ACTIONABLE,,,Zebrad,zebrad,yes,746,Zebrad <=6.2.3 -> 6.3.0
+zcashfoundation/zebra,GHSA-2p4c-3q4q-p463,2026-08-17,HIGH,no,,ACTIONABLE,,,zebrad,zebrad,yes,746,zebrad <=6.2.0 -> 6.2.1
+zcashfoundation/zebra,GHSA-95m2-vx53-v2jw,2026-07-17,LOW,no,,ACTIONABLE,,,zebrad,zebrad,yes,746,zebrad 6.0.0 -> 6.1.0
+zcashfoundation/zebra,GHSA-g7c4-2w6c-cr3r,2026-07-17,MODERATE,no,,ACTIONABLE,,,zebrad,zebrad,yes,746,zebrad 6.0.0 -> 6.1.0
+zcashfoundation/zebra,GHSA-4g24-549m-hp75,2026-07-17,MODERATE,no,,ACTIONABLE,,,zebrad,zebrad,yes,746,zebrad 6.0.0 -> 6.1.0
+zcashfoundation/zebra,GHSA-8gxx-hc65-vv82,2026-07-17,MODERATE,no,,ACTIONABLE,,,zebrad,zebrad,yes,746,zebrad 6.0.0 -> 6.1.0
+zcashfoundation/zebra,GHSA-x6v8-c2xp-928m,2026-07-03,MODERATE,no,,ACTIONABLE,,,zebra-rpc,zebra-rpc,yes,14201,zebra-rpc <=10.0.1 -> 11.0.0
+zcashfoundation/zebra,GHSA-m9xx-8rcj-vmgp,2026-07-03,MODERATE,no,,ACTIONABLE,,,zebrad,zebrad,yes,746,zebrad 5.0.0 -> 6.0.0-rc.0
+zcashfoundation/zebra,GHSA-2prc-cj5x-4443,2026-06-01,CRITICAL,no,,ACTIONABLE,,,zebrad;zebra-script,zebrad;zebra-script,yes,14754,zebrad 4.5.0 -> 4.5.1 | zebra-script 7.0.0 -> 7.0.1
+zcashfoundation/zebra,GHSA-84j3-rw4c-gqmj,2026-07-13,HIGH,no,,ACTIONABLE,,,zebrad,zebrad,yes,746,zebrad <=5.2.0 -> 6.0.0
+zcashfoundation/zebra,GHSA-h8m8-844p-v3m9,2026-08-17,MODERATE,no,,ACTIONABLE,,,Zebrad,zebrad,yes,746,Zebrad <=6.2.3 -> 6.3.0

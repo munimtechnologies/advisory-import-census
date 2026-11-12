@@ -1,0 +1,468 @@
+{
+ "exploratory": {
+  "actionable_by_repo": {
+   "apollographql/router": 5,
+   "asfhtgkdavid/theshit": 1,
+   "aws/s2n-quic": 2,
+   "boxlite-ai/boxlite": 5,
+   "cedar-policy/cedar": 1,
+   "cel-rust/cel-rust": 2,
+   "cloudflare/quiche": 2,
+   "composefs/tar-rs": 1,
+   "dani-garcia/vaultwarden": 15,
+   "ericlbuehler/mistral.rs": 4,
+   "eugeny/russh": 1,
+   "fulgur-rs/fulgur": 4,
+   "gitoxidelabs/gitoxide": 7,
+   "hickory-dns/hickory-dns": 30,
+   "jdx/mise": 6,
+   "kanidm/kanidm": 3,
+   "kanidm/ldap3": 1,
+   "kivikakk/comrak": 2,
+   "kxxt/tracexec": 1,
+   "lemmynet/lemmy": 4,
+   "libp2p/rust-libp2p": 1,
+   "metaplex-foundation/metaplex-program-library": 1,
+   "nimiq/core-rs-albatross": 11,
+   "noir-lang/noir": 4,
+   "nolabs-ai/nono": 7,
+   "nubo-db/dynoxide": 2,
+   "openmls/openmls": 5,
+   "openvm-org/openvm": 8,
+   "orange-opensource/hurl": 5,
+   "otter-sec/anchor": 1,
+   "phala-network/dcap-qvl": 1,
+   "polkadot-evm/frontier": 5,
+   "praxis-proxy/praxis": 1,
+   "qhkm/zeptoclaw": 1,
+   "quincy-rs/quincy": 1,
+   "quinn-rs/quinn": 3,
+   "raphamorim/rio": 1,
+   "rpgp/rpgp": 1,
+   "rustcrypto/utils": 1,
+   "rustfs/rustfs": 23,
+   "sonos/tract": 2,
+   "starship/starship": 2,
+   "static-web-server/static-web-server": 3,
+   "stellar/rs-stellar-xdr": 1,
+   "succinctlabs/sp1": 1,
+   "superradcompany/microsandbox": 9,
+   "surrealdb/surrealdb": 21,
+   "tauri-apps/plugins-workspace": 1,
+   "tauri-apps/tauri": 1,
+   "tempoxyz/mpp-rs": 1,
+   "uutils/coreutils": 20,
+   "versatica/mediasoup": 4,
+   "wasmerio/wasmer": 4,
+   "zcashfoundation/zebra": 25
+  },
+  "actionable_by_severity": {
+   "CRITICAL": 18,
+   "HIGH": 98,
+   "LOW": 30,
+   "MODERATE": 129
+  },
+  "actionable_repo_match": {
+   "no": 20,
+   "yes": 255
+  },
+  "cve_covered_same_crate": {
+   "no": 21,
+   "yes": 1
+  },
+  "cve_records_git_only": [
+   "CVE-2021-42574",
+   "CVE-2022-21658",
+   "CVE-2022-31111",
+   "CVE-2023-45130",
+   "CVE-2024-24576",
+   "CVE-2024-42350",
+   "CVE-2024-43402",
+   "CVE-2025-11233",
+   "CVE-2025-47270",
+   "CVE-2025-4820",
+   "CVE-2025-4821",
+   "CVE-2025-54426",
+   "CVE-2025-54427",
+   "CVE-2025-6703",
+   "CVE-2026-116678",
+   "CVE-2026-12523",
+   "CVE-2026-12707",
+   "CVE-2026-15957",
+   "CVE-2026-28402",
+   "CVE-2026-31835",
+   "CVE-2026-32605",
+   "CVE-2026-33184",
+   "CVE-2026-34061",
+   "CVE-2026-34062",
+   "CVE-2026-34063",
+   "CVE-2026-35340",
+   "CVE-2026-35372",
+   "CVE-2026-35375",
+   "CVE-2026-35376",
+   "CVE-2026-35378",
+   "CVE-2026-35379",
+   "CVE-2026-35380",
+   "CVE-2026-35468",
+   "CVE-2026-40094",
+   "CVE-2026-43911",
+   "CVE-2026-43912",
+   "CVE-2026-43913",
+   "CVE-2026-44505",
+   "CVE-2026-45039",
+   "CVE-2026-45040",
+   "CVE-2026-45041",
+   "CVE-2026-45042",
+   "CVE-2026-45043",
+   "CVE-2026-45044",
+   "CVE-2026-46540",
+   "CVE-2026-46541",
+   "CVE-2026-46669",
+   "CVE-2026-49991",
+   "CVE-2026-54742",
+   "CVE-2026-55188",
+   "CVE-2026-55189",
+   "CVE-2026-55838",
+   "CVE-2026-62333",
+   "CVE-2026-62334",
+   "CVE-2026-62335",
+   "CVE-2026-62378",
+   "CVE-2026-68538",
+   "CVE-2026-68539",
+   "CVE-2026-68540",
+   "CVE-2026-71477",
+   "CVE-2026-73285",
+   "CVE-2026-73286",
+   "CVE-2026-73287",
+   "CVE-2026-73288",
+   "CVE-2026-73289",
+   "CVE-2026-73290",
+   "CVE-2026-94450",
+   "CVE-2026-95859"
+  ],
+  "top_actionable_by_recent_downloads": [
+   {
+    "crates_found": "quinn-proto",
+    "ghsa_id": "GHSA-53rm-773f-4q8c",
+    "max_recent_downloads": 155634215,
+    "published": "2026-09-30",
+    "repo": "quinn-rs/quinn",
+    "severity": "HIGH"
+   },
+   {
+    "crates_found": "quinn-proto",
+    "ghsa_id": "GHSA-wppq-2f6r-wfvm",
+    "max_recent_downloads": 155634215,
+    "published": "2026-09-30",
+    "repo": "quinn-rs/quinn",
+    "severity": "HIGH"
+   },
+   {
+    "crates_found": "quinn-udp",
+    "ghsa_id": "GHSA-6pp4-4cxf-xf88",
+    "max_recent_downloads": 154149892,
+    "published": "2026-09-30",
+    "repo": "quinn-rs/quinn",
+    "severity": "HIGH"
+   },
+   {
+    "crates_found": "inout",
+    "ghsa_id": "GHSA-3832-prh6-8cpm",
+    "max_recent_downloads": 133551399,
+    "published": "2026-10-23",
+    "repo": "rustcrypto/utils",
+    "severity": "MODERATE"
+   },
+   {
+    "crates_found": "tar",
+    "ghsa_id": "GHSA-747h-hw98-c42x",
+    "max_recent_downloads": 77886170,
+    "published": "2026-05-18",
+    "repo": "composefs/tar-rs",
+    "severity": "LOW"
+   },
+   {
+    "crates_found": "hickory-proto;hickory-net",
+    "ghsa_id": "GHSA-2vgh-3wfw-qj7c",
+    "max_recent_downloads": 34518840,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "HIGH"
+   },
+   {
+    "crates_found": "hickory-proto;hickory-net",
+    "ghsa_id": "GHSA-3jvh-8vj5-65rq",
+    "max_recent_downloads": 34518840,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "MODERATE"
+   },
+   {
+    "crates_found": "hickory-proto;hickory-net",
+    "ghsa_id": "GHSA-3r6v-f3jh-vvqm",
+    "max_recent_downloads": 34518840,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "MODERATE"
+   },
+   {
+    "crates_found": "hickory-net;hickory-proto",
+    "ghsa_id": "GHSA-3w89-7rx5-hpwx",
+    "max_recent_downloads": 34518840,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "LOW"
+   },
+   {
+    "crates_found": "hickory-recursor;hickory-resolver;hickory-proto;hickory-server",
+    "ghsa_id": "GHSA-4jwp-xjwm-333g",
+    "max_recent_downloads": 34518840,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "MODERATE"
+   },
+   {
+    "crates_found": "hickory-net;hickory-proto",
+    "ghsa_id": "GHSA-57pw-897j-v4j6",
+    "max_recent_downloads": 34518840,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "MODERATE"
+   },
+   {
+    "crates_found": "hickory-net;hickory-proto",
+    "ghsa_id": "GHSA-588m-chg6-8jqj",
+    "max_recent_downloads": 34518840,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "HIGH"
+   },
+   {
+    "crates_found": "hickory-proto;hickory-net",
+    "ghsa_id": "GHSA-624w-vvww-xvpw",
+    "max_recent_downloads": 34518840,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "MODERATE"
+   },
+   {
+    "crates_found": "hickory-net;hickory-proto",
+    "ghsa_id": "GHSA-7php-9j59-g3ch",
+    "max_recent_downloads": 34518840,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "MODERATE"
+   },
+   {
+    "crates_found": "hickory-proto;hickory-net",
+    "ghsa_id": "GHSA-86vr-jm6c-7cpg",
+    "max_recent_downloads": 34518840,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "MODERATE"
+   },
+   {
+    "crates_found": "hickory-proto;hickory-net",
+    "ghsa_id": "GHSA-929p-gjf6-5hqj",
+    "max_recent_downloads": 34518840,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "MODERATE"
+   },
+   {
+    "crates_found": "hickory-net;hickory-proto",
+    "ghsa_id": "GHSA-j2rc-wxwh-62g9",
+    "max_recent_downloads": 34518840,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "LOW"
+   },
+   {
+    "crates_found": "hickory-net;hickory-proto",
+    "ghsa_id": "GHSA-p2jv-r3m3-7wf4",
+    "max_recent_downloads": 34518840,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "HIGH"
+   },
+   {
+    "crates_found": "hickory-net;hickory-proto",
+    "ghsa_id": "GHSA-vrv5-968r-5ggm",
+    "max_recent_downloads": 34518840,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "LOW"
+   },
+   {
+    "crates_found": "hickory-proto;hickory-net",
+    "ghsa_id": "GHSA-wjgj-fvg9-65w9",
+    "max_recent_downloads": 34518840,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "LOW"
+   },
+   {
+    "crates_found": "hickory-proto;hickory-net",
+    "ghsa_id": "GHSA-xv7c-h5g9-x25x",
+    "max_recent_downloads": 34518840,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "LOW"
+   },
+   {
+    "crates_found": "hickory-recursor;hickory-resolver;hickory-net",
+    "ghsa_id": "GHSA-29q9-p769-j8gq",
+    "max_recent_downloads": 32680088,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "LOW"
+   },
+   {
+    "crates_found": "hickory-recursor;hickory-resolver",
+    "ghsa_id": "GHSA-2hxp-x833-73f7",
+    "max_recent_downloads": 32680088,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "MODERATE"
+   },
+   {
+    "crates_found": "hickory-recursor;hickory-resolver",
+    "ghsa_id": "GHSA-6h5c-jjg5-wj59",
+    "max_recent_downloads": 32680088,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "HIGH"
+   },
+   {
+    "crates_found": "hickory-recursor;hickory-resolver",
+    "ghsa_id": "GHSA-9px7-7m25-f6q2",
+    "max_recent_downloads": 32680088,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "MODERATE"
+   },
+   {
+    "crates_found": "hickory-recursor;hickory-resolver",
+    "ghsa_id": "GHSA-cx5j-p54p-q756",
+    "max_recent_downloads": 32680088,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "HIGH"
+   },
+   {
+    "crates_found": "hickory-recursor;hickory-resolver",
+    "ghsa_id": "GHSA-vcjp-57rr-mpfw",
+    "max_recent_downloads": 32680088,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "MODERATE"
+   },
+   {
+    "crates_found": "hickory-net",
+    "ghsa_id": "GHSA-qw83-5pm2-ggp5",
+    "max_recent_downloads": 19340477,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "HIGH"
+   },
+   {
+    "crates_found": "hickory-net",
+    "ghsa_id": "GHSA-rx82-4p2j-j5cv",
+    "max_recent_downloads": 19340477,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "MODERATE"
+   },
+   {
+    "crates_found": "hickory-net",
+    "ghsa_id": "GHSA-v44v-c8m4-gc43",
+    "max_recent_downloads": 19340477,
+    "published": "2026-09-03",
+    "repo": "hickory-dns/hickory-dns",
+    "severity": "MODERATE"
+   }
+  ]
+ },
+ "gate": {
+  "controls": {
+   "mv2-s18b-no-such-crate-zz9": "NOT_FOUND",
+   "serde": "FOUND"
+  },
+  "passed": true,
+  "repos": 59,
+  "repos_ok": 59,
+  "rows": 332,
+  "rustsec_records": 1452,
+  "unresolved": 0
+ },
+ "predictions": {
+  "Q1_actionable_at_least_50pct": {
+   "held": true,
+   "of": 332,
+   "share": 0.8283132530120482,
+   "value": 275
+  },
+  "Q2_cve_rows_covered_at_least_20pct": {
+   "held": true,
+   "of": 94,
+   "share": 0.23404255319148937,
+   "value": 22
+  },
+  "Q3_no_crate_5_to_35pct": {
+   "held": true,
+   "of": 332,
+   "share": 0.08734939759036145,
+   "value": 29
+  },
+  "Q4_no_cve_rows_actionable_at_least_70pct": {
+   "held": true,
+   "of": 238,
+   "share": 0.9159663865546218,
+   "value": 218
+  },
+  "Q5_now_known_at_most_5pct": {
+   "held": true,
+   "of": 332,
+   "share": 0.018072289156626505,
+   "value": 6
+  },
+  "Q6_hand_check": {
+   "held": null,
+   "note": "graded by hand from sample.csv: at least 7 of 8 confirmed"
+  }
+ },
+ "provenance": {
+  "rows_sha256": "57820589052036be3aa61b7409e1cb1cea812cf6f063d157e94df5f796d075f1",
+  "rows_source": "https://raw.githubusercontent.com/munimtechnologies/advisory-import-census/main/study/repo-advisory-census-s18/rows.csv",
+  "zip_bytes": 3859573,
+  "zip_fetched_utc": "2026-11-12T12:42:26Z",
+  "zip_sha256": "3a9909deb16dce047febb7f76e9ffd4f322a1c733cdf69817cfcd7a22e2893e1",
+  "zip_source": "https://osv-vulnerabilities.storage.googleapis.com/crates.io/all.zip"
+ },
+ "repo_api_status": {
+  "OK": 59
+ },
+ "rows_check": {
+  "graded": 332,
+  "neither": 427,
+  "ok": true,
+  "rows": 1720
+ },
+ "sample": [
+  "GHSA-5rw2-6x5m-v22x",
+  "GHSA-8xhq-x7vw-8rcw",
+  "GHSA-929p-gjf6-5hqj",
+  "GHSA-c45m-6x25-3cjq",
+  "GHSA-cg9x-2vfm-3j58",
+  "GHSA-mhp7-gmqr-h56w",
+  "GHSA-rhpr-p3gr-f4c9",
+  "GHSA-x298-9x87-fvjq"
+ ],
+ "status_counts": {
+  "ACTIONABLE": 275,
+  "CVE_COVERED": 22,
+  "NOW_KNOWN": 6,
+  "NO_CRATE": 29
+ },
+ "version": "0.1.0"
+}
