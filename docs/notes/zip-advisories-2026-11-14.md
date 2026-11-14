@@ -20,7 +20,9 @@ Licence: CC BY 4.0. Every claim below links to the public source it was read fro
    Checked against [rustsec.org/packages/zip.html](https://rustsec.org/packages/zip.html), the OSV
    records (only q7v9 carries a RUSTSEC alias) and the
    [rustsec/advisory-db pull requests mentioning zip](https://github.com/rustsec/advisory-db/pulls?q=is%3Apr+zip).
-   MV2 has drafted RustSec entries for the four, to be offered as one pull request to rustsec/advisory-db.
+   MV2 offered RustSec entries for the four in
+   [rustsec/advisory-db#3570](https://github.com/rustsec/advisory-db/pull/3570) (opened 2026-11-14,
+   lint passed, awaiting review).
 
 2. **The fix for the critical one is opt-in.** GHSA-m665 ("Zip Cloaking") is about archives whose
    local file headers name different files from the central directory: `ZipArchive` uses the
