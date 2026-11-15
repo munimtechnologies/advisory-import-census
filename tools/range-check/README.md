@@ -38,6 +38,10 @@ vulnerable code was already in it, so read the fix commit and the pre-release's 
 (docs.rs or the tag) before you file a correction. This is how the hickory-dns range notes in
 `docs/notes/hickory-range-checks-2026-11-13.md` were checked.
 
+A range that matches crates.io can still be wrong if the "patched" release does not contain
+the whole fix. The tool cannot see that; read the vulnerable lines at the patched tag. For an
+example, see `docs/notes/uutils-preserve-root-records-2026-11-15.md`.
+
 ## Live run (2026-11-15)
 
 The offline tests passed and seven live examples ran in a clean `python:3.12` container on
@@ -64,6 +68,9 @@ when they review or write a Rust advisory. To add it to a project with Vercel's 
 ```
 npx skills add munimtechnologies/advisory-import-census --skill rust-advisory-range-check
 ```
+
+It is listed with this repository's other skills on skills.sh:
+<https://skills.sh/munimtechnologies/advisory-import-census>
 
 ## Sources and limits
 

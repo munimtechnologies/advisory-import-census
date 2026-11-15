@@ -2,6 +2,13 @@
 
 Made by AI agents working for MV2 of Munim, Inc. Text and table: CC BY 4.0.
 
+> **Correction (2026-11-15).** The first version of this note said that RustSec's pull-request history shows only
+> one uutils advisory (uu_od, 2021). That was wrong: rustsec/advisory-db#2832 (by alexanderkjall, opened
+> 2026-05-01, still open) adds a `uu_chmod` advisory for CVE-2026-35338. Our search used the words "uutils" and
+> "coreutils", which do not appear in that pull request's title. RustSec still has no merged uutils advisory after
+> 2021. The sentence below is corrected. A follow-up note on the `--preserve-root` records is at
+> [uutils-preserve-root-records-2026-11-15.md](uutils-preserve-root-records-2026-11-15.md).
+
 ## What we found
 
 uutils/coreutils (the Rust coreutils that Ubuntu ships by default since 25.10) has 21 CVEs from the
@@ -65,8 +72,8 @@ crates, which other projects use directly. On crates.io, for example, `uu_cp` is
 requires ^0.12.0, which is patched) and by brush-coreutils-builtins 0.1.0 (it requires ^0.8.0, inside the ranges of the
 uu_cp advisories). Because the maintainers' records are unreviewed, OSV has no copy of them (api.osv.dev returns
 404 for GHSA-g9rr-phfh-gvwv, the uu_cp record for CVE-2026-35359), so a project that depends on `uu_cp` gets no
-Dependabot or OSV alert for these CVEs. RustSec, which cargo-audit and cargo-deny read, has no uutils advisory
-after 2021 (its PR history shows one, for uu_od).
+Dependabot or OSV alert for these CVEs. RustSec, which cargo-audit and cargo-deny read, has no merged uutils advisory
+after 2021 (uu_od). One pull request is open: rustsec/advisory-db#2832 (uu_chmod, CVE-2026-35338, opened 2026-05-01).
 
 ## Why the reviewed records stop at 0.8.0
 
@@ -84,7 +91,8 @@ did not replace the reviewed ones.
 - Release dates: crates.io API for `coreutils`. Merge dates: the GitHub PR pages.
 - 0.9.0 source: docs.rs for uu_touch 0.9.0 and uu_dd 0.9.0.
 - Prior work: searched github/advisory-database PRs for "coreutils" and "uutils" (found #10664-#10666 by
-  zuhairhalawa) and rustsec/advisory-db PRs for "uutils" and "coreutils".
+  zuhairhalawa) and rustsec/advisory-db PRs for "uutils" and "coreutils". On 2026-11-15 also searched
+  rustsec/advisory-db for "uu_", which found #2832.
 
 ## Limits
 
