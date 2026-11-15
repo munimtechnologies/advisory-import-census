@@ -38,12 +38,32 @@ vulnerable code was already in it, so read the fix commit and the pre-release's 
 (docs.rs or the tag) before you file a correction. This is how the hickory-dns range notes in
 `docs/notes/hickory-range-checks-2026-11-13.md` were checked.
 
+## Live run (2026-11-15)
+
+The offline tests passed and seven live examples ran in a clean `python:3.12` container on
+2026-11-15 (about five minutes, network on). The full output is in
+[`examples-2026-11-15.txt`](examples-2026-11-15.txt). Highlights:
+
+- `GHSA-29q9-p769-j8gq --repo hickory-dns/hickory-dns`: the maintainers' range for
+  `hickory-recursor` starts at `0.25.0`, which was never published (R1); its five
+  `0.25.0-alpha.*` releases fall outside every range (R2).
+- `GHSA-3w89-7rx5-hpwx`: ranges starting at `0.26.0` (`hickory-net`) and `0.25.0`
+  (`hickory-proto`) leave out four betas and five alphas (R2).
+- `RUSTSEC-2026-0487`: the lower bound `0.20.1` names a version the `hickory-proto` crate
+  never published (R1). The range still covers the intended releases, so this one is cosmetic.
+- `RUSTSEC-2026-0514` and `CVE-2026-41678` (openssl): no findings.
+- `GHSA-jh2m-fhpj-3vr7` without `--repo`: not found, with the hint to pass `--repo`, as designed.
+
 ## Agent skill
 
 The same script ships as an agent skill in
 `skills/rust-advisory-range-check/` (a `SKILL.md` plus `scripts/advisory_range_check.py`, an
 identical copy), so coding agents such as Claude Code, Codex or Cursor can find and run it
-when they review or write a Rust advisory.
+when they review or write a Rust advisory. To add it to a project with Vercel's skills CLI:
+
+```
+npx skills add munimtechnologies/advisory-import-census --skill rust-advisory-range-check
+```
 
 ## Sources and limits
 
