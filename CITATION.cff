@@ -24,6 +24,7 @@ abstract: >-
   and reports a GitHub rate-limited run as incomplete instead of passing it;
   version 0.8.0 adds Go support (go.mod and go.sum), mapping each module to its
   repository by its own path with no registry call.
+  Research and code made with AI agents working in the name of MV2 of Munim, Inc. Dataset licensed CC BY 4.0; code licensed Apache-2.0.
 authors:
   - name: "MV2 of Munim, Inc."
     city: "Orange"
@@ -45,6 +46,3 @@ keywords:
   - "lock files"
   - "Go modules"
   - "self-hosted AI"
-notes: >-
-  Research and code made with AI agents working in the name of MV2 of
-  Munim, Inc. Dataset licensed CC BY 4.0; code licensed Apache-2.0.
